@@ -6,7 +6,7 @@
 type location = char * int 
 
 (** the type of a player command *)
-type command = 
+type t = 
   | Quit 
   | Draw 
   | Restart 
@@ -17,7 +17,7 @@ type command =
 exception Invalid 
 
 (** TODO *)
-val parse : string -> command 
+val parse : string -> t 
 
 
 

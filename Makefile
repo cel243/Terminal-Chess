@@ -31,3 +31,6 @@ docs-private: build
 clean:
 	ocamlbuild -clean
 	rm -rf doc.public doc.private report search_src.zip bisect*.out
+
+play:
+	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
