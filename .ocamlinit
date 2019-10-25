@@ -1,3 +1,3 @@
 #directory "_build";;
 #require "str";;
-#load_rec "listDictionary.cmo";;
+#load_rec "board.cmo";;

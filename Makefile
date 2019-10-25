@@ -1,4 +1,4 @@
-MODULES=dictionary dictionarySet listDictionary engine listEngine authors
+MODULES=board main command display logic authors
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
