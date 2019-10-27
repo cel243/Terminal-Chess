@@ -7,25 +7,28 @@ let game_state = init_state
 let board_tests = [
   "The starting player is White" >:: 
   (fun _ -> assert_equal White 
-      (get_current_player init_state));
+      (get_current_player game_state));
+  "The next player works" >:: 
+  (fun _ -> assert_equal ()
+      (next_player game_state)); 
   "The next player after White is Black" >:: 
   (fun _ -> assert_equal Black 
-      (get_current_player (next_player init_state))); 
-  "The next player after Black is White" >:: 
-  (fun _ -> assert_equal White 
-      (get_current_player (next_player (next_player init_state)))); 
+      (get_current_player game_state)); 
   "The piece at A1 is a White Rook that hasn't moved" >:: 
-  (fun _ -> assert_equal {p_type = Rook; col = White; has_moved = false} 
+  (fun _ -> assert_equal (Some {p_type = Rook; col = White; has_moved = false}) 
       (get_piece_at init_state 'A' 1)); 
   "White has 16 pieces" >:: 
-  (fun _ -> assert_equal 16 ((get_white_pieces init_state).length)); 
+  (fun _ -> assert_equal 16 (List.length (get_white_pieces init_state))); 
   "Black has 16 pieces" >:: 
-  (fun _ -> assert_equal 16 ((get_black_pieces init_state).length)); 
+  (fun _ -> assert_equal 16 (List.length (get_black_pieces init_state))); 
+  "The move_piece works" >:: 
+  (fun _ -> assert_equal ()
+      (move_piece game_state 'A' 1 'H' 8));
   "The White rook has taken the Black Rook" >:: 
-  (fun _ -> assert_equal {p_type = Rook; col = White; has_moved = true} 
-      (get_piece_at game_state H 8 (move_piece game_state A 1 H 8))); 
+  (fun _ -> assert_equal (Some {p_type = Rook; col = White; has_moved = true})
+      (get_piece_at game_state 'H' 8 )); 
   "Black has 15 pieces" >:: 
-  (fun _ -> assert_equal 15 ((get_black_pieces game_state).length));  
+  (fun _ -> assert_equal 15 (List.length (get_black_pieces game_state)));  
 ] 
 
 
