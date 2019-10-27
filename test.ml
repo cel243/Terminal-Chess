@@ -13,10 +13,11 @@ let board_tests = [
   "The next player after Black is White" >:: 
   (fun _ -> assert_equal White 
       (get_current_player (next_player (next_player init_state)))); 
-  "'draw' is parsed as Draw" >:: 
-  (fun _ -> assert_equal {p_type = Rook; col = White; has_moved} (get_piece_at init_state 'A' 1)); 
+  "The piece at A1 is a White Rook that hasn't moved" >:: 
+  (fun _ -> assert_equal {p_type = Rook; col = White; has_moved = false} 
+      (get_piece_at init_state 'A' 1)); 
   "'   DrAw  ' is parsed as Draw" >:: 
-  (fun _ -> assert_equal Draw (parse "    DrAw  ")); 
+  (fun _ -> assert_equal 16 ((get_white_pieces init_state).length)); 
   "'A6 to B4' is parsed as Move ('A',6,'B',4)" >:: 
   (fun _ -> assert_equal Move ('A',6,'B',4) (parse "A6 to B4")); 
   "'  b3  TO  c8' is parsed as Move ('B',3,'C',8)" >:: 
