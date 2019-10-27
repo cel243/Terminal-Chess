@@ -11,7 +11,6 @@ type t =
   | Draw 
   | Restart 
   | Move of location*location
-  | Take of location*location 
 
 (** raised when the command isn't one of the expected forms  *)
 exception Invalid 
