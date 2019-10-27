@@ -1,1 +1,1 @@
-true: package(oUnit), package(qcheck)
+true: package(oUnit),package(qcheck),package(ANSITerminal)

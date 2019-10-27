@@ -7,4 +7,4 @@ type res = Legal | Illegal | Terminate
 (** [process g c] updates the board with the result of the move if
     it determines the move is legal and returns [Lega], otherwise it returns 
     [Illegal], or [Terminate] if this move ends the game.  *)
-val process : Board.t -> Command.t -> bool 
+val process : Board.t -> Command.t -> res 
