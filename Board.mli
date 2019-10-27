@@ -32,7 +32,7 @@ val get_current_player : t -> color
 
 (** [update_current_player g] updates the color of the current player 
     so that it becomes the opposite color. *)
-val update_current_player : t -> unit 
+val next_player : t -> unit 
 
 (** [get_piece_at g c i] is [Some p], where [p] is the chess piece at c,i on
     the board of game [g], if such a piece exists, where the board is 
