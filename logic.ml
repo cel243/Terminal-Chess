@@ -3,4 +3,6 @@ type res = Legal | Illegal | Terminate
 
 
 let process brd cmmd = 
-  failwith "unimplemented"
+  match cmmd with 
+  | Command.Move (c1,i1,c2,i2) -> move_piece brd c1 i1 c2 i2
+  | _ -> failwith "impossible"
