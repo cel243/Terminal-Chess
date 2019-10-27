@@ -23,9 +23,9 @@ exception Invalid
     followed by another letter/number pair. 
     Examples: 
     - [parse "quit"] is [Quit] 
-    - [parse "  quit  "] is [Quit]. 
+    - [parse "  Quit  "] is [Quit]. 
     - [parse "draw"] is [Draw]
-    - [parse "   draw "] is [Draw]
+    - [parse "   Draw "] is [Draw]
     - [parse "A6 to B4"] is [Move (('A',6), ('B',4))]
     - [parse "  b3 to   c7"] is [Move (('B', 3), ('C', 7))]
 
