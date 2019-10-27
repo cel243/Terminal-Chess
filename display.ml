@@ -3,12 +3,12 @@ open ANSITerminal
 (** dark = blue, light = cyan *)
 
 let get_rep = function
-  | Pawn -> "P"
-  | Rook -> "R"
-  | Bishop -> "B"
-  | Knight -> "N"
-  | Queen -> "Q"
-  | King -> "K"
+  | Board.Pawn -> "P"
+  | Board.Rook -> "R"
+  | Board.Bishop -> "B"
+  | Board.Knight -> "N"
+  | Board.Queen -> "Q"
+  | Board.King -> "K"
 
 let get_background r f = 
   if (f mod 2 = 0 && r mod 2 = 0) || ((f mod 2 != 0) && (r mod 2 = 0)) then
