@@ -23,7 +23,7 @@ let parse_input b str =
     end
   | exception Command.Invalid -> 
     print_string "Invalid command.\n"
-      x
+
 let rec play_chess b = 
   Display.print_board b;
   match (Board.get_current_player b) with
