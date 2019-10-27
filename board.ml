@@ -109,7 +109,7 @@ let next_player state =
     state.p_turn <- White
 
 let get_piece_at state c i =
-  state.board.(c-65).(i-1)
+  state.board.(int_of_char c-65).(i-1)
 
 let rec loop_array color file i r =
   if i = 8 then []
@@ -132,16 +132,16 @@ let get_black_pieces state =
   loop_board Black state 0
 
 let copy_piece state c1 i1 c2 i2 =
-  match state.board.(c1-65).(i1-1) with
+  match state.board.(int_of_char c1-65).(i1-1) with
   | None -> raise (Failure "piece not there")
   | Some {p_type=s; col=c; has_moved=h} -> 
-    state.board.(c2-65).(i2-1) <- Some {p_type=s; col=c; has_moved=true}
+    state.board.(int_of_char c2-65).(i2-1) <- Some {p_type=s; col=c; has_moved=true}
 
 let move_piece state c1 i1 c2 i2 =
   if 
     (copy_piece state c1 i1 c2 i2) = () 
   then
-    state.board.(c1-65).(i1-1) <- None
+    state.board.(int_of_char c1-65).(i1-1) <- None
   else 
     raise (Failure "piece not moved")
 
