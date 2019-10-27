@@ -24,16 +24,17 @@ let parse_input b str =
   | exception Command.Invalid -> 
     print_string "Invalid command.\n"
 
+let print_move = function
+  | Board.Black -> print_string "Black's move.\n"; ()
+  | Board.White -> print_string "White's move.\n"; ()
+
 let rec play_chess b = 
   Display.print_board b;
-  match (Board.get_current_player b) with
-  | Black -> print_string "Black's move.\n";
-  | White -> print_string "White's move.\n";
-    print_string "> ";
-
-    match read_line () with
-    | exception End_of_file -> print_string "Goodbye.\n"; ()
-    | str -> parse_input b str; play_chess b
+  (Board.get_current_player b) |> print_move;
+  print_string "> ";
+  match read_line () with
+  | exception End_of_file -> print_string "Goodbye.\n"; ()
+  | str -> parse_input b str; play_chess b
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
