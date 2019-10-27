@@ -1,6 +1,10 @@
 (** Determines whether a player's attempted move is legal given 
     the rules of chess and the state of the game  *)
 
-(** [is_legal g c] is [true] if [c] is a legal command given the 
-    state of game [g] *)
-val is_legal : Board.t -> Command.t -> bool 
+(** the type of the result of a player's attempted move. *)
+type res = Legal | Illegal | Terminate 
+
+(** [process g c] updates the board with the result of the move if
+    it determines the move is legal and returns [Lega], otherwise it returns 
+    [Illegal], or [Terminate] if this move ends the game.  *)
+val process : Board.t -> Command.t -> bool 

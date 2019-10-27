@@ -9,7 +9,6 @@ type location = char * int
 type t = 
   | Quit 
   | Draw 
-  | Restart 
   | Move of location*location
 
 (** raised when the command isn't one of the expected forms  *)
