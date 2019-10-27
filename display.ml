@@ -11,7 +11,7 @@ let get_rep = function
   | Board.King -> "K"
 
 let get_background r f = 
-  if (f mod 2 = 0 && r mod 2 = 0) || (not (f mod 2 = 0) && (r mod 2 = 0)) then
+  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) then
     ANSITerminal.on_blue
   else
     ANSITerminal.on_cyan
@@ -37,7 +37,7 @@ let print_rank r b =
 
 let print_board b =
   ANSITerminal.print_string [default] "\n";
-  for r = 1 to 8 do
+  for r = 8 downto 1 do
     print_rank r b
   done;
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
