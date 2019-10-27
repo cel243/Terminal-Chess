@@ -37,7 +37,9 @@ let print_rank r b =
   ()
 
 let print_board b =
+  ANSITerminal.print_string [default] "\n";
   for r = 1 to 8 do
     print_rank r b
   done;
   ANSITerminal.print_string [white; on_black] " A  B  C  D  E  F  G  H ";
+  ANSITerminal.print_string [default] "\n";
