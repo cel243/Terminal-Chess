@@ -4,7 +4,7 @@ MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind 
-PKGS=oUnit, qcheck
+PKGS=oUnit, qcheck, ANSITerminal
 
 default: build
 	utop
