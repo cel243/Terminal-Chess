@@ -33,9 +33,10 @@ let is_blocked brd st_c st_i dest_c dest_i =
   | _ -> stepwise brd 
            (int_of_char st_c + 1) (st_i + 1) (int_of_char dest_c) dest_i
 
-(** TODO *)
+(** [legal_for_piece piece c1 i1 c2 i2] is [true] if game_piece [piece] can
+    legally move from [c1,i1] to [c2,i2] given the rules of the type 
+    of [piece] *)
 let legal_for_piece piece c1 i1 c2 i2 = failwith "unimplemented"
-
 
 (** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
     the opposing player's pieces have the ability to take the current
