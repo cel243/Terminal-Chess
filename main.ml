@@ -1,7 +1,8 @@
 
 let handle_result b = function
   | Logic.Legal -> Board.next_player b
-  | Logic.Illegal -> print_string "That move is illegal. Please retry.\n"
+  | Logic.Illegal str -> 
+    print_string ("That move is illegal. "^str^" Please retry.\n")
   | Logic.Terminate -> begin
       match (Board.get_current_player b) with
       | Black -> print_string "Checkmate! Black wins!\n"; exit 0

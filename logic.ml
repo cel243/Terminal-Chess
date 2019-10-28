@@ -85,16 +85,20 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
     given the current state of the game.  *)
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
-  not (is_blocked brd c1 i1 c2 i2) 
-(* && ...... *)
-(* && not (leaves_king_in_check brd c1 i1 c2 i2) *)
+  if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
+  (*  else if 
+      leaves_king_in_check brd c1 i1 c2 i2 
+      then (false, "You can't leave your king in check!" *)
+  (* else if ....... *)
+  else (true, "") 
 
-type res = Legal | Illegal | Terminate 
+type res = Legal | Illegal of string  | Terminate 
 
 let process brd cmmd = 
   match cmmd with 
   | Command.Move (c1,i1,c2,i2) -> 
-    if is_legal brd c1 i1 c2 i2  
+    let (b, str) =  is_legal brd c1 i1 c2 i2  in
+    if b 
     then (Board.move_piece brd c1 i1 c2 i2; Legal )
-    else Illegal 
+    else Illegal str
   | _ -> failwith "impossible"
