@@ -33,6 +33,28 @@ let is_blocked brd st_c st_i dest_c dest_i =
   | _ -> stepwise brd 
            (int_of_char st_c + 1) (st_i + 1) (int_of_char dest_c) dest_i
 
+(** TODO *)
+let legal_for_piece piece c1 i1 c2 i2 = failwith "unimplemented"
+
+
+(** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
+    the opposing player's pieces have the ability to take the current
+    player's king in this current board state, and [false] 
+    otherwise  *)
+let rec check_opp_attacks brd op_ls king_c king_i = 
+  match op_ls with 
+  | [] -> false 
+  | (p,c,i)::t -> 
+    if legal_for_piece p c i king_c king_i 
+    &&  not (is_blocked brd c i king_c king_i) then true 
+    else check_opp_attacks brd t king_c king_i
+
+(** [leaves_king_in_check brd c1 i1 c2 i2] is [true] if the attempted
+    move from [c1, i1] to [c2, i2] leaves the king in check, and 
+    [false] otherwise. 
+    Requires: everything else about the move from [c1, i1] to [c2, i2]
+    is valid and legal.  *)
+let leaves_king_in_check brd c1 i1 c2 i2 = failwith "unimplemented"
 
 (** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
     moving the piece at [c1, i1] to [c2, i2] is a legal move 

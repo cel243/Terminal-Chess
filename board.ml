@@ -146,3 +146,6 @@ let move_piece state c1 i1 c2 i2 =
   else 
     raise (Failure "piece not moved")
 
+let copy_board state = {p_turn = state.p_turn; 
+                        board = Array.copy state.board}
+
