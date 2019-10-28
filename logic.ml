@@ -36,7 +36,7 @@ let is_blocked brd st_c st_i dest_c dest_i =
 (** [legal_for_piece piece c1 i1 c2 i2] is [true] if game_piece [piece] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
     of [piece] *)
-let legal_for_piece piece c1 i1 c2 i2 = failwith "unimplemented"
+let legal_for_piece piece c1 i1 c2 i2 = true
 
 (** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
     the opposing player's pieces have the ability to take the current
@@ -85,8 +85,8 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
   not (is_blocked brd c1 i1 c2 i2) 
-  (* && ...... *)
-  && not (leaves_king_in_check brd c1 i1 c2 i2)
+(* && ...... *)
+(* && not (leaves_king_in_check brd c1 i1 c2 i2) *)
 
 type res = Legal | Illegal | Terminate 
 
