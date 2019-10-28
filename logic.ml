@@ -49,12 +49,34 @@ let rec check_opp_attacks brd op_ls king_c king_i =
     &&  not (is_blocked brd c i king_c king_i) then true 
     else check_opp_attacks brd t king_c king_i
 
+(** [king_loc brd] is the location [(c,i)] of the current player's
+    king  *)
+let king_loc brd = 
+  let k_ls = (
+    (match Board.get_current_player brd with 
+     | White -> Board.get_white_pieces brd
+     | Black -> Board.get_black_pieces brd ) 
+    |> List.filter (fun (Board.{p_type},_,_) -> p_type = King) 
+  ) in 
+  match k_ls with 
+  | [(k, c, i)] -> (c,i) 
+  | _ -> failwith "impossible" 
+
 (** [leaves_king_in_check brd c1 i1 c2 i2] is [true] if the attempted
     move from [c1, i1] to [c2, i2] leaves the king in check, and 
     [false] otherwise. 
     Requires: everything else about the move from [c1, i1] to [c2, i2]
     is valid and legal.  *)
-let leaves_king_in_check brd c1 i1 c2 i2 = failwith "unimplemented"
+let leaves_king_in_check brd c1 i1 c2 i2 = 
+  let temp = Board.copy_board brd in 
+  Board.move_piece temp c1 i1 c2 i2;
+  let op_piece_ls = (
+    match Board.get_current_player brd with 
+    | Black -> Board.get_black_pieces temp 
+    | White -> Board.get_white_pieces temp) in 
+  let king_c, king_i = king_loc temp in 
+  check_opp_attacks temp op_piece_ls king_c king_i 
+
 
 (** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
     moving the piece at [c1, i1] to [c2, i2] is a legal move 
@@ -62,7 +84,8 @@ let leaves_king_in_check brd c1 i1 c2 i2 = failwith "unimplemented"
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
   not (is_blocked brd c1 i1 c2 i2) 
-(* && ...... *)
+  (* && ...... *)
+  && not (leaves_king_in_check brd c1 i1 c2 i2)
 
 type res = Legal | Illegal | Terminate 
 
