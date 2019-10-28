@@ -31,7 +31,8 @@ let is_blocked brd st_c st_i dest_c dest_i =
   | None -> failwith "precondition violated" 
   | Some {p_type=Knight} -> false 
   | _ -> stepwise brd 
-           (int_of_char st_c + 1) (st_i + 1) (int_of_char dest_c) dest_i
+           (step (int_of_char st_c) (int_of_char dest_c)) (step st_i dest_i) 
+           (int_of_char dest_c) dest_i
 
 (** [legal_for_piece piece c1 i1 c2 i2] is [true] if game_piece [piece] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
