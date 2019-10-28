@@ -24,7 +24,7 @@ type game_piece = {p_type : piece; col : color; has_moved : bool }
 
 (** [init_state] is the initial state of the game when a chess
     game is started. *)
-val init_state : t 
+val init_state : unit -> t 
 
 (** [get_current_player g] is [White] if it is the white player's
     turn to move in game [g] and [Black] otherwise *)

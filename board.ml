@@ -12,7 +12,7 @@ type t = { mutable p_turn : color;
  * represents F3) 
 *)
 
-let init_state = 
+let init_state () = 
   { p_turn = White;
     board = [|
       [|

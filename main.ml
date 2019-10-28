@@ -39,7 +39,7 @@ let rec play_chess b =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   print_string "Welcome to chess.\n";
-  Board.init_state |> play_chess
+  Board.init_state () |> play_chess
 
 (* Execute the game engine. *)
 let () = main ()

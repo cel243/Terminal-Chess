@@ -1,6 +1,7 @@
 open OUnit2
 open Board
 open Command 
+open Logic 
 
 let game_state = init_state
 
@@ -46,6 +47,12 @@ let command_tests = [
   "'  b3  TO  c8' is parsed as Move ('B',3,'C',8)" >:: 
   (fun _ -> assert_equal (Move ('B',3,'C',8)) (parse "  b3  TO  c8")); 
 ] 
+
+let logic_GS = Board.init_state 
+
+let logic_tests = [
+
+]
 
 let suite =
   "test suite"  >::: List.flatten [
