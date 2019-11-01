@@ -34,10 +34,28 @@ let is_blocked brd st_c st_i dest_c dest_i =
            (step (int_of_char st_c) (int_of_char dest_c)) (step st_i dest_i) 
            (int_of_char dest_c) dest_i
 
-(** [legal_for_piece piece c1 i1 c2 i2] is [true] if game_piece [piece] can
+(** [legal_for_piece piece c1 i1 c2 i2 brd] is [true] if game_piece [piece] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
     of [piece] *)
-let legal_for_piece piece c1 i1 c2 i2 = true
+let legal_for_piece piece c1 i1 c2 i2 brd = 
+  let char_m = abs((int_of_char c1)-(int_of_char c2)) in
+  let int_m = abs (i1-i2) in
+  (not(char_m + int_m = 0)) ||
+  match piece.Board.p_type with
+  | Pawn -> 
+    (int_m=1 && char_m=0) || 
+    ((int_m=1 && char_m=1) && 
+     match (Board.get_piece_at brd c2 i2) with 
+     | None -> false
+     | Some p -> p.Board.col != piece.Board.col)
+  | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
+  | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
+  | Bishop -> (char_m = int_m)
+  | King -> (char_m < 2) && (int_m < 2)
+  | Queen -> 
+    ((char_m = 0) && (int_m > 0)) || 
+    ((char_m > 0) && (int_m = 0)) ||
+    (char_m = int_m)
 
 (** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
     the opposing player's pieces have the ability to take the current
