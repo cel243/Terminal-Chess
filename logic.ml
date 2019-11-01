@@ -43,8 +43,11 @@ let legal_for_piece piece c1 i1 c2 i2 brd =
   (not(char_m + int_m = 0)) ||
   match piece.Board.p_type with
   | Pawn -> 
-    (int_m=1 && char_m=0) || 
-    ((int_m=1 && char_m=1) && 
+    let pawn_w = i1-i2=(-1) && piece.Board.col = White in
+    let pawn_b = i1-i2=1 && piece.Board.col = Black in
+    (pawn_b && char_m=0) || 
+    (pawn_w && char_m=0) ||
+    ((i1-i2=1 && piece.Board.col = Black && char_m=1) && 
      match (Board.get_piece_at brd c2 i2) with 
      | None -> false
      | Some p -> p.Board.col != piece.Board.col)
