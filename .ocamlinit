@@ -1,4 +1,7 @@
 #directory "_build";;
 #require "str";;
+#require "ANSITerminal";;
 #load_rec "board.cmo";;
 #load_rec "display.cmo";;
+#load_rec "logic.cmo";;
+#load_rec "command.cmo";;

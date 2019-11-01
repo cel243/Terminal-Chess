@@ -12,7 +12,7 @@ type t = { mutable p_turn : color;
  * represents F3) 
 *)
 
-let init_state = 
+let init_state () = 
   { p_turn = White;
     board = [|
       [|
@@ -145,4 +145,7 @@ let move_piece state c1 i1 c2 i2 =
     state.board.((int_of_char c1)-65).(i1-1) <- None
   else 
     raise (Failure "piece not moved")
+
+let copy_board state = {p_turn = state.p_turn; 
+                        board = Array.copy state.board}
 

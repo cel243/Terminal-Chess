@@ -6,6 +6,8 @@ type t =
   | Move of locations
 exception Invalid 
 
+(** [get_command wrd_ls] is the command that [wrd_ls] represents. 
+    Raises: Invalid if [wrd_ls] is not a valid command  *)
 let get_command wrd_ls = 
   match wrd_ls with 
   | ["QUIT"] -> Quit 
@@ -15,7 +17,7 @@ let get_command wrd_ls =
           String.get l2 0, int_of_char (String.get l2 1) - 48 )
   | _ -> raise Invalid  
 
-(* val parse : string -> t  *)
+
 let parse p_in = 
   String.split_on_char ' ' p_in 
   |> List.filter (fun x -> x <> "") 
