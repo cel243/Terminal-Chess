@@ -1,5 +1,14 @@
 
 
+let is_valid_location c i =
+  (let n = int_of_char c in (n >= 97 && n <= 104) || (n >= 65 && n <= 72)) &&
+  (i >= 1 && i <= 8) 
+
+let is_curr_players b c i = 
+  match (Board.get_piece_at b c i) with
+  | None -> false
+  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player b)
+
 (** [step curr dest] is the next value of [curr] in the stepwise
     sweep. *)
 let step curr dest = 
@@ -107,10 +116,13 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
   if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
-  (*  else if 
-      leaves_king_in_check brd c1 i1 c2 i2 
-      then (false, "You can't leave your king in check!" *)
-  (* else if ....... *)
+  else if not (not ((not (is_valid_location c1 i1) || not (is_valid_location c2 i2)) ||
+                    (not (is_curr_players brd c1 i1) || (is_curr_players brd c2 i2)))) then
+    (false, "")
+    (*  else if 
+        leaves_king_in_check brd c1 i1 c2 i2 
+        then (false, "You can't leave your king in check!" *)
+    (* else if ....... *)
   else (true, "") 
 
 type res = Legal | Illegal of string  | Terminate 
@@ -119,7 +131,7 @@ let process brd cmmd =
   match cmmd with 
   | Command.Move (c1,i1,c2,i2) -> 
     let (b, str) =  is_legal brd c1 i1 c2 i2  in
-    if b 
+    if b
     then (Board.move_piece brd c1 i1 c2 i2; Legal )
     else Illegal str
   | _ -> failwith "impossible"
