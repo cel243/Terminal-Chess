@@ -1,13 +1,17 @@
 
-
+(** [is_valid_location c i] is true if [c] is a member of the set {'A',...,'Z'} 
+    and [i] is within the range [1, 8]; otherwise, it is false. *)
 let is_valid_location c i =
-  (let n = int_of_char c in (n >= 97 && n <= 104) || (n >= 65 && n <= 72)) &&
-  (i >= 1 && i <= 8) 
+  (let n = int_of_char c in (n >= 65 && n <= 72)) && (i >= 1 && i <= 8) 
 
-let is_curr_players b c i = 
-  match (Board.get_piece_at b c i) with
+(** [is_curr_players b c i] is true if there is a piece at the location (c,i) 
+    and if that piece's color is equal to the color of the current player. If
+    there is no piece at that location, it is false. 
+    Requires: (c,i) is a valid location. *)
+let is_curr_players brd c i = 
+  match (Board.get_piece_at brd c i) with
   | None -> false
-  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player b)
+  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player brd)
 
 (** [step curr dest] is the next value of [curr] in the stepwise
     sweep. *)
@@ -80,7 +84,7 @@ let rec check_opp_attacks brd op_ls king_c king_i =
   match op_ls with 
   | [] -> false 
   | (p,c,i)::t -> 
-    if legal_for_piece p c i king_c king_i 
+    if legal_for_piece c i king_c king_i brd
     &&  not (is_blocked brd c i king_c king_i) then true 
     else check_opp_attacks brd t king_c king_i
 
@@ -118,14 +122,16 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
     given the current state of the game.  *)
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
-  if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
-  else if not (not ((not (is_valid_location c1 i1) || not (is_valid_location c2 i2)) ||
-                    (not (is_curr_players brd c1 i1) || (is_curr_players brd c2 i2)))) then
-    (false, "")
-    (*  else if 
-        leaves_king_in_check brd c1 i1 c2 i2 
-        then (false, "You can't leave your king in check!" *)
-    (* else if ....... *)
+  if not (not ((not (is_valid_location c1 i1) || not (is_valid_location c2 i2)) ||
+               (not (is_curr_players brd c1 i1) || (is_curr_players brd c2 i2)))) then
+    (false, "TODO")
+  else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
+  else if not (legal_for_piece c1 i1 c2 i2 brd) 
+  then (false, "This piece can't move like this!") 
+  (*  else if 
+      leaves_king_in_check brd c1 i1 c2 i2 
+      then (false, "You can't leave your king in check!" *)
+  (* else if ....... *)
   else (true, "") 
 
 type res = Legal | Illegal of string  | Terminate 
