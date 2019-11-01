@@ -1,13 +1,17 @@
 
-
+(** [is_valid_location c i] is true if [c] is a member of the set {'A',...,'Z'} 
+    and [i] is within the range [1, 8]; otherwise, it is false. *)
 let is_valid_location c i =
-  (let n = int_of_char c in (n >= 97 && n <= 104) || (n >= 65 && n <= 72)) &&
-  (i >= 1 && i <= 8) 
+  (let n = int_of_char c in (n >= 65 && n <= 72)) && (i >= 1 && i <= 8) 
 
-let is_curr_players b c i = 
-  match (Board.get_piece_at b c i) with
+(** [is_curr_players b c i] is true if there is a piece at the location (c,i) 
+    and if that piece's color is equal to the color of the current player. If
+    there is no piece at that location, it is false. 
+    Requires: (c,i) is a valid location. *)
+let is_curr_players brd c i = 
+  match (Board.get_piece_at brd c i) with
   | None -> false
-  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player b)
+  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player brd)
 
 (** [step curr dest] is the next value of [curr] in the stepwise
     sweep. *)
