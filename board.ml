@@ -155,5 +155,11 @@ let copy_board state =
      (match state.p_turn with
       | Black -> Black
       | White -> White ); 
-   board = Array.copy state.board}
+   board = 
+     let board_copy = Array.make 8 (Array.make 8 None) in
+     (for x=0 to 7 do
+        board_copy.(x) <- Array.copy state.board.(x)
+      done);
+     board_copy
+  }
 
