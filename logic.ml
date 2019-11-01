@@ -41,7 +41,7 @@ let rec stepwise brd curr_c curr_i dest_c dest_i =
     neither (c1, i1) nor (c2, i2) is out of bounds.  *)
 let is_blocked brd st_c st_i dest_c dest_i = 
   match Board.get_piece_at brd st_c st_i with 
-  | None -> failwith "precondition violated" 
+  | None -> failwith "precondition violated in is_blocked" 
   | Some {p_type=Knight} -> false 
   | _ -> stepwise brd 
            (step (int_of_char st_c) (int_of_char dest_c)) (step st_i dest_i) 
@@ -131,10 +131,9 @@ let is_legal brd c1 i1 c2 i2 =
   else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
   else if not (legal_for_piece c1 i1 c2 i2 brd) 
   then (false, "This piece can't move like that!") 
-  (*  else if 
-      leaves_king_in_check brd c1 i1 c2 i2 
-      then (false, "You can't leave your king in check!" *)
-  (* else if ....... *)
+  else if 
+    leaves_king_in_check brd c1 i1 c2 i2 
+  then (false, "You can't leave your king in check!")
   else (true, "") 
 
 type res = Legal | Illegal of string  | Terminate 
