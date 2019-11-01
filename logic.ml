@@ -52,7 +52,7 @@ let is_blocked brd st_c st_i dest_c dest_i =
     of said piece *)
 let legal_for_piece c1 i1 c2 i2 brd = 
   match Board.get_piece_at brd c1 i1 with
-  | None -> failwith "piece doesn't exist"
+  | None -> failwith "precondition violated in legal_for_piece"
   | Some piece ->
     let char_m = abs((int_of_char c1)-(int_of_char c2)) in
     let int_m = abs (i1-i2) in
