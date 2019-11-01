@@ -122,12 +122,15 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
     given the current state of the game.  *)
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
-  if not (not ((not (is_valid_location c1 i1) || not (is_valid_location c2 i2)) ||
-               (not (is_curr_players brd c1 i1) || (is_curr_players brd c2 i2)))) then
-    (false, "TODO")
+  if (is_curr_players brd c2 i2) then 
+    (false, "This is friendly fire!")
+  else if not (is_curr_players brd c1 i1) then 
+    (false, "You don't have a piece in this square!")
+  else if not (is_valid_location c1 i1) || not (is_valid_location c2 i2) then 
+    (false, "You're attempting to access an out of bounds location!")
   else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
   else if not (legal_for_piece c1 i1 c2 i2 brd) 
-  then (false, "This piece can't move like this!") 
+  then (false, "This piece can't move like that!") 
   (*  else if 
       leaves_king_in_check brd c1 i1 c2 i2 
       then (false, "You can't leave your king in check!" *)
