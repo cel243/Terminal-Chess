@@ -111,8 +111,8 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
   Board.move_piece temp c1 i1 c2 i2;
   let op_piece_ls = (
     match Board.get_current_player brd with 
-    | Black -> Board.get_black_pieces temp 
-    | White -> Board.get_white_pieces temp) in 
+    | White -> Board.get_black_pieces temp 
+    | Black -> Board.get_white_pieces temp) in 
   let king_c, king_i = king_loc temp in 
   check_opp_attacks temp op_piece_ls king_c king_i 
 

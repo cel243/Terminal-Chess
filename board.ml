@@ -150,6 +150,16 @@ let move_piece state c1 i1 c2 i2 =
   else 
     raise (Failure "piece not moved")
 
-let copy_board state = {p_turn = state.p_turn; 
-                        board = Array.copy state.board}
+let copy_board state = 
+  {p_turn = 
+     (match state.p_turn with
+      | Black -> Black
+      | White -> White ); 
+   board = 
+     let board_copy = Array.make 8 (Array.make 8 None) in
+     (for x=0 to 7 do
+        board_copy.(x) <- Array.copy state.board.(x)
+      done);
+     board_copy
+  }
 
