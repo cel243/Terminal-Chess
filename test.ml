@@ -49,33 +49,55 @@ let command_tests = [
 ] 
 
 let logic_GS = Board.init_state ()
+let logic_GS' = Board.init_state ()
 
 let logic_tests = [
 
   (* Tests of is_blocked *)
-  "logic says move C2 to C3 is legal" >:: (fun _ -> 
+  (* "logic says move C2 to C3 is legal" >:: (fun _ -> 
       assert_equal Legal (process logic_GS (Move ('C',2,'C',3))));
-  "logic moved c2 to c3 in the previous test" >:: (fun _ -> 
+     "logic moved c2 to c3 in the previous test" >:: (fun _ -> 
       assert_equal (Some {p_type=Pawn;col=White;has_moved=true})
         (get_piece_at logic_GS 'C' 3));
-  "logic refuses to move A1 to A3 because the rook is blocked" >:: 
-  (fun _ -> assert_equal Illegal (process logic_GS (Move ('A',1,'A',3))));
-  "logic did not move the rook" >:: 
-  (fun _ -> assert_equal None (get_piece_at logic_GS 'A' 4)); 
-  "logic refuses to move C8 to F5 because the bishop is blocked" >:: 
-  (fun _ -> assert_equal Illegal (process logic_GS (Move ('C',8,'F',5))));
-  "logic did not move the rook" >:: 
-  (fun _ -> assert_equal None (get_piece_at logic_GS 'F' 5)); 
-  "logic says move D7 to D6 is legal" >:: (fun _ -> 
+     "logic refuses to move A1 to A3 because the rook is blocked" >:: 
+     (fun _ -> assert_equal (Illegal "") (process logic_GS (Move ('A',1,'A',3))));
+     "logic did not move the rook" >:: 
+     (fun _ -> assert_equal None (get_piece_at logic_GS 'A' 4)); 
+     "logic refuses to move C8 to F5 because the bishop is blocked" >:: 
+     (fun _ -> assert_equal (Illegal "") (process logic_GS (Move ('C',8,'F',5))));
+     "logic did not move the rook" >:: 
+     (fun _ -> assert_equal None (get_piece_at logic_GS 'F' 5)); 
+     "logic says move D7 to D6 is legal" >:: (fun _ -> 
       assert_equal Legal (process logic_GS (Move ('D',7,'D',6))));
-  "logic moved d7 to d6 in the previous test" >:: (fun _ -> 
+     "logic moved d7 to d6 in the previous test" >:: (fun _ -> 
       assert_equal (Some {p_type=Pawn;col=Black;has_moved=true})
         (get_piece_at logic_GS 'D' 6));
-  "logic now allows bishop to move" >:: (fun _ -> 
+     "logic now allows bishop to move" >:: (fun _ -> 
       assert_equal Legal (process logic_GS (Move ('C',8,'F',5))));
-  "logic moved bishop" >:: (fun _ -> 
+     "logic moved bishop" >:: (fun _ -> 
       assert_equal (Some {p_type=Bishop;col=Black;has_moved=true})
-        (get_piece_at logic_GS 'F' 5));
+        (get_piece_at logic_GS 'F' 5)); *)
+
+  "logic says move to out-of-bounds (file) is illegal" >:: (fun _ -> 
+      assert_equal 
+        (Illegal "You're attempting to access an out of bounds location!")
+        (process logic_GS (Move ('A',2,'J',1))));
+  "logic says move to out-of-bounds (rank) is illegal" >:: (fun _ -> 
+      assert_equal 
+        (Illegal "You're attempting to access an out of bounds location!") 
+        (process logic_GS' (Move ('A',2,'A',9))));
+  "logic says move to is friendly-fire" >:: (fun _ -> 
+      assert_equal 
+        (Illegal "This is friendly fire!") 
+        (process logic_GS' (Move ('A',1,'A',2))));
+  "logic says move from (opponent) isn't valid" >:: (fun _ -> 
+      assert_equal 
+        (Illegal "You don't have a piece in this square!") 
+        (process logic_GS' (Move ('A',7,'A',6))));
+  "logic says move from (empty) isn't valid" >:: (fun _ -> 
+      assert_equal 
+        (Illegal "You don't have a piece in this square!") 
+        (process logic_GS' (Move ('A',4,'A',5))));
 ]
 
 let suite =
