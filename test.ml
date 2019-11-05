@@ -68,6 +68,19 @@ let () = Board.move_piece piece_move_pawn 'C' 7 'C' 5
 let piece_move_rook = Board.init_state ()   
 let () = Board.move_piece piece_move_rook 'A' 1 'D' 4
 
+let piece_move_knight = Board.init_state () 
+let () = Board.move_piece piece_move_knight 'G' 1 'E' 5
+
+let piece_move_bishop = Board.init_state () 
+let () = Board.move_piece piece_move_bishop 'F' 1 'E' 5
+
+let piece_move_queen = Board.init_state () 
+let () = Board.move_piece piece_move_queen 'D' 1 'E' 5
+
+let piece_move_king = Board.init_state () 
+let () = Board.move_piece piece_move_king 'E' 1 'E' 4
+let () = Board.move_piece piece_move_king 'F' 7 'E' 3
+
 let piece_move = Board.init_state () 
 
 let print_logic_res = function 
@@ -177,6 +190,117 @@ let logic_tests = [
   "can move rook backwards" >:: 
   (fun _ -> assert_equal Legal 
       (process (copy_board piece_move_rook) (Move ('D',4,'D',3))));
+
+  (* KNIGHT *)
+  "can move knight forward 1 left 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'C',6))));
+  "can move knight forward 1 right 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'G',6))));
+  "can move knight forward 2 left 1" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'D',7))));
+  "can move knight forward 2 right 1" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'F',7))));
+  "can move knight back 2 right 1" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'F',3))));
+  "cannot move knight like a bishop" >:: 
+  (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
+      (process (copy_board piece_move_knight) (Move ('E',5,'C',3))));
+  "can move knight back 1 left 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'C',4))));
+  "can move knight back 1 right 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_knight) (Move ('E',5,'G',4))));
+
+  (* BISHOP *)
+  "can move bishop northeast 1" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_bishop) (Move ('E',5,'F',6))));
+  "can move bishop northeast 2 and take a piece" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_bishop) (Move ('E',5,'G',7))));
+  "can move bishop northwest 2 and take a piece" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_bishop) (Move ('E',5,'C',7))));
+  "can move bishop southeast 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_bishop) (Move ('E',5,'G',3))));
+  "can move bishop southwest 2" >:: 
+  (fun _ -> assert_equal Legal 
+      (process (copy_board piece_move_bishop) (Move ('E',5,'C',3))));
+  "cannot move bishop to a random spot" >:: 
+  (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
+      (process (copy_board piece_move_bishop) (Move ('E',5,'A',6))));
+
+  (* QUEEN *)
+  "can move queen forward 2 and take a piece" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'E',7))));
+  "can move queen northeast 2 and take a piece" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'G',7))));
+  "can move queen northwest 2 and take a piece" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'C',7))));
+  "can move queen right 2" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'H',5))));
+  "can move queen left 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'D',5))));
+  "can move queen southeast 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'F',4))));
+  "can move queen back 2" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'E',3))));
+  "can move queen southwest 2" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'C',3))));
+  "can move queen left 4" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_queen) (Move ('E',5,'A',5))));
+  "cannot move queen like a knight" >:: 
+  (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
+      (process (copy_board piece_move_queen) (Move ('E',5,'D',3))));
+
+  (* KING *)
+  "can move king right 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'F',4))));
+  "can move king northeast 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'F',5))));
+  "can move king southeast 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'F',3))));
+  "can move king south 1 and take a piece" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'E',3))));
+  "can move king wouthwest 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'D',3))));
+  "can move king west 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'D',4))));
+  "can move king northwest 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'D',5))));
+  "can move king forward 1" >:: 
+  (fun _ -> assert_equal Legal
+      (process (copy_board piece_move_king) (Move ('E',4,'E',5))));
+  "cannot move king randomly" >:: 
+  (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
+      (process (copy_board piece_move_king) (Move ('E',4,'G',5))));
+  "cannot move king left 4" >:: 
+  (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
+      (process (copy_board piece_move_king) (Move ('E',4,'A',4))));
+
 ]
 
 let suite =
