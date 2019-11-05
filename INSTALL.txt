@@ -1,0 +1,1 @@
+Assuming the 3110 suite is installed (including ANSITerminal, used in a2/a3), navigate inside the directory and run "make play" 

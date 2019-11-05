@@ -35,3 +35,6 @@ clean:
 
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
+
+zip:
+	zip chess.zip *.ml*  _tags *.txt Makefile
