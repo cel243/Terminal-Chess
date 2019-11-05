@@ -11,7 +11,7 @@ let is_valid_location c i =
 let is_curr_players brd c i = 
   match (Board.get_piece_at brd c i) with
   | None -> false
-  | Some {p_type=_; col; has_moved=_} -> col = (Board.get_current_player brd)
+  | Some {col} -> col = (Board.get_current_player brd)
 
 (** [step curr dest] is the next value of [curr] in the stepwise
     sweep. *)

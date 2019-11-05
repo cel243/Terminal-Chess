@@ -20,7 +20,8 @@ type color = Black | White
 (** the type of a piece in the chess game, containing a type, 
     a color denoting which player the piece belongs to, 
     and whether the piece has been moved previously.  *)
-type game_piece = {p_type : piece; col : color; has_moved : bool }
+type game_piece = 
+  {p_type : piece; col : color; has_moved : bool; points : int }
 
 (** [init_state] is the initial state of the game when a chess
     game is started. *)

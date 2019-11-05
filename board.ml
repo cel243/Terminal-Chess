@@ -1,6 +1,6 @@
 type piece = Pawn | Rook | Bishop | Knight | Queen | King
 type color = Black | White
-type game_piece = {p_type : piece; col : color; has_moved : bool }
+type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
 type t = { mutable p_turn : color;
            board : ((game_piece option) array) array }
 (**
@@ -16,84 +16,84 @@ let init_state () =
   { p_turn = White;
     board = [|
       [|
-        Some {p_type = Rook; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Rook; col = White; has_moved = false; points=5};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Rook; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Rook; col = Black; has_moved = false; points=5}
       |];
       [|
-        Some {p_type = Knight; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Knight; col = White; has_moved = false; points=3};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Knight; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Knight; col = Black; has_moved = false; points=3}
       |];
       [|
-        Some {p_type = Bishop; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Bishop; col = White; has_moved = false; points=3};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Bishop; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Bishop; col = Black; has_moved = false; points=3}
       |];
       [|
-        Some {p_type = Queen; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Queen; col = White; has_moved = false; points=9};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Queen; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Queen; col = Black; has_moved = false; points=9}
       |];
       [|
-        Some {p_type = King; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = King; col = White; has_moved = false; points=100};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = King; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = King; col = Black; has_moved = false; points=100}
       |];
       [|
-        Some {p_type = Bishop; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Bishop; col = White; has_moved = false; points=3};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Bishop; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Bishop; col = Black; has_moved = false; points=3}
       |];
       [|
-        Some {p_type = Knight; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Knight; col = White; has_moved = false; points=3};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Knight; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Knight; col = Black; has_moved = false; points=3}
       |];
       [|
-        Some {p_type = Rook; col = White; has_moved = false};
-        Some {p_type = Pawn; col = White; has_moved = false};
+        Some {p_type = Rook; col = White; has_moved = false; points=5};
+        Some {p_type = Pawn; col = White; has_moved = false; points=1};
         None;
         None;
         None;
         None;
-        Some {p_type = Pawn; col = Black; has_moved = false};
-        Some {p_type = Rook; col = Black; has_moved = false}
+        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+        Some {p_type = Rook; col = Black; has_moved = false; points=5}
       |];
     |] }
 
@@ -138,9 +138,9 @@ let get_black_pieces state =
 let copy_piece state c1 i1 c2 i2 =
   match state.board.((int_of_char c1)-65).(i1-1) with
   | None -> raise (Failure "piece not there")
-  | Some {p_type=s; col=c; has_moved=h} -> 
+  | Some {p_type=s; col=c; has_moved=h;points=p} -> 
     state.board.((int_of_char c2)-65).(i2-1) <- 
-      Some {p_type=s; col=c; has_moved=true}
+      Some {p_type=s; col=c; has_moved=true; points=p}
 
 let move_piece state c1 i1 c2 i2 =
   if 

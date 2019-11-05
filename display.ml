@@ -63,10 +63,11 @@ let print_board b =
   ANSITerminal.print_string [default] "\n"
 
 let help_menu () = 
-  ANSITerminal.print_string [] "\n-----------HELP MENU----------\n";
-  ANSITerminal.print_string [] "Quit --> exit the game\n";
-  ANSITerminal.print_string [] "Draw --> declare a draw between the players \n";
-  ANSITerminal.print_string [] "Help --> display the help menu \n";
-  ANSITerminal.print_string [] 
+  ANSITerminal.print_string [red] "\n-----------HELP MENU----------\n";
+  ANSITerminal.print_string [red] "Quit --> exit the game\n";
+  ANSITerminal.print_string [red] 
+    "Draw --> declare a draw between the players \n";
+  ANSITerminal.print_string [red] "Help --> display the help menu \n";
+  ANSITerminal.print_string [red] 
     ("CN to C'N' --> if C and C' are characters in A..H and N and N' are"
      ^" integers in 1..8, then move the piece at CN to C'N', if legal.\n")
