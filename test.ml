@@ -299,7 +299,7 @@ let logic_tests = [
       (process (copy_board piece_move_king) (Move ('E',4,'G',5))));
   "cannot move king left 4" >:: 
   (fun _ -> assert_equal (Illegal  "This piece can't move like that!")
-      (process (copy_board piece_move_king) (Move ('E',4,'A',4))));
+      (process (copy_board piece_move_king) (Move ('E',4,'A',4)))); 
 
 ]
 
