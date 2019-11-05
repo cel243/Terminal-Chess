@@ -19,11 +19,13 @@ let parse_input b str =
       print_string "It's a draw!\n";
       exit 0
     end
+  | Help -> Display.help_menu ()
   | Move _ as c -> begin
       (Logic.process b c) |> handle_result b
     end
   | exception Command.Invalid -> 
-    print_string "Invalid command.\n"
+    print_string "Invalid command.\n";
+    Display.help_menu ()
 
 let print_move = function
   | Board.Black -> print_string "Black's move.\n"; ()

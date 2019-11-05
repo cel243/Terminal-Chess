@@ -5,3 +5,6 @@
 (** [print_board g] prints a visual representation of the board of 
     game [g] *)
 val print_board : Board.t -> unit 
+
+(** [help_menu ()] prints a menu detailing accepted player commands *)
+val help_menu : unit -> unit 
