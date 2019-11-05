@@ -1,4 +1,6 @@
 
+open ANSITerminal
+
 (** [is_valid_location c i] is true if [c] is a member of the set {'A',...,'Z'} 
     and [i] is within the range [1, 8]; otherwise, it is false. *)
 let is_valid_location c i =
@@ -136,6 +138,26 @@ let is_legal brd c1 i1 c2 i2 =
   then (false, "You can't leave your king in check!")
   else (true, "") 
 
+(** [ptype_rep ptype] is the string representation of [ptype] *)
+let ptype_rep = function
+  | Board.Pawn -> "Pawn"
+  | Board.Rook -> "Rook"
+  | Board.Bishop -> "Bishop"
+  | Board.Knight -> "Knight"
+  | Board.Queen -> "Queen"
+  | Board.King -> "King"
+
+(** [capture_message brd c_dest i_dest] prints a message detailing which
+    piece has been captured by the prvious move, if any.  
+    Requires: [c1,i1] to [c2,i2] is a egal move ]*)
+let capture_message brd c1 i1 c2 i2 = 
+  match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
+  | _, None -> () 
+  | Some {p_type=p1}, Some {p_type=p2} -> 
+    ANSITerminal.print_string 
+      [red] ("\n"^(ptype_rep p1)^" takes "^(ptype_rep p2)^"!\n")
+  | _ , _ -> failwith "precond violated"
+
 type res = Legal | Illegal of string  | Terminate 
 
 let process brd cmmd = 
@@ -143,6 +165,8 @@ let process brd cmmd =
   | Command.Move (c1,i1,c2,i2) -> 
     let (b, str) =  is_legal brd c1 i1 c2 i2  in
     if b
-    then (Board.move_piece brd c1 i1 c2 i2; Legal )
+    then (
+      capture_message brd c1 i1 c2 i2; 
+      Board.move_piece brd c1 i1 c2 i2; Legal )
     else Illegal str
   | _ -> failwith "impossible"
