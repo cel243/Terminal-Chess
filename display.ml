@@ -17,6 +17,14 @@ let get_rep = function
   | Board.Queen -> "Q"
   | Board.King -> "K"
 
+let get_rep_long = function
+  | Board.Pawn -> "Pawn"
+  | Board.Rook -> "Rook"
+  | Board.Bishop -> "Bishop"
+  | Board.Knight -> "Knight"
+  | Board.Queen -> "Queen"
+  | Board.King -> "King"
+
 (** [get_background r f] is [ASNITerminal.on_blue] if either the file [f]
     or rank [r] is even, but not both; otherwise, is [ANSITerminal.on_cyan]. *)
 let get_background r f = 
@@ -69,5 +77,33 @@ let help_menu () =
     "Draw --> declare a draw between the players \n";
   ANSITerminal.print_string [red] "Help --> display the help menu \n";
   ANSITerminal.print_string [red] 
+    "Captured --> display the current player's captured pieces \n";
+  ANSITerminal.print_string [red] 
     ("CN to C'N' --> if C and C' are characters in A..H and N and N' are"
      ^" integers in 1..8, then move the piece at CN to C'N', if legal.\n")
+
+let rec print_piece_list = function 
+  | [] -> () 
+  | (p, n)::t -> 
+    ANSITerminal.print_string [red] 
+      ((get_rep_long p)^": "^(string_of_int n)^"\n"); 
+    print_piece_list t
+
+let print_captured_pieces brd = function 
+  | Board.White -> 
+    ANSITerminal.print_string 
+      [red] "\nWHITE'S CAPTURED PIECES: \n"; 
+    print_piece_list (Board.get_captured_pieces brd White)  
+  | Board.Black -> 
+    ANSITerminal.print_string 
+      [red] "\nBLACK'S CAPTURED PIECES: \n"; 
+    print_piece_list (Board.get_captured_pieces brd Black) 
+
+let capture_message brd c1 i1 c2 i2 = 
+  match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
+  | _, None -> () 
+  | Some {p_type=p1;col}, Some {p_type=p2} -> 
+    ANSITerminal.print_string 
+      [red] 
+      ("\n"^(get_rep_long p1)^" takes "^(get_rep_long p2)^"!\n")
+  | _ , _ -> failwith "precond violated"

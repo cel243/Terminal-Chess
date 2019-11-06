@@ -13,6 +13,7 @@ type t =
   | Quit 
   | Draw 
   | Help 
+  | Captured
   | Move of locations
 
 (** raised when the command isn't one of the expected forms  *)

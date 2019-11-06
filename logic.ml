@@ -138,27 +138,13 @@ let is_legal brd c1 i1 c2 i2 =
   then (false, "You can't leave your king in check!")
   else (true, "") 
 
-(** [ptype_rep ptype] is the string representation of [ptype] *)
-let ptype_rep = function
-  | Board.Pawn -> "Pawn"
-  | Board.Rook -> "Rook"
-  | Board.Bishop -> "Bishop"
-  | Board.Knight -> "Knight"
-  | Board.Queen -> "Queen"
-  | Board.King -> "King"
-
-(** [capture_message brd c_dest i_dest] prints a message detailing which
-    piece has been captured by the prvious move, if any.  
-    Requires: [c1,i1] to [c2,i2] is a egal move ]*)
-let capture_message brd c1 i1 c2 i2 = 
-  match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
-  | _, None -> () 
-  | Some {p_type=p1}, Some {p_type=p2} -> 
-    ANSITerminal.print_string 
-      [red] ("\n"^(ptype_rep p1)^" takes "^(ptype_rep p2)^"!\n")
-  | _ , _ -> failwith "precond violated"
-
 type res = Legal | Illegal of string  | Terminate 
+
+let capture brd col c2 i2 = 
+  match Board.get_piece_at brd c2 i2 with 
+  | None -> () 
+  | Some {p_type=p2} -> 
+    Board.capture_piece brd col p2
 
 let process brd cmmd = 
   match cmmd with 
@@ -166,7 +152,7 @@ let process brd cmmd =
     let (b, str) =  is_legal brd c1 i1 c2 i2  in
     if b
     then (
-      capture_message brd c1 i1 c2 i2; 
+      capture brd (Board.get_current_player brd) c2 i2;
       Board.move_piece brd c1 i1 c2 i2; Legal )
     else Illegal str
   | _ -> failwith "impossible"

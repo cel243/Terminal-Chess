@@ -60,3 +60,12 @@ val move_piece : t -> char -> int -> char -> int -> unit
 
 (** [copy_board b] is a copy of [b] *)
 val copy_board : t -> t 
+
+(**  [capture_piece state col piece] updates the the list of captured
+     pieces for player [col] with [piece].  *)
+val capture_piece : t -> color -> piece -> unit
+
+(**  [get_captured_pieces state col] is the association list of pieces
+     captured by player [col] mapped to the number of this particular 
+     piece player [col] has captured.   *)
+val get_captured_pieces : t -> color -> (piece*int) list 
