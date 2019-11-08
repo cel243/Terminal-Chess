@@ -164,10 +164,11 @@ let this_piece_cant_prevent_check piece brd =
 (** [pieces_cant_prevent_check pieces brd] is true if the current
     player's pieces cannot move in any way that does not leave the king
     in check. False otherwise.  *)
-let pieces_cant_prevent_check pieces brd = 
+let rec pieces_cant_prevent_check pieces brd = 
   match pieces with 
   | [] -> true 
-  | p::t -> this_piece_cant_prevent_check p brd 
+  | p::t -> 
+    this_piece_cant_prevent_check p brd && pieces_cant_prevent_check t brd
 
 (** [cant_escape_check brd] is true if the current player's king
     cannot escape check. False otherwise. *)
@@ -186,16 +187,6 @@ let checkmate brd =
   if king_in_check temp 
   then cant_escape_check temp  
   else false   
-
-(* 
-   - assume the move has already been made 
-   - switch hypothetical scenario to opposite player 
-   - check if king is currently in check 
-   - for each piece belonging to this player, try every move they can make
-   and see if the move leaves the king in check 
-   - as soon as any piece/move is discovered that can prevent check,
-   return false 
-   - at the end, return true *)
 
 (** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
     moving the piece at [c1, i1] to [c2, i2] is a legal move 
@@ -228,11 +219,13 @@ let capture brd col c2 i2 =
 
 let process brd cmmd = 
   match cmmd with 
-  | Command.Move (c1,i1,c2,i2) -> 
-    let (b, str) =  is_legal brd c1 i1 c2 i2  in
-    if b
-    then (
-      capture brd (Board.get_current_player brd) c2 i2;
-      Board.move_piece brd c1 i1 c2 i2; Legal )
-    else Illegal str
+  | Command.Move (c1,i1,c2,i2) -> begin 
+      match is_legal brd c1 i1 c2 i2 with 
+      | true, _ -> 
+        capture brd (Board.get_current_player brd) c2 i2;
+        Board.move_piece brd c1 i1 c2 i2; 
+        if checkmate brd then Terminate 
+        else Legal 
+      | false, str -> 
+        Illegal str end
   | _ -> failwith "impossible"
