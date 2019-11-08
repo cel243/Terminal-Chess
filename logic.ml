@@ -49,9 +49,23 @@ let is_blocked brd st_c st_i dest_c dest_i =
            (step (int_of_char st_c) (int_of_char dest_c)) (step st_i dest_i) 
            (int_of_char dest_c) dest_i
 
+(** [legal_for_pawn piece char_m c1 i1 c2 i2 brd] is [true] if this Pawn, 
+    [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
+    pawns. *)
+let legal_for_pawn piece char_m c1 i1 c2 i2 brd = 
+  let pawn_w = i1-i2=(-1) && piece.Board.col = White in
+  let pawn_b = i1-i2=1 && piece.Board.col = Black in
+  (pawn_b && char_m=0) || 
+  (pawn_w && char_m=0) ||
+  (((pawn_w||pawn_b) && char_m=1) && 
+   match (Board.get_piece_at brd c2 i2) with 
+   | None -> false
+   | Some p -> p.Board.col != piece.Board.col)
+
 (** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
-    of said piece *)
+    of said piece 
+    Requires: there is a piece at [c1,i1] *)
 let legal_for_piece c1 i1 c2 i2 brd = 
   match Board.get_piece_at brd c1 i1 with
   | None -> failwith "precondition violated in legal_for_piece"
@@ -60,15 +74,7 @@ let legal_for_piece c1 i1 c2 i2 brd =
     let int_m = abs (i1-i2) in
     not(char_m + int_m = 0) &&
     match piece.Board.p_type with
-    | Pawn -> 
-      let pawn_w = i1-i2=(-1) && piece.Board.col = White in
-      let pawn_b = i1-i2=1 && piece.Board.col = Black in
-      (pawn_b && char_m=0) || 
-      (pawn_w && char_m=0) ||
-      (((pawn_w||pawn_b) && char_m=1) && 
-       match (Board.get_piece_at brd c2 i2) with 
-       | None -> false
-       | Some p -> p.Board.col != piece.Board.col)
+    | Pawn -> legal_for_pawn piece char_m c1 i1 c2 i2 brd
     | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
     | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
     | Bishop -> (char_m = int_m)
@@ -87,7 +93,8 @@ let rec check_opp_attacks brd op_ls king_c king_i =
   | [] -> false 
   | (p,c,i)::t -> 
     if legal_for_piece c i king_c king_i brd
-    &&  not (is_blocked brd c i king_c king_i) then true 
+    &&  not (is_blocked brd c i king_c king_i)
+    then true 
     else check_opp_attacks brd t king_c king_i
 
 (** [king_loc brd] is the location [(c,i)] of the current player's
@@ -103,6 +110,16 @@ let king_loc brd =
   | [(k, c, i)] -> (c,i) 
   | _ -> failwith "impossible" 
 
+(** [king_in_check brd c1 i1 c2 i2] is [true] if the current 
+    player's king is in check, and [false] otherwise.  *)
+let king_in_check brd = 
+  let op_piece_ls = (
+    match Board.get_current_player brd with 
+    | White -> Board.get_black_pieces brd 
+    | Black -> Board.get_white_pieces brd) in 
+  let king_c, king_i = king_loc brd in 
+  check_opp_attacks brd op_piece_ls king_c king_i 
+
 (** [leaves_king_in_check brd c1 i1 c2 i2] is [true] if the attempted
     move from [c1, i1] to [c2, i2] leaves the king in check, and 
     [false] otherwise. 
@@ -111,13 +128,74 @@ let king_loc brd =
 let leaves_king_in_check brd c1 i1 c2 i2 = 
   let temp = Board.copy_board brd in 
   Board.move_piece temp c1 i1 c2 i2;
-  let op_piece_ls = (
-    match Board.get_current_player brd with 
-    | White -> Board.get_black_pieces temp 
-    | Black -> Board.get_white_pieces temp) in 
-  let king_c, king_i = king_loc temp in 
-  check_opp_attacks temp op_piece_ls king_c king_i 
+  king_in_check temp 
 
+(** [check_rows c ints piece brd] is true if there is no row in 
+    column [c] such that [piece] could move to that square and 
+    the current player's king would not be left in check.  *)
+let rec check_rows c ints piece brd = 
+  match ints with 
+  | [] -> true 
+  | i::t ->  
+    let (p,cp,ip) = piece in 
+    if legal_for_piece cp ip c i brd 
+    && not (is_blocked brd cp ip c i)
+    && not (leaves_king_in_check brd cp ip c i)
+    then false  
+    else check_rows c t piece brd 
+
+(** [check_cols chars ints piece brd] is true if there is no column
+    in which there is a square that [piece] can move that would 
+    not leave the king in check. False otherwise.   *)
+let rec check_cols chars ints piece brd = 
+  match chars with 
+  | [] -> true 
+  | c::t -> 
+    check_rows c ints piece brd && check_cols t ints piece brd 
+
+(** [this_piece_cant_prevent_check piece brd] is true if this piece
+    cannot move in any way that does not leave the current player's
+    king in check. False otherwise. *)
+let this_piece_cant_prevent_check piece brd = 
+  let chars = ['A';'B';'C';'D';'E';'F';'G';'H'] in 
+  let ints =  [1;2;3;4;5;6;7;8] in 
+  check_cols chars ints piece brd
+
+(** [pieces_cant_prevent_check pieces brd] is true if the current
+    player's pieces cannot move in any way that does not leave the king
+    in check. False otherwise.  *)
+let pieces_cant_prevent_check pieces brd = 
+  match pieces with 
+  | [] -> true 
+  | p::t -> this_piece_cant_prevent_check p brd 
+
+(** [cant_escape_check brd] is true if the current player's king
+    cannot escape check. False otherwise. *)
+let cant_escape_check brd = 
+  let pieces = (
+    match Board.get_current_player brd with 
+    | White -> Board.get_white_pieces brd
+    | Black -> Board.get_black_pieces brd ) in 
+  pieces_cant_prevent_check pieces brd 
+
+(** [checkmate brd] is true if the current state of the board leaves
+    the non-current player's king in check. *)
+let checkmate brd = 
+  let temp = Board.copy_board brd in 
+  let () = Board.next_player temp in 
+  if king_in_check temp 
+  then cant_escape_check temp  
+  else false   
+
+(* 
+   - assume the move has already been made 
+   - switch hypothetical scenario to opposite player 
+   - check if king is currently in check 
+   - for each piece belonging to this player, try every move they can make
+   and see if the move leaves the king in check 
+   - as soon as any piece/move is discovered that can prevent check,
+   return false 
+   - at the end, return true *)
 
 (** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
     moving the piece at [c1, i1] to [c2, i2] is a legal move 
@@ -140,6 +218,8 @@ let is_legal brd c1 i1 c2 i2 =
 
 type res = Legal | Illegal of string  | Terminate 
 
+(** [capture brd col c2 i2] tells Board to 'capture' the piece at the 
+    target destination of this move, if such a piece exists *)
 let capture brd col c2 i2 = 
   match Board.get_piece_at brd c2 i2 with 
   | None -> () 
