@@ -223,6 +223,8 @@ let is_legal brd c1 i1 c2 i2 =
 
 type res = Legal | Illegal of string  | Terminate 
 
+(** [check_for_castle brd c1 i1 c2 i2] checks to see if [c1, i1] is trying to
+    castle and moves the rook into place *)
 let check_for_castle brd c1 i1 c2 i2 =
   let cr1, cr2 =  (if (c2 = 'G')
                    then 'H','F'
