@@ -61,8 +61,11 @@ let legal_for_piece c1 i1 c2 i2 brd =
     | Pawn -> 
       let pawn_w = i1-i2=(-1) && piece.Board.col = White in
       let pawn_b = i1-i2=1 && piece.Board.col = Black in
-      (pawn_b && char_m=0) || 
-      (pawn_w && char_m=0) ||
+      let pawn_w2 = 
+        i1-i2=(-2) && not piece.has_moved && piece.Board.col = White in
+      let pawn_b2 = 
+        i1-i2=2 && not piece.has_moved && piece.Board.col = Black in
+      ((pawn_b || pawn_w || pawn_w2 || pawn_b2) && char_m = 0) ||
       (((pawn_w||pawn_b) && char_m=1) && 
        match (Board.get_piece_at brd c2 i2) with 
        | None -> false
@@ -70,7 +73,18 @@ let legal_for_piece c1 i1 c2 i2 brd =
     | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
     | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
     | Bishop -> (char_m = int_m)
-    | King -> (char_m < 2) && (int_m < 2)
+    | King -> (char_m < 2) && (int_m < 2) || 
+              ((char_m = 2) && 
+               (int_m = 0) && 
+               (piece.Board.has_moved = false) &&
+               let c3 = (
+                 if (c2 = 'G')
+                 then 'H'
+                 else 'A') in
+               match Board.get_piece_at brd c3 i1 with
+               | None -> false
+               | Some rook -> (rook.Board.p_type = Rook))
+
     | Queen -> 
       ((char_m = 0) && (int_m > 0)) || 
       ((char_m > 0) && (int_m = 0)) ||
@@ -138,11 +152,32 @@ let is_legal brd c1 i1 c2 i2 =
 
 type res = Legal | Illegal of string  | Terminate 
 
+let check_for_castle brd c1 i1 c2 i2 =
+  let cr1, cr2 =  (if (c2 = 'G')
+                   then 'H','F'
+                   else 'A','D') in
+  let king = (match Board.get_piece_at brd c1 i1 with
+      | None -> false
+      | Some {p_type = p; col = c; has_moved = h} -> 
+        ((p = King) && (h = false) && 
+         (((c = White) && (i1 = 1)) || 
+          ((c = Black) && (i1 = 8)) ))) in
+  let rook = (match Board.get_piece_at brd cr1 i1 with
+      | None -> false
+      | Some {p_type = p; col = c; has_moved = h} -> 
+        ((p = Rook) && (h = false))) in
+  let unit = if (king && rook)
+    then (Board.move_piece brd cr1 i1 cr2 i2)
+    else () in
+  if (unit = ())
+  then (Board.move_piece brd c1 i1 c2 i2; Legal)
+  else (Board.move_piece brd c1 i1 c2 i2; Legal)
+
 let process brd cmmd = 
   match cmmd with 
   | Command.Move (c1,i1,c2,i2) -> 
     let (b, str) =  is_legal brd c1 i1 c2 i2  in
     if b
-    then (Board.move_piece brd c1 i1 c2 i2; Legal )
+    then (check_for_castle brd c1 i1 c2 i2)
     else Illegal str
   | _ -> failwith "impossible"

@@ -139,8 +139,13 @@ let copy_piece state c1 i1 c2 i2 =
   match state.board.((int_of_char c1)-65).(i1-1) with
   | None -> raise (Failure "piece not there")
   | Some {p_type=s; col=c; has_moved=h} -> 
-    state.board.((int_of_char c2)-65).(i2-1) <- 
-      Some {p_type=s; col=c; has_moved=true}
+    if (((i2 = 8) && (c = White) && (s = Pawn)) ||
+        ((i2 = 1) && (c = Black) && (s = Pawn)))
+    then state.board.((int_of_char c2)-65).(i2-1) <- 
+        Some {p_type=Queen; col=c; has_moved=true}
+    else
+      state.board.((int_of_char c2)-65).(i2-1) <- 
+        Some {p_type=s; col=c; has_moved=true}
 
 let move_piece state c1 i1 c2 i2 =
   if 

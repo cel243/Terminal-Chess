@@ -54,7 +54,8 @@ val get_black_pieces : t -> (game_piece * char * int) list
 
 (** [move_piece g c1 i1 c2 i2] updates the board of chess game [g] so that 
     [c1, i1] on the board has replaced whatever was previously at
-    [c2, i2] on the board , leaving an empty square at [c1, i1]. *)
+    [c2, i2] on the board , leaving an empty square at [c1, i1].
+    if [c1, i1] is a pawn then it is promoted to a Queen *)
 val move_piece : t -> char -> int -> char -> int -> unit 
 
 (** [copy_board b] is a copy of [b] *)
