@@ -1,6 +1,8 @@
 
-let handle_result b = function
-  | Logic.Legal -> Board.next_player b
+let handle_result b b_prev c1 i1 c2 i2 = function
+  | Logic.Legal -> 
+    Display.capture_message b_prev c1 i1 c2 i2; 
+    Board.next_player b
   | Logic.Illegal str -> 
     print_string ("That move is illegal. "^str^" Please retry.\n")
   | Logic.Terminate -> begin
@@ -19,11 +21,15 @@ let parse_input b str =
       print_string "It's a draw!\n";
       exit 0
     end
-  | Move _ as c -> begin
-      (Logic.process b c) |> handle_result b
+  | Help -> Display.help_menu ()
+  | Captured -> Display.print_captured_pieces b (Board.get_current_player b)
+  | Move (c1,i1,c2,i2) as c -> begin
+      let b_prev = Board.copy_board b in 
+      (Logic.process b c) |> handle_result b b_prev c1 i1 c2 i2 ;
     end
   | exception Command.Invalid -> 
-    print_string "Invalid command.\n"
+    print_string "Invalid command.\n";
+    Display.help_menu ()
 
 let print_move = function
   | Board.Black -> print_string "Black's move.\n"; ()

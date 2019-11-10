@@ -16,7 +16,8 @@ let board_tests = [
   (fun _ -> assert_equal Black 
       (get_current_player game_state)); 
   "The piece at A1 is a White Rook that hasn't moved" >:: 
-  (fun _ -> assert_equal (Some {p_type = Rook; col = White; has_moved = false}) 
+  (fun _ -> assert_equal 
+      (Some {p_type = Rook; col = White; has_moved = false; points=5}) 
       (get_piece_at (init_state ()) 'A' 1)); 
   "White has 16 pieces" >:: 
   (fun _ -> assert_equal 16 (List.length (get_white_pieces (init_state ())))); 
@@ -26,7 +27,8 @@ let board_tests = [
   (fun _ -> assert_equal ()
       (move_piece game_state 'A' 1 'H' 8));
   "The White rook has taken the Black Rook" >:: 
-  (fun _ -> assert_equal (Some {p_type = Rook; col = White; has_moved = true})
+  (fun _ -> assert_equal 
+      (Some {p_type = Rook; col = White; has_moved = true; points=5})
       (get_piece_at game_state 'H' 8 )); 
   "Black has 15 pieces" >:: 
   (fun _ -> assert_equal 15 (List.length (get_black_pieces game_state)));  
@@ -98,7 +100,7 @@ let logic_tests = [
   "logic says move C2 to C3 is legal" >:: (fun _ -> 
       assert_equal Legal (process logic_GS (Move ('C',2,'C',3))));
   "logic moved c2 to c3 in the previous test" >:: (fun _ -> 
-      assert_equal (Some {p_type=Pawn;col=White;has_moved=true})
+      assert_equal (Some {p_type=Pawn;col=White;has_moved=true; points=1})
         (get_piece_at logic_GS 'C' 3));
   "logic refuses to move A1 to A3 because the rook is blocked" >:: 
   (fun _ -> assert_equal (Illegal "This piece is blocked!") 

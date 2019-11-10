@@ -12,6 +12,8 @@ type locations = char * int * char * int
 type t = 
   | Quit 
   | Draw 
+  | Help 
+  | Captured
   | Move of locations
 
 (** raised when the command isn't one of the expected forms  *)
@@ -29,6 +31,7 @@ exception Invalid
     - [parse "  Quit  "] is [Quit]. 
     - [parse "draw"] is [Draw]
     - [parse "   Draw "] is [Draw]
+    - [parse "help"] is [Help]
     - [parse "A6 to B4"] is [Move ('A',6,'B',4')]
     - [parse "  b3 to   c7"] is [Move ('B',3,'C',7)]
 
