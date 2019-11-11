@@ -1,5 +1,6 @@
 
-
+(** [handle_result b b_prev c1 i1 c2 i2] handles the result of 
+    the legality of a player's move command.  *)
 let handle_result b b_prev c1 i1 c2 i2 = function
   | Logic.Legal -> 
     Display.capture_message b_prev c1 i1 c2 i2; 
@@ -19,6 +20,8 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
     Display.print_board b; exit 0
 
+(** [parse_input b str] interprets the player's input as a command
+    and responds to the command appropriately.  *)
 let parse_input b str = 
   match (Command.parse str) with
   | Quit -> begin
@@ -39,10 +42,15 @@ let parse_input b str =
     print_string "Invalid command.\n";
     Display.help_menu ()
 
+(** [print_move col] prints the appropriate prompt for a player of color 
+    [col] to input a command.  *)
 let print_move = function
   | Board.Black -> print_string "Black's move.\n"; ()
   | Board.White -> print_string "White's move.\n"; ()
 
+(** [play_chess b] prints the current board, prompts a player to 
+    input a command, accepts player input, and delegates the 
+    hdanling of that input appropriately.  *)
 let rec play_chess b = 
   Display.print_board b;
   (Board.get_current_player b) |> print_move;
