@@ -5,7 +5,39 @@ open Logic
 
 let game_state = init_state () 
 
+let capture_board = Board.init_state () 
+let _ = 
+  (Logic.process capture_board (Command.Move ('E',2,'E',4)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('D',7,'D',5)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('E',4,'D',5)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('C',8,'G',4)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('F',1,'A',6)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('G',4,'D',1)) |> ignore;
+   Board.next_player capture_board; 
+   Logic.process capture_board (Command.Move ('A',6,'B',7)) |> ignore;
+   Logic.process capture_board (Command.Move ('E',1,'D',1)) |> ignore;
+  )
+(* WHITE -- pawn, pawn, bishop 
+   Black -- queen *)
 let board_tests = [
+  "The starting captured pieces for white is empty" >:: 
+  (fun _ -> assert_equal [] 
+      (get_captured_pieces game_state White));
+  "The starting captured pieces for black is empty" >:: 
+  (fun _ -> assert_equal [] 
+      (get_captured_pieces game_state Black));
+  "The captured pieces for capture_board white is correct" >:: 
+  (fun _ -> assert_equal [(Pawn, 2); (Bishop, 1)] 
+      (List.sort_uniq Stdlib.compare 
+         (get_captured_pieces capture_board White)));
+  "The captured pieces for capture_board black is correct" >:: 
+  (fun _ -> assert_equal [(Queen, 1)] 
+      (get_captured_pieces capture_board Black));
   "The starting player is White" >:: 
   (fun _ -> assert_equal White 
       (get_current_player game_state));
@@ -85,6 +117,58 @@ let () = Board.move_piece piece_move_king 'F' 7 'E' 3
 
 let piece_move = Board.init_state () 
 
+let checkmate_brd = Board.init_state ()
+let _ = 
+  (Logic.process checkmate_brd (Command.Move ('F',2,'F',3)) |> ignore;
+   Board.next_player checkmate_brd; 
+   Logic.process checkmate_brd (Command.Move ('E',7,'E',5)) |> ignore;
+   Board.next_player checkmate_brd; 
+   Logic.process checkmate_brd (Command.Move ('G',2,'G',4)) |> ignore;
+   Board.next_player checkmate_brd; 
+  )
+
+let stalemate_brd = Board.init_state ()
+let _ = 
+  (Logic.process stalemate_brd (Command.Move ('E',2,'E',3)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('A',7,'A',5)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('D',1,'H',5)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('A',8,'A',6)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('H',5,'A',5)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('H',7,'H',5)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('H',2,'H',4)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('A',6,'H',6)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('A',5,'C',7)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('F',7,'F',6)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('C',7,'D',7)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('E',8,'F',7)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('D',7,'B',7)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('D',8,'D',3)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('B',7,'B',8)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('D',3,'H',7)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('B',8,'C',8)) |> ignore;
+   Board.next_player stalemate_brd; 
+   Logic.process stalemate_brd (Command.Move ('F',7,'G',6)) |> ignore;
+   Board.next_player stalemate_brd; 
+  )
+
+
+
 let print_logic_res = function 
   | Legal -> "legal"
   | Illegal str -> "illegal "^str 
@@ -95,7 +179,17 @@ let print_col = function
   | White -> "white"
   | Black -> "black"
 
+
 let logic_tests = [
+
+  (* test of checkmate/stalemate *)
+  "logic detects checkmate" >:: (fun _ -> 
+      assert_equal Checkmate 
+        (process checkmate_brd (Command.Move ('D',8,'H',4))));
+  "logic detects stalemate" >:: (fun _ -> 
+      assert_equal Stalemate 
+        (process stalemate_brd (Command.Move ('C',8,'E',6)))
+        ~printer: print_logic_res);
 
   (* Tests of is_blocked *)
   "logic says move C2 to C3 is legal" >:: (fun _ -> 
