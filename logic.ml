@@ -53,17 +53,18 @@ let is_blocked brd st_c st_i dest_c dest_i =
     [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
     pawns. *)
 let legal_for_pawn piece char_m c1 i1 c2 i2 brd = 
+  let is_capturing = match (Board.get_piece_at brd c2 i2) with 
+    | None -> false
+    | Some p -> p.Board.col != piece.Board.col in 
   let pawn_w = i1-i2=(-1) && piece.Board.col = White in
   let pawn_b = i1-i2=1 && piece.Board.col = Black in
   let pawn_w2 = 
     i1-i2=(-2) && not piece.has_moved && piece.Board.col = White in
   let pawn_b2 = 
     i1-i2=2 && not piece.has_moved && piece.Board.col = Black in
-  ((pawn_b || pawn_w || pawn_w2 || pawn_b2) && char_m = 0) ||
-  (((pawn_w||pawn_b) && char_m=1) && 
-   match (Board.get_piece_at brd c2 i2) with 
-   | None -> false
-   | Some p -> p.Board.col != piece.Board.col)
+  (not is_capturing && (pawn_b || pawn_w || pawn_w2 || pawn_b2) 
+   && char_m = 0) ||
+  (((pawn_w||pawn_b) && char_m=1) && is_capturing)
 
 (** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
@@ -144,6 +145,25 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
   Board.move_piece temp c1 i1 c2 i2;
   king_in_check temp 
 
+(** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
+    moving the piece at [c1, i1] to [c2, i2] is a legal move 
+    given the current state of the game.  *)
+let is_legal brd c1 i1 c2 i2 =  
+  (* all legality tests go here! *)
+  if (not (is_valid_location c1 i1)) || (not (is_valid_location c2 i2)) then 
+    (false, "You're attempting to access an out of bounds location!")
+  else if not (is_curr_players brd c1 i1) then 
+    (false, "You don't have a piece in this square!")
+  else if (is_curr_players brd c2 i2) then 
+    (false, "This is friendly fire!")
+  else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
+  else if not (legal_for_piece c1 i1 c2 i2 brd) 
+  then (false, "This piece can't move like that!") 
+  else if 
+    leaves_king_in_check brd c1 i1 c2 i2 
+  then (false, "You can't leave your king in check!")
+  else (true, "") 
+
 (** [check_rows c ints piece brd] is true if there is no row in 
     column [c] such that [piece] could move to that square and 
     the current player's king would not be left in check.  *)
@@ -152,9 +172,11 @@ let rec check_rows c ints piece brd =
   | [] -> true 
   | i::t ->  
     let (p,cp,ip) = piece in 
-    if legal_for_piece cp ip c i brd 
-    && not (is_blocked brd cp ip c i)
-    && not (leaves_king_in_check brd cp ip c i)
+    let (b, _) = is_legal brd cp ip c i in
+    (* if legal_for_piece cp ip c i brd 
+       && not (is_blocked brd cp ip c i)
+       && not (leaves_king_in_check brd cp ip c i) *)
+    if b
     then false  
     else check_rows c t piece brd 
 
@@ -201,25 +223,6 @@ let checkmate brd =
   if king_in_check temp 
   then cant_escape_check temp  
   else false   
-
-(** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
-    moving the piece at [c1, i1] to [c2, i2] is a legal move 
-    given the current state of the game.  *)
-let is_legal brd c1 i1 c2 i2 =  
-  (* all legality tests go here! *)
-  if (not (is_valid_location c1 i1)) || (not (is_valid_location c2 i2)) then 
-    (false, "You're attempting to access an out of bounds location!")
-  else if not (is_curr_players brd c1 i1) then 
-    (false, "You don't have a piece in this square!")
-  else if (is_curr_players brd c2 i2) then 
-    (false, "This is friendly fire!")
-  else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
-  else if not (legal_for_piece c1 i1 c2 i2 brd) 
-  then (false, "This piece can't move like that!") 
-  else if 
-    leaves_king_in_check brd c1 i1 c2 i2 
-  then (false, "You can't leave your king in check!")
-  else (true, "") 
 
 type res = Legal | Illegal of string  | Terminate 
 
