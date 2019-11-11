@@ -1,4 +1,5 @@
 
+
 let handle_result b b_prev c1 i1 c2 i2 = function
   | Logic.Legal -> 
     Display.capture_message b_prev c1 i1 c2 i2; 
@@ -7,10 +8,16 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     print_string ("That move is illegal. "^str^" Please retry.\n")
   | Logic.Checkmate -> begin
       match (Board.get_current_player b) with
-      | Black -> print_string "Checkmate! Black wins!\n"; exit 0
-      | White -> print_string "Checkmate! White wins!\n"; exit 0
+      | Black -> 
+        ANSITerminal.print_string [ANSITerminal.green] "CHECKMATE! Black wins!\n"; 
+        Display.print_board b; exit 0
+      | White -> 
+        ANSITerminal.print_string [ANSITerminal.green] "CHECKMATE! White wins!\n";
+        Display.print_board b; exit 0
     end
-  | Logic.Stalemate -> print_string "Stalemate!\n"; exit 0
+  | Logic.Stalemate ->
+    ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
+    Display.print_board b; exit 0
 
 let parse_input b str = 
   match (Command.parse str) with
