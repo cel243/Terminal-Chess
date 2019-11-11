@@ -5,11 +5,12 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     Board.next_player b
   | Logic.Illegal str -> 
     print_string ("That move is illegal. "^str^" Please retry.\n")
-  | Logic.Terminate -> begin
+  | Logic.Checkmate -> begin
       match (Board.get_current_player b) with
       | Black -> print_string "Checkmate! Black wins!\n"; exit 0
       | White -> print_string "Checkmate! White wins!\n"; exit 0
     end
+  | Logic.Stalemate -> print_string "Stalemate!\n"; exit 0
 
 let parse_input b str = 
   match (Command.parse str) with

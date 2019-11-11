@@ -88,7 +88,8 @@ let piece_move = Board.init_state ()
 let print_logic_res = function 
   | Legal -> "legal"
   | Illegal str -> "illegal "^str 
-  | Terminate -> "terminate" 
+  | Checkmate -> "checkmate" 
+  | Stalemate -> "stalemate"
 
 let print_col = function 
   | White -> "white"

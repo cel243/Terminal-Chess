@@ -189,31 +189,38 @@ let rec check_cols chars ints piece brd =
   | c::t -> 
     check_rows c ints piece brd && check_cols t ints piece brd 
 
-(** [this_piece_cant_prevent_check piece brd] is true if this piece
-    cannot move in any way that does not leave the current player's
-    king in check. False otherwise. *)
-let this_piece_cant_prevent_check piece brd = 
+(** [this_piece_cant_move piece brd] is true if this piece
+    cannot move in any legal way. False otherwise. *)
+let this_piece_cant_move piece brd = 
   let chars = ['A';'B';'C';'D';'E';'F';'G';'H'] in 
   let ints =  [1;2;3;4;5;6;7;8] in 
   check_cols chars ints piece brd
 
-(** [pieces_cant_prevent_check pieces brd] is true if the current
-    player's pieces cannot move in any way that does not leave the king
-    in check. False otherwise.  *)
-let rec pieces_cant_prevent_check pieces brd = 
+(** [pieces_cant_move pieces brd] is true if the current
+    player's pieces cannot move in any legal way. False otherwise.  *)
+let rec pieces_cant_move pieces brd = 
   match pieces with 
   | [] -> true 
   | p::t -> 
-    this_piece_cant_prevent_check p brd && pieces_cant_prevent_check t brd
+    this_piece_cant_move p brd && pieces_cant_move t brd
 
-(** [cant_escape_check brd] is true if the current player's king
-    cannot escape check. False otherwise. *)
-let cant_escape_check brd = 
+(** [cant_move brd] is true if the current player's pieces
+    cannot move.  False otherwise. *)
+let cant_move brd = 
   let pieces = (
     match Board.get_current_player brd with 
     | White -> Board.get_white_pieces brd
     | Black -> Board.get_black_pieces brd ) in 
-  pieces_cant_prevent_check pieces brd 
+  pieces_cant_move pieces brd 
+
+(** [stalemate brd] is true if the current state of the board
+    leaves the non-current player unable to move any pieces, but this 
+    is not a checkmate. 
+    Requires: the non-current player's king is not in check *)
+let stalemate brd = 
+  let temp = Board.copy_board brd in 
+  let () = Board.next_player temp in 
+  cant_move temp 
 
 (** [checkmate brd] is true if the current state of the board leaves
     the non-current player's king in check. *)
@@ -221,10 +228,10 @@ let checkmate brd =
   let temp = Board.copy_board brd in 
   let () = Board.next_player temp in 
   if king_in_check temp 
-  then cant_escape_check temp  
+  then cant_move temp  
   else false   
 
-type res = Legal | Illegal of string  | Terminate 
+type res = Legal | Illegal of string | Checkmate | Stalemate  
 
 (** [check_for_castle brd c1 i1 c2 i2] checks to see if [c1, i1] is trying to
     castle and moves the rook into place *)
@@ -262,7 +269,8 @@ let process brd cmmd =
         capture brd (Board.get_current_player brd) c2 i2;
         (check_for_castle brd c1 i1 c2 i2); 
         (Board.move_piece brd c1 i1 c2 i2);
-        if checkmate brd then Terminate 
+        if checkmate brd then Checkmate 
+        else if stalemate brd then Stalemate  
         else Legal 
       | false, str -> 
         Illegal str end
