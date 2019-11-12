@@ -20,6 +20,25 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
     Display.print_board b; exit 0
 
+let handle_draw b = 
+  let () = (
+    match Board.get_current_player b with 
+    | White -> 
+      print_string ("White has requested a draw." 
+                    ^" If Black agrees, input 'AGREE'.\nBlack's input: \n";)
+    | Black -> 
+      print_string ("Black has requested a draw."
+                    ^" If White agrees, input 'AGREE'.\nWhite's input: \n";) ) 
+  in print_string ">";
+  match read_line () with
+  | exception End_of_file -> print_string "Goodbye.\n"; ()
+  | str -> if String.uppercase_ascii str = "AGREE" 
+    then (ANSITerminal.print_string [ANSITerminal.green]  
+            "It's a draw!\n"; exit 0) 
+    else (ANSITerminal.print_string [ANSITerminal.red] 
+            ("\nThe other player did not agree to the draw."
+             ^ " Please continue the game or resign.\n")) 
+
 (** [parse_input b str] interprets the player's input as a command
     and responds to the command appropriately.  *)
 let parse_input b str = 
@@ -28,10 +47,7 @@ let parse_input b str =
       print_string "Goodbye.\n";
       exit 0
     end
-  | Draw -> begin
-      print_string "It's a draw!\n";
-      exit 0
-    end
+  | Draw ->  handle_draw b
   | Help -> Display.help_menu ()
   | Captured -> Display.print_captured_pieces b (Board.get_current_player b)
   | Move (c1,i1,c2,i2) as c -> begin
