@@ -20,6 +20,9 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
     Display.print_board b; exit 0
 
+(** [handle_draw b] handles the result of one player requesting a draw. 
+    If the other player agrees to the draw, the program terminates, otherwise
+    the game continues with the current player.  *)
 let handle_draw b = 
   let () = (
     match Board.get_current_player b with 
