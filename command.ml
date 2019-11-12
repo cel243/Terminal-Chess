@@ -1,7 +1,7 @@
 
 type locations = char * int * char * int 
 type t = 
-  | Quit 
+  | Resign 
   | Draw 
   | Help
   | Captured
@@ -12,7 +12,7 @@ exception Invalid
     Raises: Invalid if [wrd_ls] is not a valid command  *)
 let get_command wrd_ls = 
   match wrd_ls with 
-  | ["QUIT"] -> Quit 
+  | ["RESIGN"] -> Resign 
   | ["DRAW"] -> Draw 
   | ["HELP"] -> Help 
   | ["CAPTURED"] -> Captured

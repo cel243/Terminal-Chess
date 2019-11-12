@@ -10,7 +10,7 @@ type locations = char * int * char * int
 
 (** the type of a player command *)
 type t = 
-  | Quit 
+  | Resign 
   | Draw 
   | Help 
   | Captured

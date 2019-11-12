@@ -46,9 +46,16 @@ let handle_draw b =
     and responds to the command appropriately.  *)
 let parse_input b str = 
   match (Command.parse str) with
-  | Quit -> begin
-      print_string "Goodbye.\n";
-      exit 0
+  | Resign -> begin
+      match Board.get_current_player b with 
+      | White -> 
+        ( ANSITerminal.print_string [ANSITerminal.green] 
+            "White has resigned. Black wins!\n" ;
+          exit 0) 
+      | Black -> 
+        (ANSITerminal.print_string [ANSITerminal.green] 
+           "Black has resigned. White wins!\n";
+         exit 0)
     end
   | Draw ->  handle_draw b
   | Help -> Display.help_menu ()

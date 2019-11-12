@@ -72,7 +72,7 @@ let print_board b =
 
 let help_menu () = 
   ANSITerminal.print_string [red] "\n-----------HELP MENU----------\n";
-  ANSITerminal.print_string [red] "Quit --> exit the game\n";
+  ANSITerminal.print_string [red] "Resign --> forfeit the game\n";
   ANSITerminal.print_string [red] 
     "Draw --> declare a draw between the players \n";
   ANSITerminal.print_string [red] "Help --> display the help menu \n";
