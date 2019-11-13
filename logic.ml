@@ -1,8 +1,6 @@
 
 open ANSITerminal
 
-(** [is_valid_location c i] is true if [c] is a member of the set {'A',...,'Z'} 
-    and [i] is within the range [1, 8]; otherwise, it is false. *)
 let is_valid_location c i =
   (let n = int_of_char c in (n >= 65 && n <= 72)) && (i >= 1 && i <= 8) 
 
@@ -15,8 +13,6 @@ let is_curr_players brd c i =
   | None -> false
   | Some {col} -> col = (Board.get_current_player brd)
 
-(** [step curr dest] is the next value of [curr] in the stepwise
-    sweep. *)
 let step curr dest = 
   if curr < dest then curr + 1
   else if curr > dest then curr - 1
@@ -145,9 +141,6 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
   Board.move_piece temp c1 i1 c2 i2;
   king_in_check temp 
 
-(** [is_legal brd c1 c2 c2 i2] is [true] if the current player 
-    moving the piece at [c1, i1] to [c2, i2] is a legal move 
-    given the current state of the game.  *)
 let is_legal brd c1 i1 c2 i2 =  
   (* all legality tests go here! *)
   if (not (is_valid_location c1 i1)) || (not (is_valid_location c2 i2)) then 

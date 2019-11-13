@@ -5,3 +5,4 @@
 #load_rec "display.cmo";;
 #load_rec "logic.cmo";;
 #load_rec "command.cmo";;
+#load_rec "support.cmo";;

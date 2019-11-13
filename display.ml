@@ -33,6 +33,14 @@ let get_background r f =
   else
     ANSITerminal.on_cyan
 
+(** [get_highlighted_background r f] is [ASNITerminal.on_yellow] if either the file [f]
+    or rank [r] is even, but not both; otherwise, is [ANSITerminal.on_red]. *)
+let get_highlighted_background r f = 
+  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) then
+    ANSITerminal.on_red
+  else
+    ANSITerminal.on_yellow
+
 (** [get_foreground c] is [ANSITerminal.black] if [c] is [Black], and
     is [ANSITerminal.white] if [c] is [White]. This function serves
     as a translator between the UI colors and internal logic designators. *)
@@ -73,12 +81,12 @@ let print_board b =
     fololowed by a new line. Pieces are displayed via [get_rep] and empty
     squares are shown as spaces. The backgrounds of locations in 
     [locs] are highlighted with [col]. *)
-let print_rank_highlighted r b locs col =
+let print_rank_highlighted r b locs =
   ANSITerminal.print_string [white; on_black] (" "^(string_of_int r)^" ");
   for f = 1 to 8 do
     let ch = char_of_int (f+64) in 
     let bg = (if List.mem (ch, r) locs 
-              then col
+              then get_highlighted_background r f 
               else get_background r f ) in
     match (Board.get_piece_at b (char_of_int (64 + f)) r) with
     | None -> ANSITerminal.print_string [bg] "   "
@@ -90,10 +98,10 @@ let print_rank_highlighted r b locs col =
   ANSITerminal.print_string [default] "\n";
   ()
 
-let print_highlighted_brd b locs col = 
+let print_highlighted_brd b locs = 
   ANSITerminal.print_string [default] "\n";
   for r = 8 downto 1 do
-    print_rank_highlighted r b locs col
+    print_rank_highlighted r b locs
   done;
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
   ANSITerminal.print_string [default] "\n"

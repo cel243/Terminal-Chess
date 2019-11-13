@@ -10,8 +10,7 @@ val print_board : Board.t -> unit
 (** [print_highlighted_brd b locs col] prints the same representation of
     the chess board [b] that [print_board] does, but with all of the 
     locations indicated in [loc] highlighted in [col]. *)
-val print_highlighted_brd :  
-  Board.t -> (char * int) list -> ANSITerminal.style -> unit
+val print_highlighted_brd :  Board.t -> (char * int) list -> unit
 
 
 (** [help_menu ()] prints a menu detailing accepted player commands *)

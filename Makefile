@@ -1,4 +1,4 @@
-MODULES=board main command display logic authors
+MODULES=board main command display logic authors support
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
