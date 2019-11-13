@@ -2,9 +2,17 @@
     so that players can easily understand what the current state of the game 
     looks like. *)
 
-(** [print_board g] prints a visual representation of the board of 
-    game [g] *)
+(** [print_board b] prints all of the pieces in board [b] on a checkered
+    background and with pieces color-coded by player. Files are indicated by
+    lettering along the bottom; ranks by numbers along the side. *)
 val print_board : Board.t -> unit 
+
+(** [print_highlighted_brd b locs col] prints the same representation of
+    the chess board [b] that [print_board] does, but with all of the 
+    locations indicated in [loc] highlighted in [col]. *)
+val print_highlighted_brd :  
+  Board.t -> (char * int) list -> ANSITerminal.style -> unit
+
 
 (** [help_menu ()] prints a menu detailing accepted player commands *)
 val help_menu : unit -> unit 

@@ -59,9 +59,6 @@ let print_rank r b =
   ANSITerminal.print_string [default] "\n";
   ()
 
-(** [print_board b] prints all of the pieces in board [b] on a checkered
-    background and with pieces color-coded by player. Files are indicated by
-    lettering along the bottom; ranks by numbers along the side. *)
 let print_board b =
   ANSITerminal.print_string [default] "\n";
   for r = 8 downto 1 do
@@ -69,6 +66,38 @@ let print_board b =
   done;
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
   ANSITerminal.print_string [default] "\n"
+
+(** [print_rank_highlighted r b locs col] 
+    prints the rank (row) [r] given the pieces in board [b].
+    The printed row is preceded by its number on a black background and is
+    fololowed by a new line. Pieces are displayed via [get_rep] and empty
+    squares are shown as spaces. The backgrounds of locations in 
+    [locs] are highlighted with [col]. *)
+let print_rank_highlighted r b locs col =
+  ANSITerminal.print_string [white; on_black] (" "^(string_of_int r)^" ");
+  for f = 1 to 8 do
+    let ch = char_of_int (f+64) in 
+    let bg = (if List.mem (ch, r) locs 
+              then col
+              else get_background r f ) in
+    match (Board.get_piece_at b (char_of_int (64 + f)) r) with
+    | None -> ANSITerminal.print_string [bg] "   "
+    | Some p -> begin
+        let s = get_rep p.p_type in
+        ANSITerminal.print_string [(get_foreground p.col); bg] (" "^s^" ")
+      end
+  done;
+  ANSITerminal.print_string [default] "\n";
+  ()
+
+let print_highlighted_brd b locs col = 
+  ANSITerminal.print_string [default] "\n";
+  for r = 8 downto 1 do
+    print_rank_highlighted r b locs col
+  done;
+  ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
+  ANSITerminal.print_string [default] "\n"
+
 
 let help_menu () = 
   ANSITerminal.print_string [red] "\n-----------HELP MENU----------\n";
