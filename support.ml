@@ -1,12 +1,5 @@
 open ANSITerminal 
 
-type request = 
-  | CanCapture of char * int 
-  | LegalMoves of char * int 
-  | UnderAttack 
-  | Attackers of char * int 
-  | UnderAttackIF of char * int * char * int 
-
 
 (* 
 FUNCTIONS TO SUPPORT? 
@@ -45,12 +38,15 @@ let legal_moves brd c i =
   else 
     match Board.get_piece_at brd c i with 
     | None -> print_string [red] "\nThere is no piece on this square.\n"
-    | Some _ -> 
-      Display.print_highlighted_brd brd ((c,i)::(get_legal_squares brd c i))  
+    | Some {col} -> 
+      if Board.get_current_player brd <> col then 
+        print_string [red] "\nThat is not your piece.\n"
+      else 
+        Display.print_highlighted_brd brd ((c,i)::(get_legal_squares brd c i))  
 
 let handle_player_support brd = function 
-  | CanCapture (c,i) -> failwith "unimplemented"
-  | LegalMoves (c,i) -> legal_moves brd c i
-  | UnderAttack  -> failwith "unimplemented"
-  | Attackers (c,i) -> failwith "unimplemented"
-  | UnderAttackIF (c1,i1,c2,i2) -> failwith "unimplemented"
+  | Command.CanCapture (c,i) -> failwith "unimplemented"
+  | Command.LegalMoves (c,i) -> legal_moves brd c i
+  | Command.UnderAttack  -> failwith "unimplemented"
+  | Command.Attackers (c,i) -> failwith "unimplemented"
+  | Command.UnderAttackIF (c1,i1,c2,i2) -> failwith "unimplemented"

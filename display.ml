@@ -109,6 +109,9 @@ let print_highlighted_brd b locs =
 
 let help_menu () = 
   ANSITerminal.print_string [red] "\n-----------HELP MENU----------\n";
+  ANSITerminal.print_string [red] 
+    ("CN to C'N' --> if C and C' are characters in A..H and N and N' are"
+     ^" integers in 1..8, then move the piece at CN to C'N', if legal.\n");
   ANSITerminal.print_string [red] "Resign --> forfeit the game\n";
   ANSITerminal.print_string [red] 
     "Draw --> declare a draw between the players \n";
@@ -116,8 +119,7 @@ let help_menu () =
   ANSITerminal.print_string [red] 
     "Captured --> display the current player's captured pieces \n";
   ANSITerminal.print_string [red] 
-    ("CN to C'N' --> if C and C' are characters in A..H and N and N' are"
-     ^" integers in 1..8, then move the piece at CN to C'N', if legal.\n")
+    "Legal moves CN --> highlights legal moves of the piece at CN.\n"
 
 let rec print_piece_list = function 
   | [] -> () 

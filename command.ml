@@ -1,4 +1,10 @@
 
+type request = 
+  | CanCapture of char * int 
+  | LegalMoves of char * int 
+  | UnderAttack 
+  | Attackers of char * int 
+  | UnderAttackIF of char * int * char * int 
 type locations = char * int * char * int 
 type t = 
   | Resign 
@@ -6,6 +12,7 @@ type t =
   | Help
   | Captured
   | Move of locations
+  | PSupport of request 
 exception Invalid 
 
 (** [get_command wrd_ls] is the command that [wrd_ls] represents. 
@@ -16,6 +23,10 @@ let get_command wrd_ls =
   | ["DRAW"] -> Draw 
   | ["HELP"] -> Help 
   | ["CAPTURED"] -> Captured
+  | ["LEGAL";"MOVES";loc] when String.length loc = 2 -> 
+    PSupport (
+      LegalMoves 
+        (String.get loc 0, int_of_char (String.get loc 1) - 48))
   | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 -> 
     Move (String.get l1 0, int_of_char (String.get l1 1) - 48,
           String.get l2 0, int_of_char (String.get l2 1) - 48 )

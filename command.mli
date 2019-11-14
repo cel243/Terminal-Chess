@@ -8,6 +8,15 @@
     location is A4 and the second is B6. *)
 type locations = char * int * char * int 
 
+(** the type of player commands asking for specific support 
+    operations.  *)
+type request = 
+  | CanCapture of char * int 
+  | LegalMoves of char * int 
+  | UnderAttack 
+  | Attackers of char * int 
+  | UnderAttackIF of char * int * char * int 
+
 (** the type of a player command *)
 type t = 
   | Resign 
@@ -15,31 +24,17 @@ type t =
   | Help 
   | Captured
   | Move of locations
+  | PSupport of request 
 
 (** raised when the command isn't one of the expected forms  *)
 exception Invalid 
 
-(** [parse str]  translates player input and outputs commands. 
-    If the player is not trying to move a piece, the first word 
-    of their input must be "quit" or "draw," and the rest of the phrase must
-    be empty.
-    Otherwise, the player input must be of the form "A6 to B4," i.e. 
-    a letter A..H or a..h and number 1..8 pairing followed by "to," 
-    followed by another letter/number pair. 
-    Examples: 
-    - [parse "quit"] is [Quit] 
-    - [parse "  Quit  "] is [Quit]. 
-    - [parse "draw"] is [Draw]
-    - [parse "   Draw "] is [Draw]
-    - [parse "help"] is [Help]
-    - [parse "A6 to B4"] is [Move ('A',6,'B',4')]
-    - [parse "  b3 to   c7"] is [Move ('B',3,'C',7)]
-
+(** [parse str]  translates player input and outputs commands. Valid 
+    player inputs are detailed in the help menu. Capitalizations and
+    white space are ignored. 
     Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space 
     characters (only ASCII character code 32; not tabs or newlines, etc.).
-
-    Raises: [Invalid] if [str] is not one of the above discussed valid
-    input formats *)
+    Raises: [Invalid] if [str] is not one of the valid input formats *)
 val parse : string -> t 
 
 
