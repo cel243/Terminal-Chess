@@ -48,6 +48,31 @@ let attackers brd c i =
     else 
       Display.print_highlighted_brd brd ops
 
+let rec exist_opp_attacks brd op_ls c i = 
+  match op_ls with 
+  | [] -> false 
+  | (_,c',i')::t -> 
+    let (b,_) = Logic.is_legal brd c' i' c i in 
+    if b 
+    then true 
+    else exist_opp_attacks brd t c i
+
+let rec check_each_piece brd sofar op_pieces = function 
+  | [] -> sofar 
+  | (_,c,i)::t -> 
+    if (exist_opp_attacks brd op_pieces c i) 
+    then  check_each_piece brd ((c,i)::sofar) op_pieces t
+    else check_each_piece brd sofar op_pieces t
+
+let under_attack brd = 
+  let pieces, op_pieces = (
+    match Board.get_current_player brd with 
+    | White -> Board.get_white_pieces brd, Board.get_black_pieces brd 
+    | Black -> Board.get_black_pieces brd, Board.get_white_pieces brd) in 
+  let temp = Board.copy_board brd in 
+  Board.next_player temp; 
+  Display.print_highlighted_brd brd (check_each_piece temp [] op_pieces pieces) 
+
 (** [check_rows c' ints brd c i] is a list of locations in column [c']
     that the piece at [c,i] can legally move to.
     Requires: there is a piece at [c,i] and it belongs to the current player.  *)
@@ -89,7 +114,7 @@ let legal_moves brd c i =
 let handle_player_support brd = function 
   | Command.CanCapture (c,i) -> failwith "unimplemented"
   | Command.LegalMoves (c,i) -> legal_moves brd c i
-  | Command.UnderAttack  -> failwith "unimplemented"
+  | Command.UnderAttack  -> under_attack brd 
   | Command.Attackers (c,i) -> attackers brd c i 
   | Command.UnderAttackIF (c1,i1,c2,i2) -> failwith "unimplemented"
   | Command.Log -> Display.print_log brd

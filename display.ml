@@ -189,6 +189,8 @@ let help_menu () =
   ANSITerminal.print_string [red] 
     "Attackers CN --> highlights pieces that can capture piece at CN.\n";
   ANSITerminal.print_string [red] 
+    "Under attack --> highlights pieces in danger of being captured.\n";
+  ANSITerminal.print_string [red] 
     "LOG --> prints all of the moves performed this game.\n"
 
 let rec print_piece_list = function 

@@ -40,7 +40,8 @@ let handle_draw b =
             "It's a draw!\n"; exit 0) 
     else (ANSITerminal.print_string [ANSITerminal.red] 
             ("\nThe other player did not agree to the draw."
-             ^ " Please continue the game or resign.\n")) 
+             ^ " Please continue the game or resign.\n");
+          Display.print_board b;)
 
 (** [parse_input b str] interprets the player's input as a command
     and responds to the command appropriately.  *)
