@@ -16,6 +16,7 @@ type request =
   | UnderAttack 
   | Attackers of char * int 
   | UnderAttackIF of char * int * char * int 
+  | Log
 
 (** the type of a player command *)
 type t = 

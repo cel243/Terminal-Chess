@@ -19,12 +19,15 @@ type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
 type t = { mutable p_turn : color;
            mutable white_captured : (piece*int) list; 
            mutable black_captured : (piece*int) list; 
-           board : ((game_piece option) array) array }
+           board : ((game_piece option) array) array;
+           mutable moves 
+           : ((piece * color * char * int) * ((piece option) * char * int)) list }
 
 let init_state () = 
   { p_turn = White;
     white_captured = [];
     black_captured = [];
+    moves = [];
     board = [|
       [|
         Some {p_type = Rook; col = White; has_moved = false; points=5};
@@ -106,7 +109,8 @@ let init_state () =
         Some {p_type = Pawn; col = Black; has_moved = false; points=1};
         Some {p_type = Rook; col = Black; has_moved = false; points=5}
       |];
-    |] }
+    |];
+  }
 
 let get_current_player state =
   state.p_turn
@@ -121,6 +125,9 @@ let next_player state =
 
 let get_piece_at state c i =
   state.board.((int_of_char c)-65).(i-1)
+
+let get_moves state = 
+  state.moves
 
 (* [loop_array c f i r] i the (game_piece * char * int) list representation of 
    board pieces of color c in a given rank r from array f. *)
@@ -158,7 +165,29 @@ let copy_piece state c1 i1 c2 i2 =
       state.board.((int_of_char c2)-65).(i2-1) <- 
         Some {p_type=s; col=c; has_moved=true; points=p}
 
+let log_move state c1 i1 c2 i2 = 
+  let moves' = 
+    match state.board.((int_of_char c1)-65).(i1-1), 
+          state.board.((int_of_char c2)-65).(i2-1) with
+    (* These first 2 should never happen due to Logic's vetting *)
+    | None, None -> raise (Failure "source & dest piece not there: log")
+    | None, _ -> raise (Failure "source piece not there: log")
+    (* Friendly piece to empty square *)
+    | Some {p_type=p1; _}, None -> begin
+        let curr = (get_current_player state) in
+        let move = ((p1, curr, c1, i1), (None, c2, i2)) in
+        move::state.moves
+      end
+    (* Friendly capturing enemy piece *)
+    | Some {p_type=p1; _}, Some {p_type=p2; _} -> begin
+        let curr = (get_current_player state) in
+        let move = ((p1, curr, c1, i1), (Some p2, c2, i2)) in
+        move::state.moves
+      end in
+  state.moves <- moves'
+
 let move_piece state c1 i1 c2 i2 =
+  (log_move state c1 i1 c2 i2);
   if 
     (copy_piece state c1 i1 c2 i2) = () 
   then
@@ -173,6 +202,7 @@ let copy_board state =
       | White -> White ); 
    white_captured = state.white_captured;
    black_captured = state.black_captured; 
+   moves = state.moves;
    board = 
      let board_copy = Array.make 8 (Array.make 8 None) in
      (for x=0 to 7 do

@@ -21,3 +21,7 @@ val is_legal : Board.t -> char -> int -> char -> int -> bool * string
     it determines the move is legal and returns [Lega], otherwise it returns 
     [Illegal], or [Terminate] if this move ends the game.  *)
 val process : Board.t -> Command.t -> res 
+
+(** [king_in_check brd] is [true] if the current player's king is in check, 
+    and [false] otherwise.  *)
+val king_in_check : Board.t -> bool
