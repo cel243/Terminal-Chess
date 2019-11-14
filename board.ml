@@ -11,17 +11,20 @@ type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
  * t.white_captured is the pieces the White player has captured mapped to the 
  * number of that particular piece white has captured 
  * t.black_captured is the pieces the Black player has captured mapped to the 
- * number of that particular piece white has captured 
+ * number of that particular piece white has captured
+ * t.moves is the list of moves performed during the game
  * RI: t.board is a 8*8 array. 
- * t.white_captured and t.black_captured contain nonzero, positive 
- * integers only. 
+ * t.white_captured, t.black_captured, and t.moves contain nonzero, positive 
+ * integers only.
 *)
-type t = { mutable p_turn : color;
-           mutable white_captured : (piece*int) list; 
-           mutable black_captured : (piece*int) list; 
-           board : ((game_piece option) array) array;
-           mutable moves 
-           : ((piece * color * char * int) * ((piece option) * char * int)) list }
+type t = { 
+  mutable p_turn : color;
+  mutable white_captured : (piece*int) list; 
+  mutable black_captured : (piece*int) list; 
+  board : ((game_piece option) array) array;
+  mutable moves : ((piece * color * char * int) * 
+                   ((piece option) * char * int)) list 
+}
 
 let init_state () = 
   { p_turn = White;
@@ -165,12 +168,15 @@ let copy_piece state c1 i1 c2 i2 =
       state.board.((int_of_char c2)-65).(i2-1) <- 
         Some {p_type=s; col=c; has_moved=true; points=p}
 
+(** [log_move state c1 i1 c2 i2] prepends a move of either form:
+    1) ((p1,c1,i1), (Some p2, c2, i2)) if there was a piece at the destination
+    2) ((p1,c1,i1), (Some p2, c2, i2)) if there was no piece at the destination,
+    or raises a Failure if the starting space is empty. *)
 let log_move state c1 i1 c2 i2 = 
   let moves' = 
     match state.board.((int_of_char c1)-65).(i1-1), 
           state.board.((int_of_char c2)-65).(i2-1) with
-    (* These first 2 should never happen due to Logic's vetting *)
-    | None, None -> raise (Failure "source & dest piece not there: log")
+    (* This should never happen due to Logic's vetting *)
     | None, _ -> raise (Failure "source piece not there: log")
     (* Friendly piece to empty square *)
     | Some {p_type=p1; _}, None -> begin
