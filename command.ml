@@ -23,7 +23,7 @@ let get_command wrd_ls =
   | ["DRAW"] -> Draw 
   | ["HELP"] -> Help 
   | ["CAPTURED"] -> Captured
-  | ["LEGAL";"MOVES";loc] when String.length loc = 2 -> 
+  | [loc] when String.length loc = 2 -> 
     PSupport (
       LegalMoves 
         (String.get loc 0, int_of_char (String.get loc 1) - 48))

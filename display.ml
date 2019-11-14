@@ -119,7 +119,7 @@ let help_menu () =
   ANSITerminal.print_string [red] 
     "Captured --> display the current player's captured pieces \n";
   ANSITerminal.print_string [red] 
-    "Legal moves CN --> highlights legal moves of the piece at CN.\n"
+    "CN --> highlights legal moves of the piece at CN.\n"
 
 let rec print_piece_list = function 
   | [] -> () 
