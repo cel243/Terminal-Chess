@@ -94,16 +94,6 @@ let get_opp_color_str = function
   | Board.White -> "Black"
   | Board.Black -> "White"
 
-(** [print_log b] prints the move list for board [b].
-    Let k be the kth move in the game.
-    Let p be the string representation of the mover's piece.
-    Let p' be the string representation of the enemy's piece.
-    Let col be the string representation of the mover's color.
-    Let col be the string representation of the enemy's color.
-    Moves that saw a piece (c,i) move to an empty square (c',i') are shown as:
-    "(k) [col] p at (c,i) TO (c',i')"
-    Moves that saw a piece (c,i) take a piece (c',i') are shown as: 
-    "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" *)
 let print_log b = 
   ANSITerminal.print_string [default] "Move Log:\n";
   let rec print_all_moves i = function
