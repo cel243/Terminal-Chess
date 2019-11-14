@@ -92,3 +92,4 @@ let handle_player_support brd = function
   | Command.UnderAttack  -> failwith "unimplemented"
   | Command.Attackers (c,i) -> attackers brd c i 
   | Command.UnderAttackIF (c1,i1,c2,i2) -> failwith "unimplemented"
+  | Command.Log -> Display.print_log brd

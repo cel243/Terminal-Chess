@@ -70,3 +70,11 @@ val capture_piece : t -> color -> piece -> unit
      captured by player [col] mapped to the number of this particular 
      piece player [col] has captured.   *)
 val get_captured_pieces : t -> color -> (piece*int) list 
+
+(** [get_moves state] returns a list of moves that have performed on
+    the given Board. Each element of the list is of the form:
+    1) ((p1,c1,i1), (Some p2, c2, i2)) if there was a piece at the destination
+    2) ((p1,c1,i1), (Some p2, c2, i2)) if there was no piece at the destination 
+*)
+val get_moves : t -> 
+  ((piece * color * char * int) * ((piece option) * char * int)) list
