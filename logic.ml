@@ -88,7 +88,8 @@ let legal_for_piece c1 i1 c2 i2 brd =
                  else 'A') in
                match Board.get_piece_at brd c3 i1 with
                | None -> false
-               | Some rook -> (rook.Board.p_type = Rook))
+               | Some rook -> ((rook.Board.p_type = Rook) &&
+                               (rook.Board.has_moved = false)))
 
     | Queen -> 
       ((char_m = 0) && (int_m > 0)) || 
