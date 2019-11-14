@@ -2,13 +2,7 @@ open ANSITerminal
 
 (** dark = blue, light = cyan *)
 
-(** [get_rep p] returns the one character representation of game piece [p].
-    Pawn: P
-    Rook: R
-    Bishop: B
-    Knight: N
-    Queen: Q
-    King: K *)
+(** [get_rep p] returns the one character representation of game piece [p]. *)
 let get_rep col p = match col, p with
   | Board.White, Board.Pawn -> "\u{2659}"
   | Board.White, Board.Rook -> "\u{2656}"
@@ -88,14 +82,28 @@ let print_board b =
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
   ANSITerminal.print_string [default] "\n"
 
+(** [get_color_str c] is "Black" if [c] is [Board.Black], and is "White"
+    if [c] is [Board.White] *)
 let get_color_str = function
   | Board.Black -> "Black"
   | Board.White -> "White"
 
+(** [get_color_str c] is "Black" if [c] is [Board.White], and is "White"
+    if [c] is [Board.Black] *)
 let get_opp_color_str = function
   | Board.White -> "Black"
   | Board.Black -> "White"
 
+(** [print_log b] prints the move list for board [b].
+    Let k be the kth move in the game.
+    Let p be the string representation of the mover's piece.
+    Let p' be the string representation of the enemy's piece.
+    Let col be the string representation of the mover's color.
+    Let col be the string representation of the enemy's color.
+    Moves that saw a piece (c,i) move to an empty square (c',i') are shown as:
+    "(k) [col] p at (c,i) TO (c',i')"
+    Moves that saw a piece (c,i) take a piece (c',i') are shown as: 
+    "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" *)
 let print_log b = 
   ANSITerminal.print_string [default] "Move Log:\n";
   let rec print_all_moves i = function
