@@ -309,7 +309,9 @@ let check_for_en_passant brd c1 i1 c2 i2 =
     target destination of this move, if such a piece exists *)
 let capture brd col c2 i2 = 
   match Board.get_piece_at brd c2 i2 with 
-  | None -> () 
+  | None -> if en_passant c2 brd then  
+      Board.capture_piece brd col Pawn
+    else ()
   | Some {p_type=p2} -> 
     Board.capture_piece brd col p2
 
