@@ -204,10 +204,10 @@ let print_captured_pieces brd = function
 let capture_message brd c1 i1 c2 i2 = 
   match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
   | _, None -> 
-    if Logic.en_passant c2 brd then  
+    if Logic.en_passant i1 c2 brd then  
       ANSITerminal.print_string 
         [red] 
-        ("\nPawn takes Pawn!\n")
+        ("\nPawn takes Pawn by En Passant!\n")
     else ()
   | Some {p_type=p1;col}, Some {p_type=p2} -> 
     ANSITerminal.print_string 

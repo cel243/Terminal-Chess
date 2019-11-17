@@ -58,14 +58,14 @@ let rec check_opp_attacks brd op_ls king_c king_i =
     then true 
     else check_opp_attacks brd t king_c king_i
 
-(**  [en_passant c2 brd] is [true] if a pawn can be taken by en passant *)
-and en_passant c2 brd =
+(**  [en_passant i1 c2 brd] is [true] if a pawn can be taken by en passant *)
+and en_passant i1 c2 brd =
   match Board.get_current_player brd with
   | White -> 
     begin
       match Board.get_moves brd with
       | ((Pawn, _, c3, 7), (None, _, 5))::t -> 
-        if (c2 = c3)
+        if ((c2 = c3) && i1 = 5)
         then true
         else false
       | _ -> false
@@ -74,7 +74,7 @@ and en_passant c2 brd =
     begin
       match Board.get_moves brd with
       | ((Pawn, _, c3, 2), (None, _, 4))::t -> 
-        if (c2 = c3)
+        if ((c2 = c3) && i1 = 4)
         then true
         else false
       | _ -> false
@@ -119,7 +119,7 @@ and legal_for_pawn piece char_m c1 i1 c2 i2 brd =
   (not is_capturing && (pawn_b || pawn_w || pawn_w2 || pawn_b2) 
    && char_m = 0) ||
   (((pawn_w||pawn_b) && char_m=1) && 
-   (is_capturing || en_passant c2 brd))
+   (is_capturing || en_passant i1 c2 brd))
 
 (** [legal_for_pawn c1 i1 c2 i2 brd] is [true] if this King, 
     [piece], can legally castle from [c1,i1] to [c2,i2] given the rules of 
@@ -305,11 +305,11 @@ let check_for_en_passant brd c1 i1 c2 i2 =
     else ()
   | _ -> ()
 
-(** [capture brd col c2 i2] tells Board to 'capture' the piece at the 
+(** [capture brd col i1 c2 i2] tells Board to 'capture' the piece at the 
     target destination of this move, if such a piece exists *)
-let capture brd col c2 i2 = 
+let capture brd col i1 c2 i2 = 
   match Board.get_piece_at brd c2 i2 with 
-  | None -> if en_passant c2 brd then  
+  | None -> if en_passant i1 c2 brd then  
       Board.capture_piece brd col Pawn
     else ()
   | Some {p_type=p2} -> 
@@ -320,7 +320,7 @@ let process brd cmmd =
   | Command.Move (c1,i1,c2,i2) -> begin 
       match is_legal brd c1 i1 c2 i2 with 
       | true, _ -> 
-        capture brd (Board.get_current_player brd) c2 i2;
+        capture brd (Board.get_current_player brd) i1 c2 i2;
         (check_for_en_passant brd c1 i1 c2 i2);
         (check_for_castle brd c1 i1 c2 i2); 
         (Board.move_piece brd c1 i1 c2 i2);

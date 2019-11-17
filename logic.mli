@@ -26,5 +26,5 @@ val process : Board.t -> Command.t -> res
     and [false] otherwise.  *)
 val king_in_check : Board.t -> bool
 
-(**  [en_passant c2 brd] is [true] if a pawn can be taken by en passant *)
-val en_passant : char -> Board.t -> bool
+(**  [en_passant i1 c2 brd] is [true] if a pawn can be taken by en passant *)
+val en_passant : int -> char -> Board.t -> bool
