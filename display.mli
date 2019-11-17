@@ -12,7 +12,6 @@ val print_board : Board.t -> unit
     locations indicated in [loc] highlighted in [col]. *)
 val print_highlighted_brd :  Board.t -> (char * int) list -> unit
 
-
 (** [help_menu ()] prints a menu detailing accepted player commands *)
 val help_menu : unit -> unit 
 
