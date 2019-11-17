@@ -170,7 +170,7 @@ let copy_piece state c1 i1 c2 i2 =
 
 (** [log_move state c1 i1 c2 i2] prepends a move of either form:
     1) ((p1,c1,i1), (Some p2, c2, i2)) if there was a piece at the destination
-    2) ((p1,c1,i1), (Some p2, c2, i2)) if there was no piece at the destination,
+    2) ((p1,c1,i1), (None, c2, i2)) if there was no piece at the destination,
     or raises a Failure if the starting space is empty. *)
 let log_move state c1 i1 c2 i2 = 
   let moves' = 

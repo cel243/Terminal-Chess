@@ -32,6 +32,7 @@ let get_command wrd_ls =
     PSupport (
       Attackers 
         (String.get loc 0, int_of_char (String.get loc 1) - 48))
+  | ["UNDER";"ATTACK"] -> PSupport UnderAttack 
   | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 -> 
     Move (String.get l1 0, int_of_char (String.get l1 1) - 48,
           String.get l2 0, int_of_char (String.get l2 1) - 48 )

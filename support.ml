@@ -11,6 +11,9 @@ FUNCTIONS TO SUPPORT?
 
 *)
 
+(** [check_valid brd c i] is [false] if [c,i] is not a valid location 
+    on [brd] or does not contain a piece of the current player's, and
+    prints an appropriate error message. Otherwise it is [true]. *)
 let check_valid brd c i = 
   if not (Logic.is_valid_location c i ) then 
     (print_string [red] "\nYou have not enetered a valid location.\n";
@@ -25,6 +28,8 @@ let check_valid brd c i =
         false )
       else true )
 
+(** [all_opp_attacks brd op_ls c i sofar] is a list of opponent
+    pieces that are capable of capturing the piece at [c,i].  *)
 let rec all_opp_attacks brd op_ls c i sofar = 
   match op_ls with 
   | [] -> sofar 
@@ -34,6 +39,11 @@ let rec all_opp_attacks brd op_ls c i sofar =
     then all_opp_attacks brd t c i ((c',i')::sofar) 
     else all_opp_attacks brd t c i sofar
 
+(** [attackers brd c i] prints [brd], with squares highlighted
+    corresponding to the opponent pieces that are capable of capturing
+    the piece at [c,i]. If [c,i] does not represent a valid location
+    or is not the location of one of the current player's pieces, an
+    appropriate error message will print instead.   *)
 let attackers brd c i = 
   if not (check_valid brd c i) then () 
   else 
@@ -47,6 +57,39 @@ let attackers brd c i =
     if List.length ops = 0 then print_string [red] "\nNo attackers!\n"
     else 
       Display.print_highlighted_brd brd ops
+
+(** [exist_opp_attacks brd op_ls c i] is true if an opponent
+    piece has the capacity to capture the piece at [c,i].  *)
+let rec exist_opp_attacks brd op_ls c i = 
+  match op_ls with 
+  | [] -> false 
+  | (_,c',i')::t -> 
+    let (b,_) = Logic.is_legal brd c' i' c i in 
+    if b 
+    then true 
+    else exist_opp_attacks brd t c i
+
+(** [check_each_piece brd sofar op_pieces] is a list of locations
+    on [brd] corresponding to the pieces of the current player
+    that are in immediate danger of being captured. *)
+let rec check_each_piece brd sofar op_pieces = function 
+  | [] -> sofar 
+  | (_,c,i)::t -> 
+    if (exist_opp_attacks brd op_pieces c i) 
+    then  check_each_piece brd ((c,i)::sofar) op_pieces t
+    else check_each_piece brd sofar op_pieces t
+
+(** [under_attack brd ] displays [brd] with the squares highlighted
+    corresponding to the pieces of the current player that are in 
+    immediate danger of being captured.  *)
+let under_attack brd = 
+  let pieces, op_pieces = (
+    match Board.get_current_player brd with 
+    | White -> Board.get_white_pieces brd, Board.get_black_pieces brd 
+    | Black -> Board.get_black_pieces brd, Board.get_white_pieces brd) in 
+  let temp = Board.copy_board brd in 
+  Board.next_player temp; 
+  Display.print_highlighted_brd brd (check_each_piece temp [] op_pieces pieces) 
 
 (** [check_rows c' ints brd c i] is a list of locations in column [c']
     that the piece at [c,i] can legally move to.
@@ -89,7 +132,7 @@ let legal_moves brd c i =
 let handle_player_support brd = function 
   | Command.CanCapture (c,i) -> failwith "unimplemented"
   | Command.LegalMoves (c,i) -> legal_moves brd c i
-  | Command.UnderAttack  -> failwith "unimplemented"
+  | Command.UnderAttack  -> under_attack brd 
   | Command.Attackers (c,i) -> attackers brd c i 
   | Command.UnderAttackIF (c1,i1,c2,i2) -> failwith "unimplemented"
   | Command.Log -> Display.print_log brd
