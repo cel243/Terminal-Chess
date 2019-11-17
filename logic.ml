@@ -45,57 +45,6 @@ let is_blocked brd st_c st_i dest_c dest_i =
            (step (int_of_char st_c) (int_of_char dest_c)) (step st_i dest_i) 
            (int_of_char dest_c) dest_i
 
-(** [legal_for_pawn piece char_m c1 i1 c2 i2 brd] is [true] if this Pawn, 
-    [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
-    pawns. *)
-let legal_for_pawn piece char_m c1 i1 c2 i2 brd = 
-  let is_capturing = match (Board.get_piece_at brd c2 i2) with 
-    | None -> false
-    | Some p -> p.Board.col != piece.Board.col in 
-  let pawn_w = i1-i2=(-1) && piece.Board.col = White in
-  let pawn_b = i1-i2=1 && piece.Board.col = Black in
-  let pawn_w2 = 
-    i1-i2=(-2) && not piece.has_moved && piece.Board.col = White in
-  let pawn_b2 = 
-    i1-i2=2 && not piece.has_moved && piece.Board.col = Black in
-  (not is_capturing && (pawn_b || pawn_w || pawn_w2 || pawn_b2) 
-   && char_m = 0) ||
-  (((pawn_w||pawn_b) && char_m=1) && is_capturing)
-
-(** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
-    legally move from [c1,i1] to [c2,i2] given the rules of the type 
-    of said piece 
-    Requires: there is a piece at [c1,i1] *)
-let legal_for_piece c1 i1 c2 i2 brd = 
-  match Board.get_piece_at brd c1 i1 with
-  | None -> failwith "precondition violated in legal_for_piece"
-  | Some piece ->
-    let char_m = abs((int_of_char c1)-(int_of_char c2)) in
-    let int_m = abs (i1-i2) in
-    not(char_m + int_m = 0) &&
-    match piece.Board.p_type with
-    | Pawn -> legal_for_pawn piece char_m c1 i1 c2 i2 brd
-    | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
-    | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
-    | Bishop -> (char_m = int_m)
-    | King -> (char_m < 2) && (int_m < 2) || 
-              ((char_m = 2) && 
-               (int_m = 0) && 
-               (piece.Board.has_moved = false) &&
-               let c3 = (
-                 if (c2 = 'G')
-                 then 'H'
-                 else 'A') in
-               match Board.get_piece_at brd c3 i1 with
-               | None -> false
-               | Some rook -> ((rook.Board.p_type = Rook) &&
-                               (rook.Board.has_moved = false)))
-
-    | Queen -> 
-      ((char_m = 0) && (int_m > 0)) || 
-      ((char_m > 0) && (int_m = 0)) ||
-      (char_m = int_m)
-
 (** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
     the opposing player's pieces have the ability to take the current
     player's king in this current board state, and [false] 
@@ -111,7 +60,7 @@ let rec check_opp_attacks brd op_ls king_c king_i =
 
 (** [king_loc brd] is the location [(c,i)] of the current player's
     king  *)
-let king_loc brd = 
+and king_loc brd = 
   let k_ls = (
     (match Board.get_current_player brd with 
      | White -> Board.get_white_pieces brd
@@ -124,13 +73,81 @@ let king_loc brd =
 
 (** [king_in_check brd c1 i1 c2 i2] is [true] if the current 
     player's king is in check, and [false] otherwise.  *)
-let king_in_check brd = 
+and king_in_check brd = 
   let op_piece_ls = (
     match Board.get_current_player brd with 
     | White -> Board.get_black_pieces brd 
     | Black -> Board.get_white_pieces brd) in 
   let king_c, king_i = king_loc brd in 
   check_opp_attacks brd op_piece_ls king_c king_i 
+
+(** [legal_for_pawn piece char_m c1 i1 c2 i2 brd] is [true] if this Pawn, 
+    [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
+    pawns. *)
+and legal_for_pawn piece char_m c1 i1 c2 i2 brd = 
+  let is_capturing = match (Board.get_piece_at brd c2 i2) with 
+    | None -> false
+    | Some p -> p.Board.col != piece.Board.col in 
+  let pawn_w = i1-i2=(-1) && piece.Board.col = White in
+  let pawn_b = i1-i2=1 && piece.Board.col = Black in
+  let pawn_w2 = 
+    i1-i2=(-2) && not piece.has_moved && piece.Board.col = White in
+  let pawn_b2 = 
+    i1-i2=2 && not piece.has_moved && piece.Board.col = Black in
+  (not is_capturing && (pawn_b || pawn_w || pawn_w2 || pawn_b2) 
+   && char_m = 0) ||
+  (((pawn_w||pawn_b) && char_m=1) && is_capturing)
+
+(** [legal_for_pawn c1 i1 c2 i2 brd] is [true] if this King, 
+    [piece], can legally castle from [c1,i1] to [c2,i2] given the rules of 
+    castling. *)
+and legal_castle c1 i1 c2 i2 brd =
+  let check1, check2, check3 = (
+    if (c2 = 'G')
+    then 'E', 'F', 'G'
+    else 'E', 'D', 'C') in
+  let temp1 = Board.copy_board brd in 
+  let temp2 = Board.copy_board brd in 
+  let temp3 = Board.copy_board brd in 
+  Board.move_piece temp2 c1 i1 check2 i2;
+  Board.move_piece temp3 c1 i1 check3 i2;
+  (not((king_in_check temp1)||(king_in_check temp2)||(king_in_check temp3)))
+
+
+(** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
+    legally move from [c1,i1] to [c2,i2] given the rules of the type 
+    of said piece 
+    Requires: there is a piece at [c1,i1] *)
+and legal_for_piece c1 i1 c2 i2 brd = 
+  match Board.get_piece_at brd c1 i1 with
+  | None -> failwith "precondition violated in legal_for_piece"
+  | Some piece ->
+    let char_m = abs((int_of_char c1)-(int_of_char c2)) in
+    let int_m = abs (i1-i2) in
+    not(char_m + int_m = 0) &&
+    match piece.Board.p_type with
+    | Pawn -> legal_for_pawn piece char_m c1 i1 c2 i2 brd
+    | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
+    | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
+    | Bishop -> (char_m = int_m)
+    | King -> (char_m < 2) && (int_m < 2) || 
+              ((char_m = 2) && 
+               (int_m = 0) && 
+               (piece.Board.has_moved = false) &&
+               (legal_castle c1 i1 c2 i2 brd) &&
+               let c3 = (
+                 if (c2 = 'G')
+                 then 'H'
+                 else 'A') in
+               match Board.get_piece_at brd c3 i1 with
+               | None -> false
+               | Some rook -> ((rook.Board.p_type = Rook) &&
+                               (rook.Board.has_moved = false)))
+
+    | Queen -> 
+      ((char_m = 0) && (int_m > 0)) || 
+      ((char_m > 0) && (int_m = 0)) ||
+      (char_m = int_m)
 
 (** [leaves_king_in_check brd c1 i1 c2 i2] is [true] if the attempted
     move from [c1, i1] to [c2, i2] leaves the king in check, and 
