@@ -3,9 +3,8 @@ open ANSITerminal
 
 (* 
 FUNCTIONS TO SUPPORT? 
-   show player all pieces it can take (and how to take them) 
-   show current player all pieces under attack 
-   show player which pieces are attacking this piece 
+   show player all pieces it can take 
+   show player which of its pieces can take a given opponents piece 
    show player top 3 suggested moves 
    show player which pieces will be under attack IF they make a given move
 

@@ -16,13 +16,16 @@ let handle_result b b_prev c1 i1 c2 i2 = function
   | Logic.Checkmate -> begin
       match (Board.get_current_player b) with
       | Black -> 
+        ANSITerminal.erase ANSITerminal.Screen;
         ANSITerminal.print_string [ANSITerminal.green] "CHECKMATE! Black wins!\n"; 
         Display.print_board b; Some BlackWin
       | White -> 
+        ANSITerminal.erase ANSITerminal.Screen;
         ANSITerminal.print_string [ANSITerminal.green] "CHECKMATE! White wins!\n";
         Display.print_board b; Some WhiteWin
     end
   | Logic.Stalemate ->
+    ANSITerminal.erase ANSITerminal.Screen;
     ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
     Display.print_board b; Some Tie
 
@@ -33,21 +36,32 @@ let handle_draw b =
   let () = (
     match Board.get_current_player b with 
     | White -> 
-      print_string ("White has requested a draw." 
-                    ^" If Black agrees, input 'AGREE'.\nBlack's input: \n";)
+      ANSITerminal.print_string [ANSITerminal.red] 
+        ("White has requested a draw." 
+         ^" If Black agrees, input 'AGREE'.\n");
+      Display.print_board b;
+      print_string "Black's Input.\n>";
     | Black -> 
-      print_string ("Black has requested a draw."
-                    ^" If White agrees, input 'AGREE'.\nWhite's input: \n";) ) 
-  in print_string ">";
+      ANSITerminal.print_string [ANSITerminal.red]
+        ("Black has requested a draw."
+         ^" If White agrees, input 'AGREE'.\n");
+      Display.print_board b;
+      print_string "White's Input.\n>"; ) 
+  in 
   match read_line () with
   | exception End_of_file -> print_string "Goodbye.\n"; exit 0
   | str -> if String.uppercase_ascii str = "AGREE" 
-    then (ANSITerminal.print_string [ANSITerminal.green]  
-            "It's a draw!\n"; Some Tie) 
-    else (ANSITerminal.print_string [ANSITerminal.red] 
-            ("\nThe other player did not agree to the draw."
-             ^ " Please continue the game or resign.\n");
-          Display.print_board b; None)
+    then (
+      ANSITerminal.erase ANSITerminal.Screen;
+      ANSITerminal.print_string [ANSITerminal.green]  
+        "It's a draw!\n"; 
+      Display.print_board b; Some Tie )
+    else (
+      ANSITerminal.erase ANSITerminal.Screen;
+      ANSITerminal.print_string [ANSITerminal.red] 
+        ("\nThe other player did not agree to the draw."
+         ^ " Please continue the game or resign.\n");
+      Display.print_board b; None)
 
 (** [parse_input b str] interprets the player's input as a command
     and responds to the command appropriately.  *)
@@ -56,21 +70,26 @@ let parse_input b str =
   | Resign -> begin
       match Board.get_current_player b with 
       | White -> 
-        ( ANSITerminal.print_string [ANSITerminal.green] 
-            "White has resigned. Black wins!\n");
-        Some BlackWin
-      | Black -> begin
-          (ANSITerminal.print_string [ANSITerminal.green] 
-             "Black has resigned. White wins!\n");
-          Some WhiteWin
-        end
+        ( ANSITerminal.erase ANSITerminal.Screen;
+          ANSITerminal.print_string [ANSITerminal.green] 
+            "White has resigned. Black wins!\n";
+          Display.print_board b; Some BlackWin) 
+      | Black -> 
+        ( ANSITerminal.erase ANSITerminal.Screen;
+          ANSITerminal.print_string [ANSITerminal.green] 
+            "Black has resigned. White wins!\n";
+          Display.print_board b; Some WhiteWin) 
     end
-  | Draw ->  handle_draw b
-  | Help -> (Display.help_menu ()); None
-  | Captured -> Display.print_captured_pieces b (Board.get_current_player b); None
-  | PSupport req -> (Support.handle_player_support b req); None
-  | Move (c1,i1,c2,i2) as c -> 
-    begin
+  | Draw ->  ANSITerminal.erase ANSITerminal.Screen; handle_draw b
+  | Help -> ANSITerminal.erase ANSITerminal.Screen; Display.help_menu (); 
+    Display.print_board b; None
+  | Captured -> ANSITerminal.erase ANSITerminal.Screen;
+    Display.print_captured_pieces b (Board.get_current_player b);
+    Display.print_board b; None
+  | PSupport req -> ANSITerminal.erase ANSITerminal.Screen; 
+    Support.handle_player_support b req; None
+  | Move (c1,i1,c2,i2) as c -> begin
+      ANSITerminal.erase ANSITerminal.Screen;
       let b_prev = Board.copy_board b in 
       let r = (Logic.process b c) |> handle_result b b_prev c1 i1 c2 i2 in
       match r with
@@ -78,8 +97,10 @@ let parse_input b str =
       | o -> o
     end
   | exception Command.Invalid -> 
-    (print_string "Invalid command.\n";
-     Display.help_menu ());
+    ANSITerminal.erase ANSITerminal.Screen;
+    print_string "Invalid command.\n";
+    Display.help_menu ();
+    Display.print_board b;
     None
 
 (** [print_move col] prints the appropriate prompt for a player of color 
@@ -167,6 +188,7 @@ let rec play_tourny t =
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
+  ANSITerminal.erase ANSITerminal.Screen;
   print_string "Welcome to chess.\n";
   match (prompt_gametype ()) with 
   | Exhibition -> begin

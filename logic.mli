@@ -25,3 +25,6 @@ val process : Board.t -> Command.t -> res
 (** [king_in_check brd] is [true] if the current player's king is in check, 
     and [false] otherwise.  *)
 val king_in_check : Board.t -> bool
+
+(**  [en_passant c2 brd] is [true] if a pawn can be taken by en passant *)
+val en_passant : char -> Board.t -> bool

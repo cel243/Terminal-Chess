@@ -129,7 +129,8 @@ let print_log b =
         ANSITerminal.print_string [default] (s^"\n");
         print_all_moves (i+1) t
       end
-  in print_all_moves 0 (List.rev (Board.get_moves b))
+  in print_all_moves 0 (List.rev (Board.get_moves b));
+  print_board b
 
 (** [print_rank_highlighted r b locs col] 
     prints the rank (row) [r] given the pieces in board [b].
@@ -202,7 +203,12 @@ let print_captured_pieces brd = function
 
 let capture_message brd c1 i1 c2 i2 = 
   match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
-  | _, None -> () 
+  | _, None -> 
+    if Logic.en_passant c2 brd then  
+      ANSITerminal.print_string 
+        [red] 
+        ("\nPawn takes Pawn!\n")
+    else ()
   | Some {p_type=p1;col}, Some {p_type=p2} -> 
     ANSITerminal.print_string 
       [red] 
