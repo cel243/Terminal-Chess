@@ -129,7 +129,8 @@ let print_log b =
         ANSITerminal.print_string [default] (s^"\n");
         print_all_moves (i+1) t
       end
-  in print_all_moves 0 (List.rev (Board.get_moves b))
+  in print_all_moves 0 (List.rev (Board.get_moves b));
+  print_board b
 
 (** [print_rank_highlighted r b locs col] 
     prints the rank (row) [r] given the pieces in board [b].
