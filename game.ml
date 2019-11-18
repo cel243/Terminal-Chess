@@ -69,6 +69,12 @@ let handle_result b b_prev c1 i1 c2 i2 = function
       Display.print_board b;
       Some Draw
     end
+  | Logic.Draw -> begin
+      ANSITerminal.erase ANSITerminal.Screen;
+      ANSITerminal.print_string [ANSITerminal.green] "It's an 80-move draw!\n";
+      Display.print_board b;
+      Some Draw
+    end
 
 (** [parse_input b str] interprets the player's input as a command
     and responds to the command appropriately.  *)

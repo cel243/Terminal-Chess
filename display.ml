@@ -126,12 +126,19 @@ let print_log b =
         let rep1 = get_rep_long p1 in
         let rep2 = get_rep_long p2 in
         let i1s = string_of_int i1 in
-        let i2s = string_of_int i3 in
+        let i2s = string_of_int i2 in
+        let i3s = string_of_int i3 in
         let c1s = Char.escaped c1 in
-        let c2s = Char.escaped c3 in
+        let c2s = Char.escaped c2 in
+        let c3s = Char.escaped c3 in
         let is = string_of_int i in 
-        let s = "("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
-                "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")"
+        let s = 
+          if i2 = i3
+          then ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
+                "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")")
+          else ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") TO ("
+                ^c2s^","^i2s^")"^" AND CAPTURES "^
+                "["^cstr2^"] "^rep2^" at ("^c3s^","^i3s^") BY EN PASSANT")
         in
         ANSITerminal.print_string [default] (s^"\n");
         print_all_moves (i+1) t

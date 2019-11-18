@@ -174,8 +174,8 @@ let copy_piece state c1 i1 c2 i2 =
         Some {p_type=s; col=c; has_moved=true; points=p}
 
 (** [log_move state c1 i1 c2 i2 c3 i3] prepends a move of either form:
-    1) ((p1,c1,i1), (c2, i2), (Some p3, c3, i3)) if there was a piece at the destination
-    2) ((p1,c1,i1), (c2, i2), (None, c3, i3))) if there was no piece at the destination,
+    1) ((p1,c1,i1), (c2, i2), Some (p3, c3, i3)) if there was a piece at the destination
+    2) ((p1,c1,i1), (c2, i2), None)) if there was no piece at the destination,
     or raises a Failure if the starting space is empty. *)
 let log_move state c1 i1 c2 i2 c3 i3 = 
   let moves' = 
@@ -201,6 +201,18 @@ let log_move state c1 i1 c2 i2 c3 i3 =
 p3 --> c3 i3
 (log_move state c1 i1 c2 i2 c3 i3)
 *)
+
+let move_piece_en_passant state c1 i1 c2 i2 c3 i3 =
+  (log_move state c1 i1 c2 i2 c3 i3);
+  if 
+    (copy_piece state c1 i1 c2 i2) = () 
+  then
+    begin
+      state.board.((int_of_char c1)-65).(i1-1) <- None;
+      state.board.((int_of_char c3)-65).(i3-1) <- None
+    end
+  else 
+    raise (Failure "piece not moved")
 
 let move_piece state c1 i1 c2 i2 =
   (log_move state c1 i1 c2 i2 c2 i2);
