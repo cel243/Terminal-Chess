@@ -23,7 +23,8 @@ type t = {
   mutable black_captured : (piece*int) list; 
   board : ((game_piece option) array) array;
   mutable moves : ((piece * color * char * int) * 
-                   ((piece option) * char * int)) list 
+                   (char * int) *
+                   ((piece * char * int) option)) list 
 }
 
 let init_state () = 
@@ -168,32 +169,37 @@ let copy_piece state c1 i1 c2 i2 =
       state.board.((int_of_char c2)-65).(i2-1) <- 
         Some {p_type=s; col=c; has_moved=true; points=p}
 
-(** [log_move state c1 i1 c2 i2] prepends a move of either form:
-    1) ((p1,c1,i1), (Some p2, c2, i2)) if there was a piece at the destination
-    2) ((p1,c1,i1), (None, c2, i2)) if there was no piece at the destination,
+(** [log_move state c1 i1 c2 i2 c3 i3] prepends a move of either form:
+    1) ((p1,c1,i1), (c2, i2), (Some p3, c3, i3)) if there was a piece at the destination
+    2) ((p1,c1,i1), (c2, i2), (None, c3, i3))) if there was no piece at the destination,
     or raises a Failure if the starting space is empty. *)
-let log_move state c1 i1 c2 i2 = 
+let log_move state c1 i1 c2 i2 c3 i3 = 
   let moves' = 
     match state.board.((int_of_char c1)-65).(i1-1), 
-          state.board.((int_of_char c2)-65).(i2-1) with
+          state.board.((int_of_char c3)-65).(i3-1) with
     (* This should never happen due to Logic's vetting *)
     | None, _ -> raise (Failure "source piece not there: log")
     (* Friendly piece to empty square *)
     | Some {p_type=p1; _}, None -> begin
         let curr = (get_current_player state) in
-        let move = ((p1, curr, c1, i1), (None, c2, i2)) in
+        let move = ((p1, curr, c1, i1), (c2, i2), None) in
         move::state.moves
       end
     (* Friendly capturing enemy piece *)
     | Some {p_type=p1; _}, Some {p_type=p2; _} -> begin
         let curr = (get_current_player state) in
-        let move = ((p1, curr, c1, i1), (Some p2, c2, i2)) in
+        let move = ((p1, curr, c1, i1), (c2, i2), Some (p2, c3, i3)) in
         move::state.moves
       end in
   state.moves <- moves'
 
+(*
+p3 --> c3 i3
+(log_move state c1 i1 c2 i2 c3 i3)
+*)
+
 let move_piece state c1 i1 c2 i2 =
-  (log_move state c1 i1 c2 i2);
+  (log_move state c1 i1 c2 i2 c2 i2);
   if 
     (copy_piece state c1 i1 c2 i2) = () 
   then

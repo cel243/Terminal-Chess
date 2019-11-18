@@ -98,7 +98,7 @@ let print_log b =
   ANSITerminal.print_string [default] "Move Log:\n";
   let rec print_all_moves i = function
     | [] -> ANSITerminal.print_string [default] "\n"
-    | ((p1,col,c1,i1),(None, c2, i2)):: t -> begin
+    | ((p1,col,c1,i1), (c2, i2), None):: t -> begin
         let cstr = get_color_str col in
         let rep = get_rep_long p1 in
         let i1s = string_of_int i1 in
@@ -113,15 +113,15 @@ let print_log b =
         ANSITerminal.print_string [default] (s^"\n");
         print_all_moves (i+1) t
       end
-    | ((p1,col,c1,i1),(Some p2, c2, i2)):: t -> begin
+    | ((p1,col,c1,i1), (c2, i2), Some (p2, c3, i3)):: t -> begin
         let cstr = get_color_str col in
         let cstr2 = get_opp_color_str col in
         let rep1 = get_rep_long p1 in
         let rep2 = get_rep_long p2 in
         let i1s = string_of_int i1 in
-        let i2s = string_of_int i2 in
+        let i2s = string_of_int i3 in
         let c1s = Char.escaped c1 in
-        let c2s = Char.escaped c2 in
+        let c2s = Char.escaped c3 in
         let is = string_of_int i in 
         let s = "("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
                 "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")"

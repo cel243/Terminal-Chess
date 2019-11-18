@@ -64,7 +64,7 @@ and en_passant i1 c2 brd =
   | White -> 
     begin
       match Board.get_moves brd with
-      | ((Pawn, _, c3, 7), (None, _, 5))::t -> 
+      | ((Pawn, _, c3, 7), (_, 5), None)::t -> 
         if ((c2 = c3) && i1 = 5)
         then true
         else false
@@ -73,7 +73,7 @@ and en_passant i1 c2 brd =
   | Black -> 
     begin
       match Board.get_moves brd with
-      | ((Pawn, _, c3, 2), (None, _, 4))::t -> 
+      | ((Pawn, _, c3, 2), (_, 4), None)::t -> 
         if ((c2 = c3) && i1 = 4)
         then true
         else false
