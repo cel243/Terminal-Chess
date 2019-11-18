@@ -62,6 +62,10 @@ val move_piece : t -> char -> int -> char -> int -> unit
 (** [copy_board b] is a copy of [b] *)
 val copy_board : t -> t 
 
+(** [get_opp_color col] is [Board.Black] is [col] is [Board.White], and is
+    [Board.White] is [col] is [Board.White] *)
+val get_opp_color : color -> color
+
 (**  [capture_piece state col piece] updates the the list of captured
      pieces for player [col] with [piece].  *)
 val capture_piece : t -> color -> piece -> unit

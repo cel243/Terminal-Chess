@@ -22,6 +22,12 @@ val print_captured_pieces : Board.t -> Board.color -> unit
 (** [get_rep_long ptype] is the string representation of [ptype] *)
 val get_rep_long : Board.piece -> string 
 
+(** [get_color_str col] is the string representation of [col] *)
+val get_color_str : Board.color -> string 
+
+(** [get_opp_color_str col] is the string representation of opposite [col] *)
+val get_opp_color_str : Board.color -> string 
+
 (** [capture_message brd c1 i1 c2 i2] prints a message detailing which
     piece has been captured by the prvious move, if any.  
     Requires: [c1,i1] to [c2,i2] is a egal move ]*)
@@ -38,3 +44,5 @@ val capture_message : Board.t -> char -> int -> char -> int -> unit
     Moves that saw a piece (c,i) take a piece (c',i') are shown as: 
     "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" *)
 val print_log : Board.t -> unit
+
+val get_input : unit -> string

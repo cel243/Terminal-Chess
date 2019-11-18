@@ -27,6 +27,10 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
+let get_opp_color = function
+  | Black -> White
+  | White -> Black
+
 let init_state () = 
   { p_turn = White;
     white_captured = [];

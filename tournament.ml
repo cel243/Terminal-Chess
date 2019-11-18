@@ -12,15 +12,17 @@ type player =
   | PlayerOne
   | PlayerTwo
 
-type outcome = 
-  | Win
-  | Loss
-  | Draw
-
 type score = float
 
-let create i = 
-  (i, 0, Board.Black, 0.0, 0.0)
+let rec create () = 
+  print_string "How many games are to be played?\n";
+  print_string "> ";
+  try
+    ((int_of_string (Display.get_input ())), 0, Board.Black, 0.0, 0.0)
+  with _ -> begin
+      print_string "That is not a valid number. Please retry.\n";
+      create ()
+    end
 
 let get_games_played = function
   | (_, n, _, _, _) -> n
@@ -43,30 +45,33 @@ let get_winner = function
     end
 
 let to_score = function
-  | Win -> 1.0
-  | Loss -> 0.0
-  | Draw -> 0.5
+  | Game.Win _ -> 1.0
+  | Game.Draw -> 0.5
 
 let opp_col = function
   | Board.White -> Board.Black
   | Board.Black -> Board.White
 
-let update (p, n, c, one, two) player outcome = 
-  let addition = to_score outcome in 
-  if outcome = Draw then
-    (p, n+1, opp_col c, one +. addition, two +. addition)
-  else
-    match player with
-    | PlayerOne -> (p, n+1, opp_col c, one +. addition, two)
-    | PlayerTwo -> (p, n+1, opp_col c, one, two +. addition)
+let get_player_with_color (_, _, c, _, _) col = 
+  if c = col then PlayerTwo
+  else PlayerOne
+
+let update ((p, n, c, one, two) as t) outcome = 
+  match outcome with
+  | None -> t
+  | Some res ->
+    let addition = to_score res in 
+    match res with
+    | Game.Draw -> (p, n+1, opp_col c, one +. addition, two +. addition)
+    | Game.Win v -> begin
+        match (get_player_with_color t v) with
+        | PlayerOne ->  (p, n+1, opp_col c, one +. addition, two)
+        | PlayerTwo -> (p, n+1, opp_col c, one, two +. addition)
+      end
 
 let col_to_string = function
   | Board.White -> "White"
   | Board.Black -> "Black"
-
-let get_player_with_color (_, _, c, _, _) col = 
-  if c = col then PlayerTwo
-  else PlayerOne
 
 let get_new_player_color (_, _, c, _, _)  = function
   | PlayerOne -> opp_col c
@@ -96,3 +101,15 @@ let display_final t =
    | Some PlayerTwo -> "Player Two wins!\n") 
   |>
   ANSITerminal.print_string [ANSITerminal.green]
+
+let rec play t = 
+  if (get_games_played t) = (get_best_of_cnt t) then
+    begin
+      display_final t
+    end
+  else 
+    begin
+      display_tourny t;
+      display_game t;
+      play (update t (Game.play ()))
+    end
