@@ -59,6 +59,8 @@ val get_black_pieces : t -> (game_piece * char * int) list
     if [c1, i1] is a pawn then it is promoted to a Queen *)
 val move_piece : t -> char -> int -> char -> int -> unit 
 
+val move_piece_en_passant : t -> char -> int -> char -> int -> char -> int -> unit 
+
 (** [copy_board b] is a copy of [b] *)
 val copy_board : t -> t 
 
