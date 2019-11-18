@@ -28,6 +28,10 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     ANSITerminal.erase ANSITerminal.Screen;
     ANSITerminal.print_string [ANSITerminal.red] "STALEMATE!\n";
     Display.print_board b; Some Tie
+  | Logic.Draw ->
+    ANSITerminal.erase ANSITerminal.Screen;
+    ANSITerminal.print_string [ANSITerminal.red] "80 MOVE DRAW!\n";
+    Display.print_board b; Some Tie
 
 (** [handle_draw b] handles the result of one player requesting a draw. 
     If the other player agrees to the draw, the program terminates, otherwise

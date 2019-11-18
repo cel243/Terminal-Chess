@@ -265,7 +265,7 @@ let checkmate brd =
   then cant_move temp  
   else false   
 
-type res = Legal | Illegal of string | Checkmate | Stalemate  
+type res = Legal | Illegal of string | Checkmate | Stalemate | Draw
 
 (** [check_for_castle brd c1 i1 c2 i2] checks to see if [c1, i1] is trying to
     castle and moves the rook into place *)
@@ -315,21 +315,24 @@ let capture brd col i1 c2 i2 =
     Board.capture_piece brd col p2
 
 let process brd cmmd = 
-  match cmmd with 
-  | Command.Move (c1,i1,c2,i2) -> begin 
-      match is_legal brd c1 i1 c2 i2 with 
-      | true, _ -> 
-        capture brd (Board.get_current_player brd) i1 c2 i2;
-        (if (check_for_en_passant brd c1 i1 c2 i2)
-         then begin (Board.move_piece_en_passant brd c1 i1 c2 i2 c2 i1); end
-         else
-           begin
-             (check_for_castle brd c1 i1 c2 i2); 
-             (Board.move_piece brd c1 i1 c2 i2);
-           end);
-        if checkmate brd then Checkmate 
-        else if stalemate brd then Stalemate  
-        else Legal 
-      | false, str -> 
-        Illegal str end
-  | _ -> failwith "impossible 1"
+  if (List.length (Board.get_moves brd)) > 159
+  then Draw
+  else
+    match cmmd with 
+    | Command.Move (c1,i1,c2,i2) -> begin 
+        match is_legal brd c1 i1 c2 i2 with 
+        | true, _ -> 
+          capture brd (Board.get_current_player brd) i1 c2 i2;
+          (if (check_for_en_passant brd c1 i1 c2 i2)
+           then begin (Board.move_piece_en_passant brd c1 i1 c2 i2 c2 i1); end
+           else
+             begin
+               (check_for_castle brd c1 i1 c2 i2); 
+               (Board.move_piece brd c1 i1 c2 i2);
+             end);
+          if checkmate brd then Checkmate 
+          else if stalemate brd then Stalemate  
+          else Legal 
+        | false, str -> 
+          Illegal str end
+    | _ -> failwith "impossible 1"

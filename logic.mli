@@ -2,7 +2,7 @@
     the rules of chess and the state of the game  *)
 
 (** the type of the result of a player's attempted move. *)
-type res = Legal | Illegal of string | Checkmate | Stalemate  
+type res = Legal | Illegal of string | Checkmate | Stalemate | Draw
 
 (** [is_valid_location c i] is true if [c] is a member of the set {'A',...,'Z'} 
     and [i] is within the range [1, 8]; otherwise, it is false. *)
