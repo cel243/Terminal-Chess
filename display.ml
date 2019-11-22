@@ -179,23 +179,34 @@ let print_highlighted_brd b locs =
 
 
 let help_menu () = 
-  ANSITerminal.print_string [red] "\n-----------HELP MENU----------\n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] "\n-----------HELP MENU----------\n";
+  ANSITerminal.print_string [green] 
     ("CN to C'N' --> if C and C' are characters in A..H and N and N' are"
-     ^" integers in 1..8, then move the piece at CN to C'N', if legal.\n");
-  ANSITerminal.print_string [red] "Resign --> forfeit the game\n";
-  ANSITerminal.print_string [red] 
+     ^" integers in 1..8, \nthen move the piece at CN to C'N', if legal.\n");
+  ANSITerminal.print_string [green] "Resign --> forfeit the game\n";
+  ANSITerminal.print_string [green] 
     "Draw --> declare a draw between the players \n";
-  ANSITerminal.print_string [red] "Help --> display the help menu \n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] "Help --> display the help menu \n";
+  ANSITerminal.print_string [green] 
     "Captured --> display the current player's captured pieces \n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] 
     "CN --> highlights legal moves of the piece at CN.\n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] 
     "Attackers CN --> highlights pieces that can capture piece at CN.\n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] 
+    ("Attackers CN if C'N' to C''N'' --> highlights pieces that can capture "
+     ^"piece at CN IF player moves C'N' to C''N''.\n");
+  ANSITerminal.print_string [green] 
     "Under attack --> highlights pieces in danger of being captured.\n";
-  ANSITerminal.print_string [red] 
+  ANSITerminal.print_string [green] 
+    ("Under attack if CN to C'N' --> highlights pieces in danger of being "
+     ^"captured IF player moves CN to C'N'.\n");
+  ANSITerminal.print_string [green] 
+    "Can attack --> highlights pieces the current player can capture.\n";
+  ANSITerminal.print_string [green] 
+    ("Can attack if CN to C'N' --> highlights pieces current player can "
+     ^"capture IF player moves CN to C'N'.\n");
+  ANSITerminal.print_string [green] 
     "LOG --> prints all of the moves performed this game.\n"
 
 let rec print_piece_list = function 

@@ -11,11 +11,13 @@ type locations = char * int * char * int
 (** the type of player commands asking for specific support 
     operations.  *)
 type request = 
-  | CanCapture of char * int 
   | LegalMoves of char * int 
   | UnderAttack 
-  | Attackers of char * int 
   | UnderAttackIF of char * int * char * int 
+  | CanAttack 
+  | CanAttackIF of char * int * char * int 
+  | Attackers of char * int 
+  | AttackersIF of char * int * char * int * char * int 
   | Log
 
 (** the type of a player command *)

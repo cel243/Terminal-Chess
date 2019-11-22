@@ -69,9 +69,10 @@ let board_tests = [
 
 
 let command_tests = [
-  "'quit' is parsed as Quit" >:: (fun _ -> assert_equal Quit (parse "quit"));
-  "'   Quit  ' is parsed as Quit" >:: 
-  (fun _ -> assert_equal Quit (parse "    QuiT  ")); 
+  "'resign' is parsed as Resign" >:: 
+  (fun _ -> assert_equal Resign (parse "resign"));
+  "'   Resign  ' is parsed as Resign" >:: 
+  (fun _ -> assert_equal Resign (parse "    ReSiGn  ")); 
   "'draw' is parsed as Draw" >:: 
   (fun _ -> assert_equal Draw (parse "draw")); 
   "'   DrAw  ' is parsed as Draw" >:: 
