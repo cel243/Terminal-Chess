@@ -27,9 +27,18 @@ type game_piece =
     game is started. *)
 val init_state : unit -> t 
 
+(** [set_game col brd_arr] is a chess game in which 
+    the current player is [col] and all the pieces are arranged
+    as represented in [brd_arr] *)
+val set_game : color -> game_piece option array array -> t
+
 (** [get_current_player g] is [White] if it is the white player's
     turn to move in game [g] and [Black] otherwise *)
 val get_current_player : t -> color 
+
+(** [board_to_array g] is the board in game [g] represented as an 
+    array.  *)
+val board_to_array : t -> game_piece option array array
 
 (** [update_current_player g] updates the color of the current player 
     so that it becomes the opposite color. *)

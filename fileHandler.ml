@@ -8,12 +8,12 @@ let ptype_from_string = function
   | "knight" -> Board.Knight
   | "queen" -> Board.Queen
   | "king" -> Board.King 
-  | _ -> failwith "precond violated" 
+  | s -> failwith (" ptype precond violated: "^s) 
 
 let col_from_string = function 
   | "white" -> Board.White 
   | "black" -> Board.Black 
-  | _ -> failwith "precond violated" 
+  | s -> failwith ("color precond violated: "^s) 
 
 let form_piece ( p : Board.game_piece ) : Yojson.Basic.t  = 
   `Assoc [("p_type", 
@@ -37,11 +37,14 @@ let form_board brd_arr : Yojson.Basic.t  =
   done;
   `List (!p_ls) 
 
-let form_save brd_arr curr_player = 
+let save_game f_name brd = 
+  let brd_arr = Board.board_to_array brd in 
   let json : Yojson.Basic.t  = `Assoc [
-      ("current player", `String (Display.get_color_str curr_player));
+      ("current player", 
+       `String (Display.get_color_str (Board.get_current_player brd) 
+                |> String.lowercase_ascii));
       ("board", form_board brd_arr)] in 
-  Yojson.Basic.to_file "test.json" json 
+  Yojson.Basic.to_file (f_name^".json") json 
 
 let get_piece p = 
   let pt = p |> member "p_type" |> to_string in 
@@ -53,16 +56,24 @@ let get_piece p =
       points= p|> member "points" |> to_int       
     }
 
-let rec iter_pieces brd row col pieces = 
-  match pieces with 
-  | [] -> () 
-  | p::t -> 
-    brd.(row).(col) <- get_piece p;
-    iter_pieces brd ((row+1) mod 8) (col+1) t  
+let get_board_pieces json = json |> member "board" |> to_list 
 
-let get_board  p_ls = 
+let get_board  json = 
+  let p_ls = get_board_pieces json in 
   let brd = Array.make_matrix 8 8 None in 
-  iter_pieces brd 0 0 p_ls;
-  brd 
+  let counter = ref 0 in 
+  for row=0 to 7 do 
+    for col = 0 to 7 do 
+      brd.(row).(col) <- get_piece (List.nth p_ls (!counter));
+      counter := !counter + 1
+    done
+  done;
+  brd  
 
 let get_turn json = col_from_string (json |> member "current player" |> to_string)
+
+let load_game f = 
+  let json = Yojson.Basic.from_file f in 
+  Board.set_game (get_turn json) (get_board json)
+
+

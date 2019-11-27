@@ -28,6 +28,15 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
+let set_game p_turn board = 
+  {
+    p_turn=p_turn;
+    white_captured=[];
+    black_captured=[];
+    board=board;
+    moves = []
+  }
+
 let get_opp_color = function
   | Black -> White
   | White -> Black
@@ -123,6 +132,8 @@ let init_state () =
 
 let get_current_player state =
   state.p_turn
+
+let board_to_array state = state.board
 
 let next_player state =
   if 
@@ -262,5 +273,7 @@ let capture_piece state col piece =
 let get_captured_pieces state = function 
   | White -> state.white_captured
   | Black -> state.black_captured
+
+
 
 
