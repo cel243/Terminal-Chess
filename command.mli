@@ -29,6 +29,7 @@ type t =
   | Move of locations
   | PSupport of request 
   | Log 
+  | Save of string 
 
 (** raised when the command isn't one of the expected forms  *)
 exception Invalid 

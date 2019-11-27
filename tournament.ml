@@ -111,5 +111,5 @@ let rec play t =
     begin
       display_tourny t;
       display_game t;
-      play (update t (Game.play ()))
+      play (update t (Game.play (Board.init_state ())))
     end

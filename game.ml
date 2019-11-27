@@ -83,6 +83,9 @@ let parse_input b str =
   match (Command.parse str) with
   | Resign -> handle_resign (Board.get_current_player b) b
   | Draw -> handle_draw b
+  | Save s -> FileHandler.save_game s b; 
+    ANSITerminal.print_string [ANSITerminal.green] ("Game Saved as "^s);
+    Display.print_board b; None 
   | Help -> begin
       Display.help_menu ();
       Display.print_board b; 
@@ -127,7 +130,6 @@ let rec play_board b =
   | None -> play_board b
   | outcome -> outcome
 
-let play () = 
-  let b = Board.init_state () in  
+let play b = 
   Display.print_board b; 
   play_board b
