@@ -1,8 +1,10 @@
 #directory "_build";;
 #require "str";;
 #require "ANSITerminal";;
+#require "yojson";;
 #load_rec "board.cmo";;
 #load_rec "display.cmo";;
+#load_rec "fileHandler.cmo";;
 #load_rec "logic.cmo";;
 #load_rec "command.cmo";;
 #load_rec "support.cmo";;

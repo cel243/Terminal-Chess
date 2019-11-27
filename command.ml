@@ -1,14 +1,14 @@
 
+type locations = char * int * char * int 
 type request = 
   | LegalMoves of char * int 
+  | LegalMovesIF of char * int * char * int * char * int 
   | UnderAttack 
-  | UnderAttackIF of char * int * char * int 
+  | UnderAttackIF of locations
   | CanAttack
-  | CanAttackIF of char * int * char * int 
+  | CanAttackIF of locations
   | Attackers of char * int 
   | AttackersIF of char * int * char * int * char * int 
-  | Log
-type locations = char * int * char * int 
 type t = 
   | Resign 
   | Draw 
@@ -16,11 +16,43 @@ type t =
   | Captured
   | Move of locations
   | PSupport of request 
+  | Log 
 exception Invalid 
 
+
+(** [get_hypothetical_cmmd wrd_ls] is the command that [wrd_ls] represents,
+    where [wrd_ls] represents one of the [IF PSupport] commands.
+    Raises: Invalid if [wrd_ls] is not a valid command  *)
+let get_hypothetical_cmmd wrd_ls = 
+  match wrd_ls with 
+  | [loc;"IF"; l1; "TO"; l2] 
+    when String.length l1 = 2 && String.length l2 = 2 
+         && String.length loc = 2 -> 
+    PSupport 
+      (LegalMovesIF (String.get loc 0, int_of_char (String.get loc 1) - 48,
+                     String.get l1 0, int_of_char (String.get l1 1) - 48,
+                     String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+  | ["ATTACKERS";loc;"IF"; l1; "TO"; l2] 
+    when String.length l1 = 2 && String.length l2 = 2 
+         && String.length loc = 2 -> 
+    PSupport 
+      (AttackersIF (String.get loc 0, int_of_char (String.get loc 1) - 48,
+                    String.get l1 0, int_of_char (String.get l1 1) - 48,
+                    String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+  | ["UNDER";"ATTACK";"IF"; l1; "TO"; l2] 
+    when String.length l1 = 2 && String.length l2 = 2 -> 
+    PSupport 
+      (UnderAttackIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
+                      String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+  | ["CAN";"ATTACK";"IF"; l1; "TO"; l2] 
+    when String.length l1 = 2 && String.length l2 = 2 -> 
+    PSupport 
+      (CanAttackIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
+                    String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+  | _ -> raise Invalid  
+
 (** [get_psupport_command wrd_ls] is the command that [wrd_ls] represents,
-    where [wrd_ls] wither represents a Player Support command type 
-    or is invalid.  
+    where [wrd_ls] wither represents a Player Support command type. 
     Raises: Invalid if [wrd_ls] is not a valid command  *)
 let get_psupport_cmmd wrd_ls = 
   match wrd_ls with 
@@ -32,27 +64,10 @@ let get_psupport_cmmd wrd_ls =
     PSupport (
       Attackers 
         (String.get loc 0, int_of_char (String.get loc 1) - 48))
-  | ["ATTACKERS";loc;"IF"; l1; "TO"; l2] 
-    when String.length l1 = 2 && String.length l2 = 2 
-         && String.length loc = 2 -> 
-    PSupport 
-      (AttackersIF (String.get loc 0, int_of_char (String.get loc 1) - 48,
-                    String.get l1 0, int_of_char (String.get l1 1) - 48,
-                    String.get l2 0, int_of_char (String.get l2 1) - 48 ))
   | ["UNDER";"ATTACK"] -> PSupport UnderAttack 
-  | ["UNDER";"ATTACK";"IF"; l1; "TO"; l2] 
-    when String.length l1 = 2 && String.length l2 = 2 -> 
-    PSupport 
-      (UnderAttackIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
-                      String.get l2 0, int_of_char (String.get l2 1) - 48 ))
   | ["CAN";"ATTACK"] -> PSupport CanAttack 
-  | ["CAN";"ATTACK";"IF"; l1; "TO"; l2] 
-    when String.length l1 = 2 && String.length l2 = 2 -> 
-    PSupport 
-      (CanAttackIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
-                    String.get l2 0, int_of_char (String.get l2 1) - 48 ))
-  | ["LOG"] -> PSupport (Log)
-  | _ -> raise Invalid  
+  | ["LOG"] -> Log
+  | _ -> get_hypothetical_cmmd wrd_ls
 
 (** [get_command wrd_ls] is the command that [wrd_ls] represents. 
     Raises: Invalid if [wrd_ls] is not a valid command  *)

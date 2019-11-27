@@ -103,6 +103,7 @@ let parse_input b str =
       | None -> Display.print_board b; None
       | outcome -> outcome
     end
+  | Log -> Display.print_log b; None
   | exception Command.Invalid -> begin
       print_string "Invalid command.\n";
       Display.help_menu ();

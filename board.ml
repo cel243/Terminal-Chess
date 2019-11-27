@@ -16,6 +16,7 @@ type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
  * RI: t.board is a 8*8 array. 
  * t.white_captured, t.black_captured, and t.moves contain nonzero, positive 
  * integers only.
+ * t.moves contains only chars A..H
 *)
 type t = { 
   mutable p_turn : color;

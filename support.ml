@@ -1,55 +1,27 @@
 open ANSITerminal 
 
 
-(* 
-FUNCTIONS TO SUPPORT? 
-   show player all pieces it can take 
-   show player top 3 suggested moves 
-   show player which pieces will be under attack IF they make a given move
-
-*)
-
-(** [check_valid brd c i] is [false] if [c,i] is not a valid location 
-    on [brd] or does not contain a piece of the current player's, and
-    prints an appropriate error message. Otherwise it is [true]. *)
-let check_valid brd c i = 
-  if not (Logic.is_valid_location c i ) then 
-    (print_string [red] "\nYou have not enetered a valid location.\n";
-     Display.print_board brd;
-     false )
-  else (
-    match Board.get_piece_at brd c i with 
-    | None -> print_string [red] "\nThere is no piece on this square.\n";
-      Display.print_board brd;
-      false 
-    | Some {col} when Board.get_current_player brd <> col -> 
-      print_string [red] "\nThat is not your piece.\n";
-      Display.print_board brd;
-      false 
-    | Some {col} -> 
-      true )
-
-(** [check_valid_attackers brd c i] is [false, brd] if [c,i] is not a valid 
+(** [check_valid brd c i] is [false, brd] if [c,i] is not a valid 
     location on [brd] or does not contain a piece, and prints an appropriate 
     error message. Otherwise it is [true, new_brd], where [new_brd] is a
     temporary board where the current player is the opposite player than the
     one that owns the piece in that square. *)
-let check_valid_attackers brd c i = 
+let check_valid brd c i = 
   if not (Logic.is_valid_location c i ) then 
     (print_string [red] "\nYou have not enetered a valid location.\n";
      Display.print_board brd;
      (false,brd) )
   else (
+    let temp = Board.copy_board brd in 
     match Board.get_piece_at brd c i with 
     | None -> 
       print_string [red] "\nThere is no piece on this square.\n";
       Display.print_board brd;
       (false,brd) 
     | Some {col} when Board.get_current_player brd = col -> 
-      let temp = Board.copy_board brd in 
       Board.next_player temp; 
       (true, temp)
-    | Some {col} -> (true, brd) )
+    | Some {col} -> (true, temp) )
 
 (** [all_opp_attacks brd op_ls c i sofar] is a list of opponent
     pieces that are capable of capturing the piece at [c,i].  *)
@@ -68,7 +40,7 @@ let rec all_opp_attacks brd op_ls c i sofar =
     or is not the location of one of the current player's pieces, an
     appropriate error message will print instead.   *)
 let attackers brd c i = 
-  match check_valid_attackers brd c i with 
+  match check_valid brd c i with 
   | (false, _) -> ()
   | (true, temp) -> 
     let op_ls = (
@@ -126,29 +98,6 @@ let can_attack brd =
   Board.next_player temp; 
   under_attack temp
 
-(** [hypothetical cmmd brd c1 i1 c2 i2] displays two boards: first,
-    a hypothetical board, highlighting the squares that [cmmd] would
-    normally highlight if the piece at [c1,i1] were moved to [c2,i2];
-    and second, the current board. If the move from [c1,i1] to [c2,i2]
-    is illegal, an appropriate error message is displayed. 
-    Requires: [cmmd] is one of the [IF PSupport] types.  *)
-let hypothetical cmmd brd c1 i1 c2 i2 = 
-  match Logic.is_legal brd c1 i1 c2 i2 with 
-  | false, s -> 
-    print_string [red] ("\nCannot check this move: "^s^"\n");
-    Display.print_board brd 
-  | true, _ -> (
-      let temp = Board.copy_board brd in 
-      Board.move_piece temp c1 i1 c2 i2; 
-      print_string [red] "\nHypothetical board: \n";
-      (match cmmd with 
-       | Command.UnderAttackIF _ -> under_attack temp
-       | Command.CanAttackIF _ -> can_attack temp 
-       | Command.AttackersIF (c,i,_,_,_,_) -> attackers temp c i  
-       | _ -> failwith "precondition violated" );
-      print_string [red] "\n Current board: \n";
-      Display.print_board brd 
-    )
 
 (** [check_rows c' ints brd c i] is a list of locations in column [c']
     that the piece at [c,i] can legally move to.
@@ -181,12 +130,41 @@ let get_legal_squares brd c i  =
   check_cols chars ints brd c i  [] 
 
 (** [legal_moves brd c i] prints a visual depiction of the legal moves
-    of the piece at [c,i], if such a piece exists and belongs to
-    the current player.   *)
+    of the piece at [c,i], if the location is on the board
+    and there is a piece at that location. Otherwise, an
+    appropriate error message is printed. *)
 let legal_moves brd c i = 
-  if not (check_valid brd c i) then () 
-  else 
-    Display.print_highlighted_brd brd ((c,i)::(get_legal_squares brd c i))  
+  match check_valid brd c i with 
+  | false, _ -> () 
+  | true, temp -> 
+    Board.next_player temp; 
+    Display.print_highlighted_brd temp ((c,i)::(get_legal_squares temp c i))  
+
+(** [hypothetical cmmd brd c1 i1 c2 i2] displays two boards: first,
+    a hypothetical board, highlighting the squares that [cmmd] would
+    normally highlight if the piece at [c1,i1] were moved to [c2,i2];
+    and second, the current board. If the move from [c1,i1] to [c2,i2]
+    is illegal, an appropriate error message is displayed. 
+    Requires: [cmmd] is one of the [IF PSupport] types.  *)
+let hypothetical cmmd brd c1 i1 c2 i2 = 
+  match Logic.is_legal brd c1 i1 c2 i2 with 
+  | false, s -> 
+    print_string [red] ("\nCannot check this move: "^s^"\n");
+    Display.print_board brd 
+  | true, _ -> (
+      let temp = Board.copy_board brd in 
+      Board.move_piece temp c1 i1 c2 i2; 
+      print_string [red] "\nHypothetical board: \n";
+      (match cmmd with 
+       | Command.UnderAttackIF _ -> under_attack temp
+       | Command.CanAttackIF _ -> can_attack temp 
+       | Command.AttackersIF (c,i,_,_,_,_) -> attackers temp c i  
+       | Command.LegalMovesIF (c,i,_,_,_,_) -> legal_moves temp c i 
+       | _ -> failwith "precondition violated" );
+      print_string [red] "\n Current board: \n";
+      Display.print_board brd 
+    )
+
 
 let handle_player_support brd = function 
   | Command.LegalMoves (c,i) -> legal_moves brd c i
@@ -195,6 +173,6 @@ let handle_player_support brd = function
   | Command.Attackers (c,i) -> attackers brd c i 
   | Command.CanAttackIF (c1,i1,c2,i2) 
   | Command.AttackersIF (_,_,c1,i1,c2,i2) 
+  | Command.LegalMovesIF (_,_,c1,i1,c2,i2)
   | Command.UnderAttackIF (c1,i1,c2,i2) as cmmd -> 
     hypothetical cmmd brd c1 i1 c2 i2 
-  | Command.Log -> Display.print_log brd
