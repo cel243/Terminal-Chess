@@ -84,7 +84,7 @@ let parse_input b str =
   | Resign -> handle_resign (Board.get_current_player b) b
   | Draw -> handle_draw b
   | Save s -> FileHandler.save_game s b; 
-    ANSITerminal.print_string [ANSITerminal.green] ("Game Saved as "^s);
+    ANSITerminal.print_string [ANSITerminal.green] ("Game Saved as "^s^"\n");
     Display.print_board b; None 
   | Help -> begin
       Display.help_menu ();
