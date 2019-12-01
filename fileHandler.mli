@@ -1,5 +1,6 @@
 (** Handles interactions with JSON files, including saving
-    and loading chess games. *)
+    and loading chess games. The saved chess games do not include
+    the log of moves or the lists of captured pieces *)
 
 (** [save_game f_name brd] creates a file named [f_name.json[ that stores
     information about the current game board state in JSON format
