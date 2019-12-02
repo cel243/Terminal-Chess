@@ -46,7 +46,7 @@ let form_board brd_arr : Yojson.Basic.t  =
   `List (!p_ls) 
 
 (** [form_log_entry e] is a JSON representation of the individual
-    entry in the move log [e].  *)
+    entry in the move log, [e].  *)
 let form_log_entry ((p1, c, c1, i1), (c2, i2), p_op) : Yojson.Basic.t = 
   let base_list = 
     [("p_type", 
@@ -76,15 +76,36 @@ let form_log log_ls : Yojson.Basic.t =
     log_ls; 
   `List (!l_ls)
 
+(** [form_captured_entry c] is a JSON representation of the individual
+    entry, [c], in an association list representation of captured
+    pieces.  *)
+let form_captured_entry (p, i) : Yojson.Basic.t = 
+  `Assoc [("p_type", 
+           `String (Display.get_rep_long p |> String.lowercase_ascii));
+          ("num", `Int i)]
+
+(** [form_captured cap_ls]  is  JSON representation of the 
+    association list representation of captured pieces, [cap_ls]. *)
+let form_captured cap_ls : Yojson.Basic.t = 
+  let c_ls = ref [] in 
+  List.iter 
+    (fun c -> c_ls := (form_captured_entry c)::(!c_ls))
+    cap_ls;
+  `List (!c_ls)
+
 let save_game f_name brd = 
   let brd_arr = Board.board_to_array brd in 
   let log_ls = Board.log_to_list brd in 
+  let w_cap = Board.white_cap_to_list brd in 
+  let b_cap = Board.black_cap_to_list brd in 
   let json : Yojson.Basic.t  = `Assoc [
       ("current player", 
        `String (Display.get_color_str (Board.get_current_player brd) 
                 |> String.lowercase_ascii));
       ("board", form_board brd_arr);
-      ("log", form_log log_ls)] in 
+      ("log", form_log log_ls);
+      ("white captured", form_captured w_cap);
+      ("black captured", form_captured b_cap)] in 
   Yojson.Basic.to_file (f_name^".json") json 
 
 (** [get_piece p] is the optional game piece that is represented 
@@ -140,6 +161,25 @@ let get_log json =
   List.iter (fun e -> log := (get_log_entry e)::(!log)) l_ls;
   !log
 
+(** [get_cap_entry c] is the tuple of a piece
+    and a number represented by [c].  *)
+let get_cap_entry c = (
+  ptype_from_string (c |> member "p_type" |> to_string),
+  c |> member "num" |> to_int  
+)
+
+(** [get_cap col json] is the pieces captured by [col] in [json]. 
+    Requires: [col] is ["W"] or ["B"].  *)
+let get_cap col json = 
+  let cap_ls = (
+    if col = "W" then (json |> member "white captured" |> to_list)
+    else (json |> member "black captured" |> to_list)
+  ) in 
+  let cap = ref [] in 
+  List.iter 
+    (fun c -> cap := (get_cap_entry c)::(!cap)) cap_ls; 
+  !cap 
+
 
 (** [get_turn json] is the current player's turn in the game
     stored in [json].  *)
@@ -149,5 +189,6 @@ let get_turn json =
 let load_game f = 
   let json = Yojson.Basic.from_file f in 
   Board.set_game (get_turn json) (get_board json) (get_log json)
+    (get_cap "W" json) (get_cap "B" json)
 
 

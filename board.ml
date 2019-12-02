@@ -28,11 +28,11 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
-let set_game p_turn board log = 
+let set_game p_turn board log w_cap b_cap= 
   {
     p_turn=p_turn;
-    white_captured=[];
-    black_captured=[];
+    white_captured= w_cap;
+    black_captured= b_cap;
     board=board;
     moves = log
   }
@@ -136,6 +136,10 @@ let get_current_player state =
 let board_to_array state = state.board
 
 let log_to_list state = state.moves 
+
+let white_cap_to_list state = state.white_captured
+
+let black_cap_to_list state = state.black_captured 
 
 let next_player state =
   if 

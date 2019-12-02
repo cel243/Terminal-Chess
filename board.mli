@@ -27,13 +27,15 @@ type game_piece =
     game is started. *)
 val init_state : unit -> t 
 
-(** [set_game col brd_arr log] is a chess game in which 
+(** [set_game col brd_arr log w_cap b_cap] is a chess game in which 
     the current player is [col], all the pieces are arranged
-    as represented in [brd_arr], and all previous moves
-    are represented in [log] *)
+    as represented in [brd_arr], all previous moves
+    are represented in [log], and white and black have captured
+    pieces as indicated by [w_cap] and [b_cap]. 
+*)
 val set_game : color -> game_piece option array array ->
   ((piece * color * char * int) * (char * int) * (piece * char * int) option)
-    list -> t
+    list -> (piece * int) list -> (piece * int) list -> t
 
 (** [get_current_player g] is [White] if it is the white player's
     turn to move in game [g] and [Black] otherwise *)
@@ -47,6 +49,16 @@ val board_to_array : t -> game_piece option array array
 val log_to_list : t ->
   ((piece * color * char * int) * (char * int) * (piece * char * int) option)
     list
+
+(** [white_cap_to_list g] is an association list representation
+    mapping piece type to the number of piece of that type
+    white has captured  *)
+val white_cap_to_list : t -> (piece * int) list
+
+(** [black_cap_to_list g] is an association list 
+    mapping piece types to the number of piece of that type
+    black has captured  *)
+val black_cap_to_list : t -> (piece * int) list
 
 (** [update_current_player g] updates the color of the current player 
     so that it becomes the opposite color. *)
