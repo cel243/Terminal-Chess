@@ -28,13 +28,13 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
-let set_game p_turn board = 
+let set_game p_turn board log = 
   {
     p_turn=p_turn;
     white_captured=[];
     black_captured=[];
     board=board;
-    moves = []
+    moves = log
   }
 
 let get_opp_color = function
@@ -134,6 +134,8 @@ let get_current_player state =
   state.p_turn
 
 let board_to_array state = state.board
+
+let log_to_list state = state.moves 
 
 let next_player state =
   if 
