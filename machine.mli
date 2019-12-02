@@ -1,0 +1,1 @@
+val get_rand_move : Board.t -> (char*int*char*int)
