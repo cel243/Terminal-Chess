@@ -3,6 +3,10 @@ type outcome =
   | Win of Board.color
   | Draw
 
+type opponent =
+  | Human
+  | CPU
+
 let handle_resign color b =
   let c = Display.get_color_str color in
   let copp = Display.get_opp_color_str color in
@@ -83,6 +87,9 @@ let parse_input b str =
   match (Command.parse str) with
   | Resign -> handle_resign (Board.get_current_player b) b
   | Draw -> handle_draw b
+  | Save s -> FileHandler.save_game s b; 
+    ANSITerminal.print_string [ANSITerminal.green] ("Game Saved as "^s^"\n");
+    Display.print_board b; None 
   | Help -> begin
       Display.help_menu ();
       Display.print_board b; 
@@ -103,6 +110,7 @@ let parse_input b str =
       | None -> Display.print_board b; None
       | outcome -> outcome
     end
+  | Log -> Display.print_log b; None
   | exception Command.Invalid -> begin
       print_string "Invalid command.\n";
       Display.help_menu ();
@@ -119,14 +127,30 @@ let print_move = function
 (** [play_chess b] prints the current board, prompts a player to 
     input a command, accepts player input, and delegates the 
     hdanling of that input appropriately.  *)
-let rec play_board b = 
-  (Board.get_current_player b) |> print_move;
-  print_string "> ";
-  match (parse_input b (Display.get_input ())) with
-  | None -> play_board b
+let rec play_board b oppt person = 
+  let curr = (Board.get_current_player b) in
+  curr |> print_move;
+  let move =
+    if person || oppt <> CPU then (print_string "> "; Display.get_input ())
+    else begin
+      let cpu_move =
+        (*let (c1, i1, c2, i2) = Machine.get_rand_move b in
+          (Char.escaped c1)^(string_of_int i1)^" to "^
+          (Char.escaped c2)^(string_of_int i2)*)
+        "a7 to a6" in
+      print_string ("> " ^ cpu_move ^ "\n");
+      cpu_move
+    end
+  in
+  match (parse_input b move) with
+  | None -> begin
+      if (Board.get_current_player b) = curr then (* Illegal Move *)
+        play_board b oppt person
+      else
+        play_board b oppt (not person)
+    end
   | outcome -> outcome
 
-let play () = 
-  let b = Board.init_state () in  
+let play b oppt = 
   Display.print_board b; 
-  play_board b
+  play_board b oppt true

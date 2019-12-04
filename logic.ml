@@ -272,20 +272,25 @@ type res = Legal | Illegal of string | Checkmate | Stalemate | Draw
 let check_for_castle brd c1 i1 c2 i2 =
   let cr1, cr2 =  (if (c2 = 'G')
                    then 'H','F'
-                   else 'A','D') in
-  let king = (match Board.get_piece_at brd c1 i1 with
-      | None -> false
-      | Some {p_type = p; col = c; has_moved = h} -> 
-        ((p = King) && (h = false) && 
-         (((c = White) && (i1 = 1)) || 
-          ((c = Black) && (i1 = 8)) ))) in
-  let rook = (match Board.get_piece_at brd cr1 i1 with
-      | None -> false
-      | Some {p_type = p; col = c; has_moved = h} -> 
-        ((p = Rook) && (h = false))) in
-  if (king && rook)
-  then (Board.move_piece brd cr1 i1 cr2 i2)
-  else ()
+                   else if (c2 = 'C')
+                   then 'A','D'
+                   else 'B', 'B') in
+  if (cr1 = cr2)
+  then ()
+  else
+    let king = (match Board.get_piece_at brd c1 i1 with
+        | None -> false
+        | Some {p_type = p; col = c; has_moved = h} -> 
+          ((p = King) && (h = false) && 
+           (((c = White) && (i1 = 1)) || 
+            ((c = Black) && (i1 = 8)) ))) in
+    let rook = (match Board.get_piece_at brd cr1 i1 with
+        | None -> false
+        | Some {p_type = p; col = c; has_moved = h} -> 
+          ((p = Rook) && (h = false))) in
+    if (king && rook)
+    then (Board.move_piece brd cr1 i1 cr2 i2)
+    else ()
 
 (** [check_for_en_passant brd c1 i1 c2 i2] checks if the move being made is en
     passant capture, if it is, the pawn captures the pawn on [c2 i1], then moves

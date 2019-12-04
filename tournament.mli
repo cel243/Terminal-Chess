@@ -12,7 +12,7 @@ type player =
 (** the current points accumulated by a player  *)
 type score = float
 
-val create : unit -> t
+val create : Game.opponent -> t
 val to_score : Game.outcome -> score
 val get_games_played : t -> int
 val is_tied : t -> bool

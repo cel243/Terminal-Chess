@@ -11,12 +11,14 @@ type locations = char * int * char * int
 (** the type of player commands asking for specific support 
     operations.  *)
 type request = 
-  | CanCapture of char * int 
   | LegalMoves of char * int 
+  | LegalMovesIF of char * int * char * int * char * int 
   | UnderAttack 
+  | UnderAttackIF of locations
+  | CanAttack 
+  | CanAttackIF of locations
   | Attackers of char * int 
-  | UnderAttackIF of char * int * char * int 
-  | Log
+  | AttackersIF of char * int * char * int * char * int 
 
 (** the type of a player command *)
 type t = 
@@ -26,6 +28,8 @@ type t =
   | Captured
   | Move of locations
   | PSupport of request 
+  | Log 
+  | Save of string 
 
 (** raised when the command isn't one of the expected forms  *)
 exception Invalid 

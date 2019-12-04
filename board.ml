@@ -16,6 +16,7 @@ type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
  * RI: t.board is a 8*8 array. 
  * t.white_captured, t.black_captured, and t.moves contain nonzero, positive 
  * integers only.
+ * t.moves contains only chars A..H
 *)
 type t = { 
   mutable p_turn : color;
@@ -26,6 +27,15 @@ type t = {
                    (char * int) *
                    ((piece * char * int) option)) list 
 }
+
+let set_game p_turn board log w_cap b_cap= 
+  {
+    p_turn=p_turn;
+    white_captured= w_cap;
+    black_captured= b_cap;
+    board=board;
+    moves = log
+  }
 
 let get_opp_color = function
   | Black -> White
@@ -122,6 +132,14 @@ let init_state () =
 
 let get_current_player state =
   state.p_turn
+
+let board_to_array state = state.board
+
+let log_to_list state = state.moves 
+
+let white_cap_to_list state = state.white_captured
+
+let black_cap_to_list state = state.black_captured 
 
 let next_player state =
   if 
@@ -261,5 +279,7 @@ let capture_piece state col piece =
 let get_captured_pieces state = function 
   | White -> state.white_captured
   | Black -> state.black_captured
+
+
 
 

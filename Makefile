@@ -1,4 +1,4 @@
-MODULES=board main command display logic authors support
+MODULES=board main command display logic authors support fileHandler
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

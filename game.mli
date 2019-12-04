@@ -3,4 +3,8 @@ type outcome =
   | Win of Board.color
   | Draw
 
-val play : unit -> outcome option
+type opponent =
+  | Human
+  | CPU
+
+val play : Board.t -> opponent -> outcome option
