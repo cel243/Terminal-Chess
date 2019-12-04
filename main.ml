@@ -1,7 +1,12 @@
+open Unix
 
 type gametype = 
   | Exhibition
   | Series
+
+type opponent = 
+  | HumanLocal
+  | CPU
 
 let rec prompt_gametype () = 
   print_string "Which mode would you like to play?\n";
@@ -12,6 +17,19 @@ let rec prompt_gametype () =
   | "quick" -> Exhibition
   | "tournament" -> Series
   | _ -> print_string "Invalid mode. Please retry.\n"; prompt_gametype ()
+
+let rec prompt_opponent_type () = 
+  print_string "Who would you like to play against?\n";
+  print_string "For a local player, type \"local\"\n";
+  print_string "For a computer player, type \"cpu\"\n";
+  print_string "> ";
+  match (Display.get_input ()) |> String.lowercase_ascii with
+  | "local" -> HumanLocal
+  | "cpu" -> CPU
+  | _ -> begin
+      print_string "Invalid player type. Please retry.\n"; 
+      prompt_opponent_type ()
+    end
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
