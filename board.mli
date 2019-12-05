@@ -113,3 +113,5 @@ val get_captured_pieces : t -> color -> (piece*int) list
 *)
 val get_moves : t -> 
   ((piece * color * char * int) * (char * int) * ((piece * char * int) option)) list
+
+val get_score : t -> color -> int

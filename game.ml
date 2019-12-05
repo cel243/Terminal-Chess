@@ -24,19 +24,31 @@ let print_draw_prompt b =
   Display.print_board b;
   print_string (c' ^ "'s input:\n>")
 
+let handle_cpu_draw b =
+  let player_color = Board.get_current_player b in
+  let cpu_color = Board.get_opp_color player_color in
+  let player_score = Board.get_score b player_color in
+  let cpu_score = Board.get_score b cpu_color in
+  cpu_score <= player_score
+
+let handle_human_draw b = 
+  print_draw_prompt b;
+  ((Display.get_input ()) |> String.lowercase_ascii) = "agree"
+
 (** [handle_draw b] handles the result of one player requesting a draw. 
     If the other player agrees to the draw, the program terminates, otherwise
     the game continues with the current player.  *)
-let handle_draw b = 
-  print_draw_prompt b;
-  if ((Display.get_input ()) |> String.lowercase_ascii) = "agree" then 
+let handle_draw b oppt = 
+  if (match oppt with
+      | Human -> handle_human_draw b
+      | CPU -> handle_cpu_draw b) then
     begin
       ANSITerminal.erase ANSITerminal.Screen;
       ANSITerminal.print_string [ANSITerminal.green]  "It's a draw!\n"; 
       Display.print_board b; 
       Some Draw
     end
-  else 
+  else
     begin
       ANSITerminal.erase ANSITerminal.Screen;
       ANSITerminal.print_string [ANSITerminal.red] 
@@ -82,11 +94,11 @@ let handle_result b b_prev c1 i1 c2 i2 = function
 
 (** [parse_input b str] interprets the player's input as a command
     and responds to the command appropriately.  *)
-let parse_input b str = 
+let parse_input b str opp = 
   ANSITerminal.erase ANSITerminal.Screen;
   match (Command.parse str) with
   | Resign -> handle_resign (Board.get_current_player b) b
-  | Draw -> handle_draw b
+  | Draw -> handle_draw b opp
   | Save s -> FileHandler.save_game s b; 
     ANSITerminal.print_string [ANSITerminal.green] ("Game Saved as "^s^"\n");
     Display.print_board b; None 
@@ -142,7 +154,7 @@ let rec play_board b oppt person =
       cpu_move
     end
   in
-  match (parse_input b move) with
+  match (parse_input b move oppt) with
   | None -> begin
       if (Board.get_current_player b) = curr then (* Illegal Move *)
         play_board b oppt person

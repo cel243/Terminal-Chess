@@ -28,6 +28,14 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
+let get_piece_value = function
+  | Pawn -> 1
+  | Rook -> 5
+  | Bishop -> 3
+  | Knight -> 3
+  | Queen -> 9
+  | King -> 100
+
 let set_game p_turn board log w_cap b_cap= 
   {
     p_turn=p_turn;
@@ -280,6 +288,13 @@ let get_captured_pieces state = function
   | White -> state.white_captured
   | Black -> state.black_captured
 
+let rec get_score_tr sum = function
+  | [] -> sum
+  | (p, q) :: a -> begin
+      let addition = (get_piece_value p) * q in
+      get_score_tr (sum + addition) a
+    end
 
-
-
+let get_score st col = 
+  let pieces = (get_captured_pieces st col) in
+  get_score_tr 0 pieces
