@@ -42,4 +42,4 @@ let get_rand_move brd =
   let pieces = get_pieces brd 63 in
   let moves = get_moves brd pieces in
   let rand = (List.length moves) in
-  get_index_at rand moves
+  get_index_at (Random.int rand) moves

@@ -146,10 +146,10 @@ let rec play_board b oppt person =
     if person || oppt <> CPU then (print_string "> "; Display.get_input ())
     else begin
       let cpu_move =
-        (*let (c1, i1, c2, i2) = Machine.get_rand_move b in
-          (Char.escaped c1)^(string_of_int i1)^" to "^
-          (Char.escaped c2)^(string_of_int i2)*)
-        "a7 to a6" in
+        let (c1, i1, c2, i2) = Machine.get_rand_move b in
+        (Char.escaped c1)^(string_of_int i1)^" to "^
+        (Char.escaped c2)^(string_of_int i2) in
+      (* "a7 to a6" in *)
       print_string ("> " ^ cpu_move ^ "\n");
       cpu_move
     end
