@@ -41,5 +41,10 @@ let rec get_moves brd = function
 let get_rand_move brd = 
   let pieces = get_pieces brd 63 in
   let moves = get_moves brd pieces in
-  let rand = (List.length moves) in
-  get_index_at (Random.int rand) moves
+  let rand1 = (int_of_float (Unix.time())) mod 1000000000 in
+  let rand = ((Random.int rand1) mod (List.length moves)) in
+  get_index_at rand moves
+
+
+let get_next_move brd =
+  MoveTree.next_move brd
