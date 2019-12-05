@@ -30,7 +30,7 @@ val get_opp_color_str : Board.color -> string
 
 (** [capture_message brd c1 i1 c2 i2] prints a message detailing which
     piece has been captured by the prvious move, if any.  
-    Requires: [c1,i1] to [c2,i2] is a egal move ]*)
+    Requires: [c1,i1] to [c2,i2] is a legal move *)
 val capture_message : Board.t -> char -> int -> char -> int -> unit
 
 (** [print_log b] prints the move list for board [b].

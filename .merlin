@@ -1,5 +1,6 @@
 B _build
 PKG oUnit
+PKG qcheck
 PKG ANSITerminal 
 PKG yojson
 PKG ocamlbuild
