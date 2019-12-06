@@ -1,8 +1,6 @@
 open ANSITerminal
 
-(** dark = blue, light = cyan *)
-
-(** [get_rep p] returns the one character representation of game piece [p]. *)
+(** [get_rep col p] is the Unicode glyph for a piece [p] in the color [col]. *)
 let get_rep col p = match col, p with
   | Board.White, Board.Pawn -> "\u{2659}"
   | Board.White, Board.Rook -> "\u{2656}"
@@ -17,6 +15,7 @@ let get_rep col p = match col, p with
   | Board.Black, Board.Queen -> "\u{265B}"
   | Board.Black, Board.King -> "\u{265A}"
 
+(** [get_rep_long p] is the full string representation of the piece type [p]. *)
 let get_rep_long = function
   | Board.Pawn -> "Pawn"
   | Board.Rook -> "Rook"
@@ -25,6 +24,8 @@ let get_rep_long = function
   | Board.Queen -> "Queen"
   | Board.King -> "King"
 
+(** [get_input ()] is the next line inputted by the user to stdin, or 
+    exits the application if it encounters an EOF (i.e., CTRL-D). *)
 let get_input () = 
   match (read_line ()) with
   | exception End_of_file -> begin
@@ -68,19 +69,25 @@ let print_rank r b =
     | None -> ANSITerminal.print_string [bg] "   "
     | Some p -> begin
         let s = get_rep p.col p.p_type in
-        let chck_cnd = (Logic.king_in_check b) && (p.col = Board.get_current_player b) in
+        let chck_cnd = (Logic.king_in_check b) && 
+                       (p.col = Board.get_current_player b) in
+        let s' = (" "^s^" ") in
         match p.p_type with 
         | Board.King when chck_cnd -> begin
-            ANSITerminal.print_string [(get_foreground p.col); on_red] (" "^s^" ")
+            ANSITerminal.print_string [(get_foreground p.col); on_red] s'
           end
         | _ -> begin
-            ANSITerminal.print_string [(get_foreground p.col); bg] (" "^s^" ")
+            ANSITerminal.print_string [(get_foreground p.col); bg] s'
           end
       end
   done;
   ANSITerminal.print_string [default] "\n";
   ()
 
+(** [print_board b] displays to the console all of the pieces on board [b]
+    with a checkered background. Rows are preceded by corresponding numbers
+    and columns have the representative letter (one of A though H) displayed
+    beneath them. *)
 let print_board b =
   ANSITerminal.print_string [default] "\n";
   for r = 8 downto 1 do
@@ -101,49 +108,65 @@ let get_opp_color_str = function
   | Board.White -> "Black"
   | Board.Black -> "White"
 
+(** [construct_move_str i m] creates a string representative of the move [m].
+    The move's string always starts with: (i) [<player color>] at (<origin>)
+    The latter part depends on the move type and is determined as follows:
+    =======================|====================================================
+            Move           |                 Predicate
+    =======================|====================================================
+     Piece to empty square | TO (<destination>)
+    =======================|====================================================
+     Piece captures Piece  | CAPTURES [<opponent color>] at (<destination>)
+    =======================|====================================================
+     En Passant capture    | CAPTURES [<opponent color>] at (<destination>) 
+                           | BY EN PASSANT
+    =======================|====================================================
+*)
+let construct_move_str i = function
+  | ((p1,col,c1,i1), (c2, i2), None) -> begin
+      let cstr = get_color_str col in
+      let rep = get_rep_long p1 in
+      let i1s = string_of_int i1 in
+      let i2s = string_of_int i2 in
+      let c1s = Char.escaped c1 in
+      let c2s = Char.escaped c2 in
+      let is = string_of_int i in 
+      "("^is^") ["^cstr^"] "^rep^" at ("^c1s^","^i1s
+      ^") TO ("^c2s^","^i2s^")"
+    end
+  | ((p1,col,c1,i1), (c2, i2), Some (p2, c3, i3)) -> begin
+      let cstr = get_color_str col in
+      let cstr2 = get_opp_color_str col in
+      let rep1 = get_rep_long p1 in
+      let rep2 = get_rep_long p2 in
+      let i1s = string_of_int i1 in
+      let i2s = string_of_int i2 in
+      let i3s = string_of_int i3 in
+      let c1s = Char.escaped c1 in
+      let c2s = Char.escaped c2 in
+      let c3s = Char.escaped c3 in
+      let is = string_of_int i in
+      if i2 = i3
+      then ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
+            "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")")
+      else ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") TO ("
+            ^c2s^","^i2s^")"^" AND CAPTURES "^
+            "["^cstr2^"] "^rep2^" at ("^c3s^","^i3s^") BY EN PASSANT")
+    end
+
+let print_move i m = 
+  let s = construct_move_str i m in
+  ANSITerminal.print_string [default] ("Last Move: "^s^"\n")
+
 let print_log b = 
   ANSITerminal.print_string [default] "Move Log:\n";
   let rec print_all_moves i = function
     | [] -> ANSITerminal.print_string [default] "\n"
-    | ((p1,col,c1,i1), (c2, i2), None):: t -> begin
-        let cstr = get_color_str col in
-        let rep = get_rep_long p1 in
-        let i1s = string_of_int i1 in
-        let i2s = string_of_int i2 in
-        let c1s = Char.escaped c1 in
-        let c2s = Char.escaped c2 in
-        let is = string_of_int i in 
-        let s =
-          "("^is^") ["^cstr^"] "^rep^" at ("^c1s^","^i1s
-          ^") TO ("^c2s^","^i2s^")"
-        in
-        ANSITerminal.print_string [default] (s^"\n");
-        print_all_moves (i+1) t
-      end
-    | ((p1,col,c1,i1), (c2, i2), Some (p2, c3, i3)):: t -> begin
-        let cstr = get_color_str col in
-        let cstr2 = get_opp_color_str col in
-        let rep1 = get_rep_long p1 in
-        let rep2 = get_rep_long p2 in
-        let i1s = string_of_int i1 in
-        let i2s = string_of_int i2 in
-        let i3s = string_of_int i3 in
-        let c1s = Char.escaped c1 in
-        let c2s = Char.escaped c2 in
-        let c3s = Char.escaped c3 in
-        let is = string_of_int i in 
-        let s = 
-          if i2 = i3
-          then ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
-                "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")")
-          else ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") TO ("
-                ^c2s^","^i2s^")"^" AND CAPTURES "^
-                "["^cstr2^"] "^rep2^" at ("^c3s^","^i3s^") BY EN PASSANT")
-        in
-        ANSITerminal.print_string [default] (s^"\n");
-        print_all_moves (i+1) t
-      end
-  in print_all_moves 0 (List.rev (Board.get_moves b));
+    | h :: t -> 
+      print_move i h;
+      print_all_moves (i+1) t
+  in 
+  print_all_moves 0 (List.rev (Board.get_moves b));
   print_board b
 
 (** [print_rank_highlighted r b locs col] 

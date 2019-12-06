@@ -163,6 +163,10 @@ let get_piece_at state c i =
 let get_moves state = 
   state.moves
 
+let get_last_move t = match (get_moves t) with 
+  | [] -> None
+  | h :: _ -> Some h
+
 (* [loop_array c f i r] i the (game_piece * char * int) list representation of 
    board pieces of color c in a given rank r from array f. *)
 let rec loop_array color file i r =
@@ -298,3 +302,5 @@ let rec get_score_tr sum = function
 let get_score st col = 
   let pieces = (get_captured_pieces st col) in
   get_score_tr 0 pieces
+
+let get_move_cnt st = List.length (get_moves st)

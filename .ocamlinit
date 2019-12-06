@@ -8,3 +8,5 @@
 #load_rec "logic.cmo";;
 #load_rec "command.cmo";;
 #load_rec "support.cmo";;
+#load_rec "game.cmo";;
+#load_rec "tournament.cmo";;

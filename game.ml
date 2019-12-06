@@ -140,13 +140,16 @@ let print_move = function
     input a command, accepts player input, and delegates the 
     hdanling of that input appropriately.  *)
 let rec play_board b oppt person = 
+  (match (Board.get_last_move b) with
+   | None -> ()
+   | Some m -> Display.print_move (Board.get_move_cnt b) m);
   let curr = (Board.get_current_player b) in
   curr |> print_move;
   let move =
     if person || oppt <> CPU then (print_string "> "; Display.get_input ())
     else begin
       let cpu_move =
-        let (c1, i1, c2, i2) = Machine.get_rand_move b in
+        let (c1, i1, c2, i2) = MoveTree.next_move b in
         (Char.escaped c1)^(string_of_int i1)^" to "^
         (Char.escaped c2)^(string_of_int i2) in
       (* "a7 to a6" in *)
@@ -163,6 +166,6 @@ let rec play_board b oppt person =
     end
   | outcome -> outcome
 
-let play b oppt = 
+let play b oppt human_start = 
   Display.print_board b; 
-  play_board b oppt true
+  play_board b oppt human_start
