@@ -16,6 +16,10 @@ let print_col = function
   | White -> "white"
   | Black -> "black"
 
+let make_cmmd_test name cmmd input = 
+  name >:: 
+  (fun _ -> assert_equal cmmd (parse input))
+
 (* BOARDS USED FOR TESTING *)
 
 let capture_board = FileHandler.load_game "CAPTURE_TEST.json"
@@ -107,20 +111,68 @@ let board_tests = [
 ] 
 
 
+(* type request = 
+   | LegalMoves of char * int 
+   | LegalMovesIF of char * int * char * int * char * int 
+   | UnderAttack 
+   | UnderAttackIF of locations
+   | CanAttack
+   | CanAttackIF of locations
+   | Attackers of char * int 
+   | AttackersIF of char * int * char * int * char * int 
+   type t = 
+   | Resign 
+   | Draw 
+   | Help
+   | Captured
+   | Move of locations
+   | PSupport of request 
+   | Log 
+   | Save of string *)
 
 let command_tests = [
-  "'resign' is parsed as Resign" >:: 
-  (fun _ -> assert_equal Resign (parse "resign"));
-  "'   Resign  ' is parsed as Resign" >:: 
-  (fun _ -> assert_equal Resign (parse "    ReSiGn  ")); 
-  "'draw' is parsed as Draw" >:: 
-  (fun _ -> assert_equal Command.Draw (parse "draw")); 
-  "'   DrAw  ' is parsed as Draw" >:: 
-  (fun _ -> assert_equal Command.Draw (parse "    DrAw  ")); 
-  "'A6 to B4' is parsed as Move ('A',6,'B',4)" >:: 
-  (fun _ -> assert_equal (Move ('A',6,'B',4)) (parse "A6 to B4")); 
-  "'  b3  TO  c8' is parsed as Move ('B',3,'C',8)" >:: 
-  (fun _ -> assert_equal (Move ('B',3,'C',8)) (parse "  b3  TO  c8")); 
+  make_cmmd_test {|"resign" is parsed as Resign|}  Resign "resign";
+  make_cmmd_test {|'   Resign  ' is parsed as Resign|} Resign "    ReSiGn  "; 
+  make_cmmd_test {|'draw' is parsed as Draw|} Command.Draw "draw"; 
+  make_cmmd_test {|'   DrAw  ' is parsed as Draw|} Command.Draw  "    DrAw  "; 
+  make_cmmd_test {|'A6 to B4' is parsed as Move ('A',6,'B',4)|} 
+    (Move ('A',6,'B',4)) "A6 to B4"; 
+  make_cmmd_test {|'  b3  TO  c8' is parsed as Move ('B',3,'C',8)|} 
+    (Move ('B',3,'C',8)) "  b3  TO  c8"; 
+  make_cmmd_test {|"help" parsed as Help|}  Help "help";
+  make_cmmd_test {|"captured" parsed as Captured|}  Captured "captured";
+  make_cmmd_test {|"log" parsed as Log|}  Log "log";
+  make_cmmd_test {|"save as test" parsed as Save "TEST"|}  
+    (Save "TEST") "save as test";
+  make_cmmd_test {|"a5" parsed as PSupport LegalMoves ('A',5)|}  
+    (PSupport (LegalMoves ('A',5))) "a5";
+  make_cmmd_test 
+    ({|"a5 if c1 to c2" parsed as|} 
+     ^{|PSupport LegalMovesIF ('A',5, 'C', 1, 'C', 2)|})  
+    (PSupport (LegalMovesIF ('A',5, 'C', 1, 'C', 2))) 
+    "a5 if c1 to c2" ;
+  make_cmmd_test {|"under attack" parsed as PSupport UnderAttack|}  
+    (PSupport UnderAttack) "under attack";
+  make_cmmd_test 
+    ({|"under attack if c1 to c2" parsed as|} 
+     ^{|PSupport UnderAttackIF ('C', 1, 'C', 2)|})  
+    (PSupport (UnderAttackIF ('C', 1, 'C', 2))) 
+    "under attack if c1 to c2" ;
+  make_cmmd_test {|"can attack" parsed as PSupport CanAttack|}  
+    (PSupport CanAttack) "can attack";
+  make_cmmd_test 
+    ({|"can attack if b1 to c2" parsed as|} 
+     ^{|PSupport UnderAttackIF ('B', 1, 'C', 2)|})  
+    (PSupport (CanAttackIF ('B', 1, 'C', 2))) 
+    "can attack if b1 to c2" ;
+  make_cmmd_test {|"attackers f6" parsed as PSupport Attackers ('F',6)|}  
+    (PSupport (Attackers ('F',6))) "attackers f6";
+  make_cmmd_test 
+    ({|"attackers a5 if c1 to c2" parsed as|} 
+     ^{|PSupport AttackersIF ('A',5, 'C', 1, 'C', 2)|})  
+    (PSupport (AttackersIF ('A',5, 'C', 1, 'C', 2))) 
+    "attackers a5 if c1 to c2" ;
+
 ] 
 
 
