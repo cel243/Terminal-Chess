@@ -122,7 +122,7 @@ let display_final t =
   |>
   ANSITerminal.print_string [ANSITerminal.green]
 
-let rec play t = 
+let rec play t prev = 
   if (get_games_played t) = (get_best_of_cnt t) then
     begin
       display_final t
@@ -131,5 +131,7 @@ let rec play t =
     begin
       display_tourny t;
       display_game t;
-      play (update t (Game.play (Board.init_state ()) (get_opp_type t)))
+      play (update t 
+              (Game.play (Board.init_state ()) (get_opp_type t) (not prev)))
+        (not prev)
     end

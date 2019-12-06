@@ -7,4 +7,4 @@ type opponent =
   | Human
   | CPU
 
-val play : Board.t -> opponent -> outcome option
+val play : Board.t -> opponent -> bool -> outcome option

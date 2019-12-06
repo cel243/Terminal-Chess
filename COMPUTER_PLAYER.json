@@ -1,1 +1,429 @@
-{"current player":"white","board":[{"p_type":"rook","col":"white","has_moved":false,"points":5},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":false,"points":1},{"p_type":"rook","col":"black","has_moved":false,"points":5},{"p_type":"knight","col":"white","has_moved":false,"points":3},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"white","has_moved":true,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"bishop","col":"white","has_moved":false,"points":3},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":false,"points":1},{"p_type":"bishop","col":"black","has_moved":false,"points":3},{"p_type":"none"},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":true,"points":1},{"p_type":"none"},{"p_type":"queen","col":"black","has_moved":false,"points":9},{"p_type":"king","col":"white","has_moved":false,"points":100},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":true,"points":1},{"p_type":"none"},{"p_type":"king","col":"black","has_moved":false,"points":100},{"p_type":"bishop","col":"white","has_moved":false,"points":3},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"white","has_moved":true,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":false,"points":1},{"p_type":"bishop","col":"black","has_moved":false,"points":3},{"p_type":"knight","col":"white","has_moved":false,"points":3},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"knight","col":"black","has_moved":true,"points":3},{"p_type":"none"},{"p_type":"queen","col":"white","has_moved":true,"points":9},{"p_type":"none"},{"p_type":"none"},{"p_type":"rook","col":"white","has_moved":false,"points":5},{"p_type":"pawn","col":"white","has_moved":false,"points":1},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"none"},{"p_type":"pawn","col":"black","has_moved":false,"points":1},{"p_type":"rook","col":"black","has_moved":false,"points":5}],"log":[{"p_type":"pawn","col":"white","starting char":"C","starting int":2,"ending char":"C","ending int":4,"captured piece":"none"},{"p_type":"pawn","col":"black","starting char":"G","starting int":7,"ending char":"G","ending int":6,"captured piece":"none"},{"p_type":"pawn","col":"white","starting char":"F","starting int":2,"ending char":"F","ending int":4,"captured piece":"none"},{"p_type":"knight","col":"black","starting char":"B","starting int":8,"ending char":"A","ending int":6,"captured piece":"none"},{"p_type":"queen","col":"white","starting char":"D","starting int":1,"ending char":"A","ending int":4,"captured piece":"none"},{"p_type":"knight","col":"black","starting char":"G","starting int":8,"ending char":"F","ending int":6,"captured piece":"none"},{"p_type":"queen","col":"white","starting char":"A","starting int":4,"ending char":"A","ending int":6,"captured piece":"queen","captured char":"A","captured int":6},{"p_type":"knight","col":"black","starting char":"F","starting int":6,"ending char":"G","ending int":4,"captured piece":"none"},{"p_type":"queen","col":"white","starting char":"A","starting int":6,"ending char":"G","ending int":6,"captured piece":"queen","captured char":"G","captured int":6},{"p_type":"pawn","col":"black","starting char":"D","starting int":7,"ending char":"D","ending int":6,"captured piece":"none"},{"p_type":"pawn","col":"white","starting char":"C","starting int":4,"ending char":"C","ending int":5,"captured piece":"none"},{"p_type":"pawn","col":"black","starting char":"B","starting int":7,"ending char":"B","ending int":5,"captured piece":"none"},{"p_type":"pawn","col":"white","starting char":"C","starting int":5,"ending char":"B","ending int":6,"captured piece":"pawn","captured char":"B","captured int":6},{"p_type":"pawn","col":"black","starting char":"E","starting int":7,"ending char":"E","ending int":6,"captured piece":"none"}],"white captured":[{"p_type":"knight","num":1},{"p_type":"pawn","num":2}],"black captured":[]}
+{
+  "current player": "white",
+  "board": [
+    {
+      "p_type": "rook",
+      "col": "white",
+      "has_moved": false,
+      "points": 5
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "rook",
+      "col": "black",
+      "has_moved": false,
+      "points": 5
+    },
+    {
+      "p_type": "knight",
+      "col": "white",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": true,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "bishop",
+      "col": "white",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "bishop",
+      "col": "black",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": true,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "black",
+      "has_moved": false,
+      "points": 9
+    },
+    {
+      "p_type": "king",
+      "col": "white",
+      "has_moved": false,
+      "points": 100
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": true,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "king",
+      "col": "black",
+      "has_moved": false,
+      "points": 100
+    },
+    {
+      "p_type": "bishop",
+      "col": "white",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": true,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "bishop",
+      "col": "black",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "knight",
+      "col": "white",
+      "has_moved": false,
+      "points": 3
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "knight",
+      "col": "black",
+      "has_moved": true,
+      "points": 3
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "has_moved": true,
+      "points": 9
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "rook",
+      "col": "white",
+      "has_moved": false,
+      "points": 5
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "rook",
+      "col": "black",
+      "has_moved": false,
+      "points": 5
+    }
+  ],
+  "log": [
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "starting char": "C",
+      "starting int": 2,
+      "ending char": "C",
+      "ending int": 4,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "starting char": "G",
+      "starting int": 7,
+      "ending char": "G",
+      "ending int": 6,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "starting char": "F",
+      "starting int": 2,
+      "ending char": "F",
+      "ending int": 4,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "knight",
+      "col": "black",
+      "starting char": "B",
+      "starting int": 8,
+      "ending char": "A",
+      "ending int": 6,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "D",
+      "starting int": 1,
+      "ending char": "A",
+      "ending int": 4,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "knight",
+      "col": "black",
+      "starting char": "G",
+      "starting int": 8,
+      "ending char": "F",
+      "ending int": 6,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 4,
+      "ending char": "A",
+      "ending int": 6,
+      "captured piece": "queen",
+      "captured char": "A",
+      "captured int": 6
+    },
+    {
+      "p_type": "knight",
+      "col": "black",
+      "starting char": "F",
+      "starting int": 6,
+      "ending char": "G",
+      "ending int": 4,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 6,
+      "ending char": "G",
+      "ending int": 6,
+      "captured piece": "queen",
+      "captured char": "G",
+      "captured int": 6
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "starting char": "D",
+      "starting int": 7,
+      "ending char": "D",
+      "ending int": 6,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "starting char": "C",
+      "starting int": 4,
+      "ending char": "C",
+      "ending int": 5,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "starting char": "B",
+      "starting int": 7,
+      "ending char": "B",
+      "ending int": 5,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "starting char": "C",
+      "starting int": 5,
+      "ending char": "B",
+      "ending int": 6,
+      "captured piece": "pawn",
+      "captured char": "B",
+      "captured int": 6
+    },
+    {
+      "p_type": "pawn",
+      "col": "black",
+      "starting char": "E",
+      "starting int": 7,
+      "ending char": "E",
+      "ending int": 6,
+      "captured piece": "none"
+    }
+  ],
+  "white captured": [
+    {
+      "p_type": "knight",
+      "num": 1
+    },
+    {
+      "p_type": "pawn",
+      "num": 2
+    }
+  ],
+  "black captured": []
+}

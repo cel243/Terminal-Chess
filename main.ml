@@ -49,10 +49,10 @@ let main () =
   let opp = prompt_opponent_type () in
   match (prompt_gametype ()) with 
   | Exhibition brd -> begin
-      let _ = Game.play brd opp in ()
+      let _ = Game.play brd opp true in ()
     end
   | Series -> begin
-      ((Tournament.create opp) |> Tournament.play); ()
+      (Tournament.play (Tournament.create opp) false); ()
     end
 
 (* Execute the game engine. *)

@@ -46,3 +46,7 @@ val capture_message : Board.t -> char -> int -> char -> int -> unit
 val print_log : Board.t -> unit
 
 val get_input : unit -> string
+
+val print_move : int -> 
+  ((Board.piece * Board.color * char * int) * (char * int) 
+   * ((Board.piece * char * int) option)) -> unit

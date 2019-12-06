@@ -25,4 +25,4 @@ val get_new_player_color : t -> player -> Board.color
 val display_tourny : t -> unit
 val display_game : t -> unit
 val display_final : t -> unit
-val play : t -> unit
+val play : t -> bool -> unit
