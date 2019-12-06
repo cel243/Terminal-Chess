@@ -3,28 +3,66 @@ open Board
 open Command 
 open Logic 
 
+(* HELPERS *)
+
+let print_logic_res = function 
+  | Legal -> "legal"
+  | Illegal str -> "illegal "^str 
+  | Checkmate -> "checkmate" 
+  | Stalemate -> "stalemate"
+  | Draw -> "draw"
+
+let print_col = function 
+  | White -> "white"
+  | Black -> "black"
+
+(* BOARDS USED FOR TESTING *)
+
+let capture_board = FileHandler.load_game "CAPTURE_TEST.json"
+let checkmate_brd = FileHandler.load_game "CHECKMATE_TEST.json"
+let stalemate_brd = FileHandler.load_game "STALEMATE_TEST.json"
+
 let game_state = init_state () 
 
-let capture_board = Board.init_state () 
+let logic_GS = Board.init_state ()
+
+let logic_GS_Black = Board.init_state () 
+let _ = Board.next_player logic_GS_Black
+
+let logic_king = Board.init_state ()   
+let _ = Board.move_piece logic_king 'D' 8 'A' 5
+
+let logic_king_pawn = Board.init_state ()   
 let _ = 
-  (Logic.process capture_board (Command.Move ('E',2,'E',4)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('D',7,'D',5)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('E',4,'D',5)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('C',8,'G',4)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('F',1,'A',6)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('G',4,'D',1)) |> ignore;
-   Board.next_player capture_board; 
-   Logic.process capture_board (Command.Move ('A',6,'B',7)) |> ignore;
-   Logic.process capture_board (Command.Move ('E',1,'D',1)) |> ignore;
-  )
-(* WHITE -- pawn, pawn, bishop 
-   Black -- queen *)
+  Board.move_piece logic_king_pawn 'D' 8 'A' 5;
+  Board.move_piece logic_king_pawn 'D' 2 'D' 3
+
+let piece_move_pawn = Board.init_state ()   
+let _ = 
+  Board.move_piece piece_move_pawn 'D' 2 'D' 3;
+  Board.move_piece piece_move_pawn 'C' 7 'C' 5
+
+let piece_move_rook = Board.init_state ()   
+let _ = Board.move_piece piece_move_rook 'A' 1 'D' 4
+
+let piece_move_knight = Board.init_state () 
+let _ = Board.move_piece piece_move_knight 'G' 1 'E' 5
+
+let piece_move_bishop = Board.init_state () 
+let _ = Board.move_piece piece_move_bishop 'F' 1 'E' 5
+
+let piece_move_queen = Board.init_state () 
+let _ = Board.move_piece piece_move_queen 'D' 1 'E' 5
+
+let piece_move_king = Board.init_state () 
+let _ = Board.move_piece piece_move_king 'E' 1 'E' 4
+let _ = Board.move_piece piece_move_king 'F' 7 'E' 3
+
+let piece_move = Board.init_state () 
+
+
 let board_tests = [
+  (* capture list tests *)
   "The starting captured pieces for white is empty" >:: 
   (fun _ -> assert_equal [] 
       (get_captured_pieces game_state White));
@@ -38,6 +76,8 @@ let board_tests = [
   "The captured pieces for capture_board black is correct" >:: 
   (fun _ -> assert_equal [(Queen, 1)] 
       (get_captured_pieces capture_board Black));
+
+
   "The starting player is White" >:: 
   (fun _ -> assert_equal White 
       (get_current_player game_state));
@@ -74,111 +114,14 @@ let command_tests = [
   "'   Resign  ' is parsed as Resign" >:: 
   (fun _ -> assert_equal Resign (parse "    ReSiGn  ")); 
   "'draw' is parsed as Draw" >:: 
-  (fun _ -> assert_equal Draw (parse "draw")); 
+  (fun _ -> assert_equal Command.Draw (parse "draw")); 
   "'   DrAw  ' is parsed as Draw" >:: 
-  (fun _ -> assert_equal Draw (parse "    DrAw  ")); 
+  (fun _ -> assert_equal Command.Draw (parse "    DrAw  ")); 
   "'A6 to B4' is parsed as Move ('A',6,'B',4)" >:: 
   (fun _ -> assert_equal (Move ('A',6,'B',4)) (parse "A6 to B4")); 
   "'  b3  TO  c8' is parsed as Move ('B',3,'C',8)" >:: 
   (fun _ -> assert_equal (Move ('B',3,'C',8)) (parse "  b3  TO  c8")); 
 ] 
-
-(* boards for testing: *)
-let logic_GS = Board.init_state ()
-
-let logic_GS_Black = Board.init_state () 
-let () = Board.next_player logic_GS_Black
-
-let logic_king = Board.init_state ()   
-let () = Board.move_piece logic_king 'D' 8 'A' 5
-
-let logic_king_pawn = Board.init_state ()   
-let () = Board.move_piece logic_king_pawn 'D' 8 'A' 5
-let () = Board.move_piece logic_king_pawn 'D' 2 'D' 3
-
-let piece_move_pawn = Board.init_state ()   
-let () = Board.move_piece piece_move_pawn 'D' 2 'D' 3
-let () = Board.move_piece piece_move_pawn 'C' 7 'C' 5
-
-let piece_move_rook = Board.init_state ()   
-let () = Board.move_piece piece_move_rook 'A' 1 'D' 4
-
-let piece_move_knight = Board.init_state () 
-let () = Board.move_piece piece_move_knight 'G' 1 'E' 5
-
-let piece_move_bishop = Board.init_state () 
-let () = Board.move_piece piece_move_bishop 'F' 1 'E' 5
-
-let piece_move_queen = Board.init_state () 
-let () = Board.move_piece piece_move_queen 'D' 1 'E' 5
-
-let piece_move_king = Board.init_state () 
-let () = Board.move_piece piece_move_king 'E' 1 'E' 4
-let () = Board.move_piece piece_move_king 'F' 7 'E' 3
-
-let piece_move = Board.init_state () 
-
-let checkmate_brd = Board.init_state ()
-let _ = 
-  (Logic.process checkmate_brd (Command.Move ('F',2,'F',3)) |> ignore;
-   Board.next_player checkmate_brd; 
-   Logic.process checkmate_brd (Command.Move ('E',7,'E',5)) |> ignore;
-   Board.next_player checkmate_brd; 
-   Logic.process checkmate_brd (Command.Move ('G',2,'G',4)) |> ignore;
-   Board.next_player checkmate_brd; 
-  )
-
-let stalemate_brd = Board.init_state ()
-let _ = 
-  (Logic.process stalemate_brd (Command.Move ('E',2,'E',3)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('A',7,'A',5)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('D',1,'H',5)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('A',8,'A',6)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('H',5,'A',5)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('H',7,'H',5)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('H',2,'H',4)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('A',6,'H',6)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('A',5,'C',7)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('F',7,'F',6)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('C',7,'D',7)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('E',8,'F',7)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('D',7,'B',7)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('D',8,'D',3)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('B',7,'B',8)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('D',3,'H',7)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('B',8,'C',8)) |> ignore;
-   Board.next_player stalemate_brd; 
-   Logic.process stalemate_brd (Command.Move ('F',7,'G',6)) |> ignore;
-   Board.next_player stalemate_brd; 
-  )
-
-
-
-let print_logic_res = function 
-  | Legal -> "legal"
-  | Illegal str -> "illegal "^str 
-  | Checkmate -> "checkmate" 
-  | Stalemate -> "stalemate"
-
-let print_col = function 
-  | White -> "white"
-  | Black -> "black"
 
 
 let logic_tests = [

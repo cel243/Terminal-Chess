@@ -1,4 +1,4 @@
-MODULES=board main command display logic authors support fileHandler
+MODULES=board main command display logic authors support fileHandler game machine moveTree tournament
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

@@ -199,7 +199,9 @@ let help_menu () =
     ^ "Can attack --> highlights pieces the current player can capture.\n"
     ^"Can attack if CN to C'N' --> highlights pieces current player can "
     ^"capture IF player moves CN to C'N'.\n"
-    ^"LOG --> prints all of the moves performed this game.\n")
+    ^"LOG --> prints all of the moves performed this game.\n"
+    ^"Save as <file_name> --> saves the current game at <file_name>.json\n"
+    ^" in the current directory, to be loaded later.\n")
 
 let rec print_piece_list = function 
   | [] -> () 
