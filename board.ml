@@ -304,3 +304,4 @@ let get_score st col =
   get_score_tr 0 pieces
 
 let get_move_cnt st = List.length (get_moves st)
+

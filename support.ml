@@ -120,8 +120,7 @@ let rec check_cols chars ints brd c i sofar =
   | c'::t -> check_cols t ints brd c i ((check_rows c' ints brd c i)@sofar)
 
 (** [get_legal_squares brd c i] is a list of locations on the 
-    board to which it is legal for the piece at [c,i] to move, 
-    including the location [(c,i)]. 
+    board to which it is legal for the piece at [c,i] to move. 
     Requires: there is a piece at [c,i] and it belongs to the current player. 
 *)
 let get_legal_squares brd c i  = 

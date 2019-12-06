@@ -20,6 +20,12 @@ let make_cmmd_test name cmmd input =
   name >:: 
   (fun _ -> assert_equal cmmd (parse input))
 
+let logic_move_test name board c1 i1 c2 i2 outcome = 
+  name >:: (fun _ -> 
+      assert_equal outcome 
+        (process board (Command.Move (c1,i1,c2,i2)))
+        ~printer: print_logic_res)
+
 (* BOARDS USED FOR TESTING *)
 
 let capture_board = FileHandler.load_game "CAPTURE_TEST.json"
@@ -64,6 +70,10 @@ let _ = Board.move_piece piece_move_king 'F' 7 'E' 3
 
 let piece_move = Board.init_state () 
 
+
+let support_tests = [
+
+]
 
 let board_tests = [
   (* capture list tests *)
@@ -111,25 +121,6 @@ let board_tests = [
 ] 
 
 
-(* type request = 
-   | LegalMoves of char * int 
-   | LegalMovesIF of char * int * char * int * char * int 
-   | UnderAttack 
-   | UnderAttackIF of locations
-   | CanAttack
-   | CanAttackIF of locations
-   | Attackers of char * int 
-   | AttackersIF of char * int * char * int * char * int 
-   type t = 
-   | Resign 
-   | Draw 
-   | Help
-   | Captured
-   | Move of locations
-   | PSupport of request 
-   | Log 
-   | Save of string *)
-
 let command_tests = [
   make_cmmd_test {|"resign" is parsed as Resign|}  Resign "resign";
   make_cmmd_test {|'   Resign  ' is parsed as Resign|} Resign "    ReSiGn  "; 
@@ -172,80 +163,77 @@ let command_tests = [
      ^{|PSupport AttackersIF ('A',5, 'C', 1, 'C', 2)|})  
     (PSupport (AttackersIF ('A',5, 'C', 1, 'C', 2))) 
     "attackers a5 if c1 to c2" ;
-
+  "gibberish is invalid" >:: (fun _ -> 
+      assert_raises Invalid 
+        (fun () -> (parse "awsdfcvgbhnjkml"))); 
+  "blank is invalid" >:: (fun _ -> 
+      assert_raises Invalid 
+        (fun () -> (parse "      "))); 
 ] 
-
 
 let logic_tests = [
 
   (* test of checkmate/stalemate *)
-  "logic detects checkmate" >:: (fun _ -> 
-      assert_equal Checkmate 
-        (process checkmate_brd (Command.Move ('D',8,'H',4))));
-  "logic detects stalemate" >:: (fun _ -> 
-      assert_equal Stalemate 
-        (process stalemate_brd (Command.Move ('C',8,'E',6)))
-        ~printer: print_logic_res);
+  logic_move_test "logic detects checkmate" checkmate_brd 'D' 8 'H' 4 Checkmate;
+  logic_move_test "logic detects stalemate" stalemate_brd 'C' 8 'E' 6 Stalemate;
 
   (* Tests of is_blocked *)
-  "logic says move C2 to C3 is legal" >:: (fun _ -> 
-      assert_equal Legal (process logic_GS (Move ('C',2,'C',3))));
+  logic_move_test 
+    "logic says move C2 to C3 is legal" logic_GS 'C' 2 'C' 3 Legal;
+
   "logic moved c2 to c3 in the previous test" >:: (fun _ -> 
       assert_equal (Some {p_type=Pawn;col=White;has_moved=true; points=1})
         (get_piece_at logic_GS 'C' 3));
-  "logic refuses to move A1 to A3 because the rook is blocked" >:: 
-  (fun _ -> assert_equal (Illegal "This piece is blocked!") 
-      (process logic_GS (Move ('A',1,'A',3))));
+
+  logic_move_test 
+    "logic refuses to move A1 to A3 because the rook is blocked" 
+    logic_GS 'A' 1 'A' 3 (Illegal "This piece is blocked!"); 
+
   "logic did not move the rook" >:: 
   (fun _ -> assert_equal None (get_piece_at logic_GS 'A' 4)); 
-  "logic did not move the rook" >:: 
+
+  logic_move_test
+    "logic refuses to move C8 to F5 because the bishop is blocked" logic_GS_Black
+    'C' 8 'F' 5 (Illegal "This piece is blocked!");
+  "logic did not move the bishop" >:: 
   (fun _ -> assert_equal None (get_piece_at logic_GS 'F' 5)); 
-  "logic refuses to move C8 to F5 because the bishop is blocked" >:: 
-  (fun _ -> assert_equal (Illegal "This piece is blocked!") 
-      (process logic_GS_Black (Move ('C',8,'F',5))) 
-      ~printer: print_logic_res);
-  "logic says move D7 to D6 is legal" >:: (fun _ -> 
-      assert_equal Legal (process logic_GS_Black (Move ('D',7,'D',6)))
-        ~printer: print_logic_res);
-  "logic now allows bishop to move" >:: (fun _ -> 
-      assert_equal Legal (process logic_GS_Black (Move ('C',8,'F',5))));
+
+  logic_move_test
+    "logic says move D7 to D6 is legal" logic_GS_Black
+    'D' 7 'D' 6 Legal;
+  logic_move_test
+    "logic now allows bishop to move" logic_GS_Black 'C' 8 'F' 5 Legal;
 
   (** out of bounds tests *)
-  "logic says move to out-of-bounds (file) is illegal" >:: (fun _ -> 
-      assert_equal 
-        (Illegal "You're attempting to access an out of bounds location!")
-        (process logic_GS (Move ('A',2,'J',1))));
-  "logic says move to out-of-bounds (rank) is illegal" >:: (fun _ -> 
-      assert_equal 
-        (Illegal "You're attempting to access an out of bounds location!") 
-        (process logic_GS (Move ('A',2,'A',9))));
-  "logic says move to is friendly-fire" >:: (fun _ -> 
-      assert_equal 
-        (Illegal "This is friendly fire!") 
-        (process logic_GS (Move ('A',1,'A',2))));
-  "logic says move from (opponent) isn't valid" >:: (fun _ -> 
-      assert_equal 
-        (Illegal "You don't have a piece in this square!") 
-        (process logic_GS (Move ('A',7,'A',6))));
-  "logic says move from (empty) isn't valid" >:: (fun _ -> 
-      assert_equal 
-        (Illegal "You don't have a piece in this square!") 
-        (process logic_GS (Move ('A',4,'A',5))));
+  logic_move_test
+    "logic says move to out-of-bounds (file) is illegal" logic_GS 
+    'A' 2 'J' 1 
+    (Illegal "You're attempting to access an out of bounds location!"); 
+  logic_move_test
+    "logic says move to out-of-bounds (rank) is illegal" logic_GS 
+    'A' 2 'A' 9
+    (Illegal "You're attempting to access an out of bounds location!"); 
+  logic_move_test 
+    "logic says move to is friendly-fire" logic_GS 
+    'A' 1 'A' 2 (Illegal "This is friendly fire!"); 
+  logic_move_test
+    "logic says move from (opponent) isn't valid" logic_GS 
+    'A' 7 'A' 6 (Illegal "You don't have a piece in this square!"); 
+  logic_move_test
+    "logic says move from (empty) isn't valid" logic_GS 
+    'A' 4 'A' 5 (Illegal "You don't have a piece in this square!"); 
 
 
   (* Tests of detecting check *)
-  "logic will not let pawn move because leaves king in check" >:: 
-  (fun _ -> assert_equal (Illegal "You can't leave your king in check!") 
-      (process logic_king (Move ('D',2,'D',3)))
-      ~printer: print_logic_res) ;
-
-  "if pawn moves, no white piece can move that doesn't stop check" >:: 
-  (fun _ -> assert_equal (Illegal "You can't leave your king in check!") 
-      (process logic_king_pawn (Move ('A',2,'A',3))));
-
-  "can move piece that prevents check" >:: 
-  (fun _ -> assert_equal Legal (process logic_king_pawn (Move ('C',2,'C',3)))
-      ~printer: print_logic_res);
+  logic_move_test
+    "logic will not let pawn move because leaves king in check" logic_king 
+    'D' 2 'D' 3 (Illegal "You can't leave your king in check!"); 
+  logic_move_test
+    "if pawn moves, no white piece can move that doesn't stop check" 
+    logic_king_pawn 'A' 2 'A' 3
+    (Illegal "You can't leave your king in check!"); 
+  logic_move_test
+    "can move piece that prevents check" logic_king_pawn 'C' 2 'C' 3 Legal ;
 
 
   (* tests of piece movement *)
@@ -401,6 +389,7 @@ let suite =
     board_tests;
     command_tests;
     logic_tests;
+    support_tests; 
   ]
 
 let _ = run_test_tt_main suite
