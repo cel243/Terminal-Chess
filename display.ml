@@ -192,6 +192,9 @@ let print_rank_highlighted r b locs =
   ANSITerminal.print_string [default] "\n";
   ()
 
+(** [print_highlighted_brd b locs] prints the same representation of
+    the chess board [b] that [print_board] does, but with all of the 
+    locations indicated in [loc] highlighted. *)
 let print_highlighted_brd b locs = 
   ANSITerminal.print_string [default] "\n";
   for r = 8 downto 1 do
@@ -199,6 +202,18 @@ let print_highlighted_brd b locs =
   done;
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
   ANSITerminal.print_string [default] "\n"
+
+let p_support_display (locs, b, hyp, b') = 
+  if hyp then (
+    ANSITerminal.print_string [red] "\nHypothetical board: \n";
+    print_highlighted_brd b locs;
+    print_string [red] "\n Current board: \n";
+    print_board b' )
+  else (
+    print_highlighted_brd b locs 
+  )
+
+
 
 
 let help_menu () = 

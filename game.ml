@@ -113,7 +113,7 @@ let parse_input b str opp =
       None
     end
   | PSupport req -> begin
-      Support.handle_player_support b req; 
+      Display.p_support_display (Support.handle_player_support b req); 
       None
     end
   | Move (c1,i1,c2,i2) as c -> begin

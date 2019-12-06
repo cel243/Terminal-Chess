@@ -7,10 +7,13 @@
     lettering along the bottom; ranks by numbers along the side. *)
 val print_board : Board.t -> unit 
 
-(** [print_highlighted_brd b locs col] prints the same representation of
-    the chess board [b] that [print_board] does, but with all of the 
-    locations indicated in [loc] highlighted in [col]. *)
-val print_highlighted_brd :  Board.t -> (char * int) list -> unit
+(** [p_support_display (locs, b, hyp, b')] does one of two things. 
+    If [hyp] is true, it first prints 'hypothetical' board [b]
+    as [print_board] would, but with all of the locations in 
+    [locs] highlighted. Then it prints [b'] normally. If [hyp]
+    is false, it simply prints [b] with the locations in [locs]
+    highlighted. *)
+val p_support_display : (char * int) list * Board.t * bool * Board.t -> unit
 
 (** [help_menu ()] prints a menu detailing accepted player commands *)
 val help_menu : unit -> unit 
