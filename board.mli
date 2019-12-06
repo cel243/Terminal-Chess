@@ -112,6 +112,13 @@ val get_captured_pieces : t -> color -> (piece*int) list
     2) ((p1,c1,i1), (None, c2, i2)) if there was no piece at the destination 
 *)
 val get_moves : t -> 
-  ((piece * color * char * int) * (char * int) * ((piece * char * int) option)) list
+  ((piece * color * char * int) * (char * int) * ((piece * char * int) option))
+    list
 
 val get_score : t -> color -> int
+
+val get_last_move : t ->
+  ((piece * color * char * int) * (char * int) * ((piece * char * int) option))
+    option
+
+val get_move_cnt : t -> int
