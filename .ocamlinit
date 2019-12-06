@@ -9,6 +9,4 @@
 #load_rec "command.cmo";;
 #load_rec "support.cmo";;
 #load_rec "game.cmo";;
-#load_rec "machine.cmo";;
-#load_rec "moveTree.cmo";;
 #load_rec "tournament.cmo";;

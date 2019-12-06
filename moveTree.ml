@@ -1,21 +1,5 @@
-type cc1 = char
-type cc2 = char
-type ii1 = int
-type ii2 = int
-type score = float
-type color = Board.color
-type depth = int
 
 let depth_cpu = 2
-
-type t = 
-  | Node of score*depth*cc1*ii1*cc2*ii2*(t list)
-  | Leaf 
-
-let init brd () =
-  let col = Board.get_current_player brd in
-  let sc = Board.get_score brd col in
-  (col, sc, 0, 'A', 1, 'A', 1, [])
 
 let rec get_index_at int = function
   | [] -> failwith "index error"
