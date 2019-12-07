@@ -9,8 +9,8 @@ type request =
   | CanAttackIF of locations
   | Attackers of char * int 
   | AttackersIF of char * int * char * int * char * int 
-  | Suggest 
-  | SuggestIF of locations
+  | Suggest of (Board.t -> char * int * char * int)
+  | SuggestIF of (Board.t -> char * int * char * int)*locations
 type t = 
   | Resign 
   | Draw 
@@ -26,7 +26,7 @@ exception Invalid
 (** [get_hypothetical_cmmd wrd_ls] is the command that [wrd_ls] represents,
     where [wrd_ls] represents one of the [IF PSupport] commands.
     Raises: Invalid if [wrd_ls] is not a valid command  *)
-let get_hypothetical_cmmd wrd_ls = 
+let get_hypothetical_cmmd f wrd_ls = 
   match wrd_ls with 
   | [loc;"IF"; l1; "TO"; l2] 
     when String.length l1 = 2 && String.length l2 = 2 
@@ -55,14 +55,15 @@ let get_hypothetical_cmmd wrd_ls =
   | ["SUGGEST"; "IF"; l1; "TO"; l2] 
     when String.length l1 = 2 && String.length l2 = 2 -> 
     PSupport 
-      (SuggestIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
-                  String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+      (SuggestIF (f,
+                  (String.get l1 0, int_of_char (String.get l1 1) - 48,
+                   String.get l2 0, int_of_char (String.get l2 1) - 48 )))
   | _ -> raise Invalid  
 
 (** [get_psupport_command wrd_ls] is the command that [wrd_ls] represents,
     where [wrd_ls] wither represents a Player Support command type. 
     Raises: Invalid if [wrd_ls] is not a valid command  *)
-let get_psupport_cmmd wrd_ls = 
+let get_psupport_cmmd f wrd_ls = 
   match wrd_ls with 
   | [loc] when String.length loc = 2 -> 
     PSupport (
@@ -74,12 +75,12 @@ let get_psupport_cmmd wrd_ls =
         (String.get loc 0, int_of_char (String.get loc 1) - 48))
   | ["UNDER";"ATTACK"] -> PSupport UnderAttack 
   | ["CAN";"ATTACK"] -> PSupport CanAttack 
-  | ["SUGGEST"] -> PSupport Suggest
-  | _ -> get_hypothetical_cmmd wrd_ls
+  | ["SUGGEST"] -> PSupport (Suggest f)
+  | _ -> get_hypothetical_cmmd f wrd_ls
 
 (** [get_command wrd_ls] is the command that [wrd_ls] represents. 
     Raises: Invalid if [wrd_ls] is not a valid command  *)
-let get_command wrd_ls = 
+let get_command f wrd_ls = 
   match wrd_ls with 
   | ["RESIGN"] -> Resign 
   | ["DRAW"] -> Draw 
@@ -90,14 +91,14 @@ let get_command wrd_ls =
   | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 -> 
     Move (String.get l1 0, int_of_char (String.get l1 1) - 48,
           String.get l2 0, int_of_char (String.get l2 1) - 48 )
-  | _ -> get_psupport_cmmd wrd_ls 
+  | _ -> get_psupport_cmmd f wrd_ls 
 
 
-let parse p_in = 
+let parse f p_in = 
   String.split_on_char ' ' p_in 
   |> List.filter (fun x -> x <> "") 
   |> List.map (fun s -> String.uppercase_ascii s)
-  |> get_command  
+  |> get_command f  
 
 
 

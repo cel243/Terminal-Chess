@@ -96,7 +96,7 @@ let handle_result b b_prev c1 i1 c2 i2 = function
     and responds to the command appropriately.  *)
 let parse_input b str opp = 
   ANSITerminal.erase ANSITerminal.Screen;
-  match (Command.parse str) with
+  match (Command.parse Cpu.next_move str) with
   | Resign -> handle_resign (Board.get_current_player b) b
   | Draw -> handle_draw b opp
   | Save s -> FileHandler.save_game s b; 
