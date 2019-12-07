@@ -10,3 +10,4 @@
 #load_rec "support.cmo";;
 #load_rec "game.cmo";;
 #load_rec "tournament.cmo";;
+#load_rec "cpu.cmo";;

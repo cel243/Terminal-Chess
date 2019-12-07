@@ -1,4 +1,4 @@
-MODULES=board main command display logic authors support fileHandler game machine tournament
+MODULES=board main command display logic authors support fileHandler game machine tournament cpu
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -37,4 +37,4 @@ play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
 zip:
-	zip chess.zip *.ml*  _tags *.txt Makefile
+	zip chess.zip *.ml*  _tags *.txt Makefile *.json

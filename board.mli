@@ -23,9 +23,10 @@ type color = Black | White
 type game_piece = 
   {p_type : piece; col : color; has_moved : bool; points : int }
 
-(** [init_state] is the initial state of the game when a chess
-    game is started. *)
-val init_state : unit -> t 
+(** [init_state loader] is the initial state of the game when a chess
+    game is started, where the initial state is retreived via
+    [loader].  *)
+val init_state : (string -> t) -> t
 
 (** [set_game col brd_arr log w_cap b_cap] is a chess game in which 
     the current player is [col], all the pieces are arranged

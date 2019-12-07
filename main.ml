@@ -23,7 +23,7 @@ let rec prompt_gametype () =
   print_string "To load a previous game, type \"load\".\n";
   print_string "> ";
   match (Display.get_input ()) |> String.lowercase_ascii with
-  | "quick" -> Exhibition (Board.init_state ())
+  | "quick" -> Exhibition (Board.init_state FileHandler.load_game)
   | "tournament" -> Series
   | "load" -> handle_load () 
   | "exit" -> print_string "Goodbye!"; exit 0
