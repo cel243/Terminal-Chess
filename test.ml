@@ -267,7 +267,7 @@ let logic_tests_clean = [
   "can move queen northwest 2 and take a piece",piece_move_queen, 
   'E',5,'C',7, Legal;
   "can move queen right 2",piece_move_queen,'E',5,'H',5, Legal;
-  "can move queen left 1",piece_move_queen,E',5,'D',5, Legal;
+  "can move queen left 1",piece_move_queen,'E',5,'D',5, Legal;
   "can move queen southeast 1",piece_move_queen, 'E',5,'F',4, Legal;
   "can move queen back 2",piece_move_queen, 'E',5,'E',3, Legal;
   "can move queen southwest 2",piece_move_queen,'E',5,'C',3, Legal;
