@@ -102,6 +102,12 @@ let logic_move_test name board c1 i1 c2 i2 outcome =
         (process board (Command.Move (c1,i1,c2,i2)))
         ~printer: print_logic_res)
 
+let logic_move_test_copybrd name board c1 i1 c2 i2 outcome = 
+  name >:: (fun _ -> 
+      assert_equal outcome 
+        (process (Board.copy_board board) (Command.Move (c1,i1,c2,i2)))
+        ~printer: print_logic_res)
+
 let file_tests = [
   "Teh board loaded from the file is equal to the one you get manually" >:: 
   (fun _ -> assert_equal file_brd file_brd_manual) ;
@@ -178,7 +184,7 @@ let command_tests =
          assert_raises Invalid 
            (fun () -> (parse "      ")))]
 
-let logic_tests_clean = [
+let logic_tests_clean_WITH_effects = [
 
   (* test of checkmate/stalemate *)
   "logic detects checkmate", checkmate_brd, 'D', 8, 'H', 4, Checkmate;
@@ -230,7 +236,9 @@ let logic_tests_clean = [
   (Illegal  "This piece can't move like that!");
   "pawn can move diagonally when taking other piece", piece_move_pawn, 
   'D',4,'C',5, Legal; 
+]
 
+let logic_tests_clean_NO_effects = [
   (* ROOK *)
   "can move rook forward 2", piece_move_rook,'D',4,'D',6, Legal; 
   "can move rook to the right", piece_move_rook,'D',4,'H',4, Legal; 
@@ -296,8 +304,14 @@ let logic_tests_unclean = [
 
 let logic_tests = 
   ( List.map 
-      (fun (name,brd,c1,i1,c2,i2,res) -> logic_move_test name brd c1 i1 c2 i2 res)
-      logic_tests_clean ) @ logic_tests_unclean
+      (fun (name,brd,c1,i1,c2,i2,res) -> 
+         logic_move_test name brd c1 i1 c2 i2 res)
+      logic_tests_clean_WITH_effects ) 
+  @ 
+  ( List.map 
+      (fun (name,brd,c1,i1,c2,i2,res) -> 
+         logic_move_test_copybrd name brd c1 i1 c2 i2 res)
+      logic_tests_clean_NO_effects ) 
 
 let board_tests = [
   (* capture list tests *)
