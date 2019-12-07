@@ -68,7 +68,8 @@ let get_opp_move brd c2 i2 =
   else 
     let (c,i), p = highest_piece brd locs 0 ('A',1) Pawn in 
     if p <> King then (
-      let attackers,_,_,_ = Support.handle_player_support brd (Command.Attackers (c,i)) in 
+      let attackers,_,_,_ = 
+        Support.handle_player_support brd (Command.Attackers (c,i)) in 
       let att_c,att_i = List.nth attackers 0 in 
       Board.capture_piece brd (Board.get_current_player brd) p; 
       Board.move_piece brd  att_c att_i c i; 
