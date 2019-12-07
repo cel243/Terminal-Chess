@@ -21,6 +21,13 @@ let check_valid brd c i =
       (true, temp)
     | Some {col} -> (true, temp) )
 
+(** [suggest brd] is ([strt ; fnsh], brd, false, brd), where [strt] is 
+    the beginning square of the CPU's cuggested move, and [fnsh] is the
+    ending square. *)
+let suggest brd = 
+  let (c1, i1, c2, i2) = MoveTree.next_move brd in 
+  ([(c1,i1);c2,i2], brd, false, brd)
+
 (** [all_opp_attacks brd op_ls c i sofar] is a list of opponent
     pieces that are capable of capturing the piece at [c,i].  *)
 let rec all_opp_attacks brd op_ls c i sofar = 
@@ -162,6 +169,7 @@ let hypothetical cmmd brd c1 i1 c2 i2 =
          | Command.CanAttackIF _ -> can_attack temp 
          | Command.AttackersIF (c,i,_,_,_,_) -> attackers temp c i  
          | Command.LegalMovesIF (c,i,_,_,_,_) -> legal_moves temp c i 
+         | Command.SuggestIF _ -> suggest temp
          | _ -> failwith "precondition violated" ) in 
       (locs, temp, true, brd)
     )
@@ -172,7 +180,9 @@ let handle_player_support brd = function
   | Command.UnderAttack  -> under_attack brd 
   | Command.CanAttack -> can_attack brd 
   | Command.Attackers (c,i) -> attackers brd c i 
+  | Command.Suggest -> suggest brd 
   | Command.CanAttackIF (c1,i1,c2,i2) 
+  | Command.SuggestIF (c1,i1,c2,i2) 
   | Command.AttackersIF (_,_,c1,i1,c2,i2) 
   | Command.LegalMovesIF (_,_,c1,i1,c2,i2)
   | Command.UnderAttackIF (c1,i1,c2,i2) as cmmd -> 

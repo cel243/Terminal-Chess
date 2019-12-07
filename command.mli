@@ -19,6 +19,8 @@ type request =
   | CanAttackIF of locations
   | Attackers of char * int 
   | AttackersIF of char * int * char * int * char * int 
+  | Suggest 
+  | SuggestIF of locations 
 
 (** the type of a player command *)
 type t = 

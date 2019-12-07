@@ -9,6 +9,8 @@ type request =
   | CanAttackIF of locations
   | Attackers of char * int 
   | AttackersIF of char * int * char * int * char * int 
+  | Suggest 
+  | SuggestIF of locations
 type t = 
   | Resign 
   | Draw 
@@ -50,6 +52,11 @@ let get_hypothetical_cmmd wrd_ls =
     PSupport 
       (CanAttackIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
                     String.get l2 0, int_of_char (String.get l2 1) - 48 ))
+  | ["SUGGEST"; "IF"; l1; "TO"; l2] 
+    when String.length l1 = 2 && String.length l2 = 2 -> 
+    PSupport 
+      (SuggestIF (String.get l1 0, int_of_char (String.get l1 1) - 48,
+                  String.get l2 0, int_of_char (String.get l2 1) - 48 ))
   | _ -> raise Invalid  
 
 (** [get_psupport_command wrd_ls] is the command that [wrd_ls] represents,
@@ -67,7 +74,7 @@ let get_psupport_cmmd wrd_ls =
         (String.get loc 0, int_of_char (String.get loc 1) - 48))
   | ["UNDER";"ATTACK"] -> PSupport UnderAttack 
   | ["CAN";"ATTACK"] -> PSupport CanAttack 
-  | ["LOG"] -> Log
+  | ["SUGGEST"] -> PSupport Suggest
   | _ -> get_hypothetical_cmmd wrd_ls
 
 (** [get_command wrd_ls] is the command that [wrd_ls] represents. 
@@ -79,6 +86,7 @@ let get_command wrd_ls =
   | ["HELP"] -> Help 
   | ["CAPTURED"] -> Captured
   | ["SAVE";"AS";s] -> Save s 
+  | ["LOG"] -> Log
   | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 -> 
     Move (String.get l1 0, int_of_char (String.get l1 1) - 48,
           String.get l2 0, int_of_char (String.get l2 1) - 48 )

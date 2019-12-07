@@ -226,20 +226,15 @@ let help_menu () =
     ^"Help --> display the help menu \n"
     ^"Captured --> display the current player's captured pieces \n"
     ^"CN --> highlights legal moves of the piece at CN.\n"
-    ^"CN if C'N' to C''N'' --> highlights legal moves of the piece at CN "
-    ^"IF player moves CN to C'N'.\n"
     ^"Attackers CN --> highlights pieces that can capture piece at CN.\n"
-    ^ "Attackers CN if C'N' to C''N'' --> highlights pieces that can capture "
-    ^"piece at CN IF player moves C'N' to C''N''.\n"
     ^ "Under attack --> highlights pieces in danger of being captured.\n"
-    ^ "Under attack if CN to C'N' --> highlights pieces in danger of being "
-    ^"captured IF player moves CN to C'N'.\n"
     ^ "Can attack --> highlights pieces the current player can capture.\n"
-    ^"Can attack if CN to C'N' --> highlights pieces current player can "
-    ^"capture IF player moves CN to C'N'.\n"
-    ^"LOG --> prints all of the moves performed this game.\n"
+    ^"Log --> prints all of the moves performed this game.\n"
     ^"Save as <file_name> --> saves the current game at <file_name>.json\n"
-    ^" in the current directory, to be loaded later.\n")
+    ^" in the current directory, to be loaded later.\n"
+    ^"Suggest --> query the AI for a good next move.\n"
+    ^"_____ IF CN to C'N' --> the same command, but executed in "
+    ^"a world where the move CN to C'N' has occured.\n")
 
 let rec print_piece_list = function 
   | [] -> () 
