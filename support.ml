@@ -25,7 +25,7 @@ let check_valid brd c i =
     the beginning square of the CPU's cuggested move, and [fnsh] is the
     ending square. *)
 let suggest brd = 
-  let (c1, i1, c2, i2) = Cpu.next_move brd in 
+  let (c1, i1, c2, i2) = MoveTree.next_move brd in 
   ([(c1,i1);c2,i2], brd, false, brd)
 
 (** [all_opp_attacks brd op_ls c i sofar] is a list of opponent
