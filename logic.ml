@@ -91,7 +91,7 @@ and king_loc brd =
   ) in 
   match k_ls with 
   | [(k, c, i)] -> (c,i) 
-  | _ -> failwith "impossible 2" 
+  | _ -> failwith "there is always a king on the board : logic" 
 
 (** [king_in_check brd c1 i1 c2 i2] is [true] if the current 
     player's king is in check, and [false] otherwise.  *)
@@ -340,4 +340,4 @@ let process brd cmmd =
           else Legal 
         | false, str -> 
           Illegal str end
-    | _ -> failwith "impossible 1"
+    | _ -> failwith "process is always called with a move command : logic"

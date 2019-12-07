@@ -303,5 +303,12 @@ let get_score st col =
   let pieces = (get_captured_pieces st col) in
   get_score_tr 0 pieces
 
+let get_score_cpu st col = 
+  let pieces, op_pieces = (
+    match col with 
+    | White -> get_captured_pieces st White, get_captured_pieces st Black 
+    | Black -> get_captured_pieces st Black, get_captured_pieces st White )
+  in (get_score_tr 0 pieces) - (get_score_tr 0 op_pieces)
+
 let get_move_cnt st = List.length (get_moves st)
 

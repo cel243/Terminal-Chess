@@ -55,9 +55,6 @@ let attackers brd c i =
       | White -> Board.get_white_pieces temp 
       | Black -> Board.get_black_pieces temp) in 
     let ops = all_opp_attacks temp op_ls c i [] in 
-    if List.length ops = 0 
-    then print_string [red] ("\nNo attackers!\n")
-    else (); 
     (ops, brd, false, brd)
 
 (** [exist_opp_attacks brd op_ls c i] is true if an opponent
@@ -92,8 +89,6 @@ let under_attack brd =
   let temp = Board.copy_board brd in 
   Board.next_player temp; 
   let locs = (check_each_piece temp [] op_pieces pieces) in 
-  if locs = [] then print_string [red] ("\nNo pieces in danger!\n") 
-  else (); 
   (locs, brd, false, brd) 
 
 (** [can_attack brd] is [(locs, brd, false, brd)], where [locs] is 

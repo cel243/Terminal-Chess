@@ -11,9 +11,7 @@
        the hypothetical move has not been made. 
      - If [hyp] is [false], then both [b] and [b'] are the current board. 
 
-     Will print an error message if the request is not valid, and may 
-     print additional information about the results of the
-     support request.  
+     Will print an error message if the request is not valid. 
      Will never modify whose turn it is in the state of [brd]. 
 
      Examples: 

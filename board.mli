@@ -116,6 +116,7 @@ val get_moves : t ->
     list
 
 val get_score : t -> color -> int
+val get_score_cpu : t -> color -> int
 
 val get_last_move : t ->
   ((piece * color * char * int) * (char * int) * ((piece * char * int) option))
