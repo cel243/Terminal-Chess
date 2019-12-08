@@ -2,7 +2,9 @@ open OUnit2
 open Board
 open Command 
 open Logic 
-open Support 
+open Support
+open Machine
+open Cpu 
 
 
 (* BOARDS USED FOR TESTING *)
@@ -360,6 +362,50 @@ let board_tests = [
   (fun _ -> assert_equal 15 (List.length (get_black_pieces game_state)));  
 ] 
 
+let machine_helper = 
+  let c1,i1,c2,i2 = (get_rand_move capture_board)in
+  let test,_ = is_legal capture_board c1 i1 c2 i2 in
+  test
+
+let machine_tests = [
+  "Lists White pieces" >:: 
+  (fun _ -> assert_equal (List.length (get_white_pieces capture_board))
+      (List.length (get_pieces capture_board 63)));
+  "Lists Black pieces" >:: 
+  (fun _ -> assert_equal (List.length (get_black_pieces checkmate_brd))
+      (List.length (get_pieces checkmate_brd 63)));
+  "Lists Knight moves" >:: 
+  (fun _ -> assert_equal 3
+      (List.length (get_moves_piece capture_board 63 'G' 1)));
+  "Lists both Knights moves" >:: 
+  (fun _ -> assert_equal 5
+      (List.length (get_moves capture_board ((1,'G',1,1)::(1,'B',1,1)::[]))));
+  "Random move is legal" >:: 
+  (fun _ -> assert_equal true
+      machine_helper);
+]
+
+let cpu_helper = 
+  let c1,i1,c2,i2 = (next_move capture_board)in
+  let test,_ = is_legal capture_board c1 i1 c2 i2 in
+  test
+
+let cpu_tests = [
+  "Creates fake board properly" >:: 
+  (fun _ -> assert_equal (get_piece_at capture_board 'B' 7)
+      (get_piece_at (create_board capture_board 'B' 7 'H' 3) 'H' 3));
+  "Lists moves properly" >:: 
+  (fun _ -> assert_equal 
+      (List.length (get_boards capture_board [('B',7,'H',3);('D',5,'H',3)]))
+      2 );
+  "Finds the largest score" >:: 
+  (fun _ -> assert_equal (largest_score 0 0 [(1,1);(2,2);(3,3);(5,4)])
+      4 );
+  "Next move is legal" >:: 
+  (fun _ -> assert_equal true
+      cpu_helper);
+]
+
 let suite =
   "test suite"  >::: List.flatten [
     board_tests;
@@ -367,6 +413,8 @@ let suite =
     logic_tests;
     support_tests; 
     file_tests;
+    machine_tests;
+    cpu_tests;
   ]
 
 let _ = run_test_tt_main suite
