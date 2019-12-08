@@ -132,6 +132,8 @@ let rec play t prev =
       display_tourny t;
       display_game t;
       play (update t 
-              (Game.play (Board.init_state ()) (get_opp_type t) (not prev)))
+              (Game.play 
+                 (Board.init_state FileHandler.load_game) 
+                 (get_opp_type t) (not prev)))
         (not prev)
     end
