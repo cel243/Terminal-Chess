@@ -13,7 +13,7 @@ let stalemate_brd = FileHandler.load_game "STALEMATE_TEST.json"
 let support_brd = FileHandler.load_game "SUPPORT_TEST.json"
 let file_brd = FileHandler.load_game "FILE_TEST.json"
 
-let file_brd_manual = Board.init_state () 
+let file_brd_manual = Board.init_state FileHandler.load_game  
 let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
   Board.next_player file_brd_manual;
   ignore (Logic.process file_brd_manual (Move ('A' ,7 ,'A', 6)));
@@ -21,43 +21,43 @@ let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
   ignore (Logic.process file_brd_manual (Move ('F' ,1 ,'C', 4)));
   Board.next_player file_brd_manual
 
-let game_state = Board.init_state () 
+let game_state = Board.init_state FileHandler.load_game  
 
-let logic_GS = Board.init_state ()
+let logic_GS = Board.init_state FileHandler.load_game 
 
-let logic_GS_Black = Board.init_state () 
+let logic_GS_Black = Board.init_state FileHandler.load_game  
 let _ = Board.next_player logic_GS_Black
 
-let logic_king = Board.init_state ()   
+let logic_king = Board.init_state FileHandler.load_game    
 let _ = Board.move_piece logic_king 'D' 8 'A' 5
 
-let logic_king_pawn = Board.init_state ()   
+let logic_king_pawn = Board.init_state FileHandler.load_game    
 let _ = 
   Board.move_piece logic_king_pawn 'D' 8 'A' 5;
   Board.move_piece logic_king_pawn 'D' 2 'D' 3
 
-let piece_move_pawn = Board.init_state ()   
+let piece_move_pawn = Board.init_state FileHandler.load_game    
 let _ = 
   Board.move_piece piece_move_pawn 'D' 2 'D' 3;
   Board.move_piece piece_move_pawn 'C' 7 'C' 5
 
-let piece_move_rook = Board.init_state ()   
+let piece_move_rook = Board.init_state FileHandler.load_game    
 let _ = Board.move_piece piece_move_rook 'A' 1 'D' 4
 
-let piece_move_knight = Board.init_state () 
+let piece_move_knight = Board.init_state FileHandler.load_game  
 let _ = Board.move_piece piece_move_knight 'G' 1 'E' 5
 
-let piece_move_bishop = Board.init_state () 
+let piece_move_bishop = Board.init_state FileHandler.load_game  
 let _ = Board.move_piece piece_move_bishop 'F' 1 'E' 5
 
-let piece_move_queen = Board.init_state () 
+let piece_move_queen = Board.init_state FileHandler.load_game  
 let _ = Board.move_piece piece_move_queen 'D' 1 'E' 5
 
-let piece_move_king = Board.init_state () 
+let piece_move_king = Board.init_state FileHandler.load_game  
 let _ = Board.move_piece piece_move_king 'E' 1 'E' 4
 let _ = Board.move_piece piece_move_king 'F' 7 'E' 3
 
-let piece_move = Board.init_state () 
+let piece_move = Board.init_state FileHandler.load_game  
 
 (* HELPERS *)
 
@@ -89,7 +89,7 @@ let print_list ls = "["^(print_list_aux ls)^"]"
 
 let make_cmmd_test name cmmd input = 
   name >:: 
-  (fun _ -> assert_equal cmmd (parse input))
+  (fun _ -> assert_equal cmmd (parse Cpu.next_move input))
 
 let make_support_test name cmmd locs = 
   let output,_,_,_ = handle_player_support support_brd cmmd in 
@@ -179,10 +179,10 @@ let command_tests =
   (List.map (fun (n,c,s) -> make_cmmd_test n c s) command_tests_clean)
   @ ["gibberish is invalid" >:: (fun _ -> 
       assert_raises Invalid 
-        (fun () -> (parse "awsdfcvgbhnjkml"))); 
+        (fun () -> (parse Cpu.next_move "awsdfcvgbhnjkml"))); 
      "blank is invalid" >:: (fun _ -> 
          assert_raises Invalid 
-           (fun () -> (parse "      ")))]
+           (fun () -> (parse Cpu.next_move "      ")))]
 
 let logic_tests_clean_WITH_effects = [
 
@@ -342,11 +342,13 @@ let board_tests = [
   "The piece at A1 is a White Rook that hasn't moved" >:: 
   (fun _ -> assert_equal 
       (Some {p_type = Rook; col = White; has_moved = false; points=5}) 
-      (get_piece_at (init_state ()) 'A' 1)); 
+      (get_piece_at (init_state FileHandler.load_game) 'A' 1)); 
   "White has 16 pieces" >:: 
-  (fun _ -> assert_equal 16 (List.length (get_white_pieces (init_state ())))); 
+  (fun _ -> assert_equal 16 
+      (List.length (get_white_pieces (init_state FileHandler.load_game )))); 
   "Black has 16 pieces" >:: 
-  (fun _ -> assert_equal 16 (List.length (get_black_pieces (init_state ())))); 
+  (fun _ -> assert_equal 16 
+      (List.length (get_black_pieces (init_state FileHandler.load_game )))); 
   "The move_piece works" >:: 
   (fun _ -> assert_equal ()
       (move_piece game_state 'A' 1 'H' 8));
