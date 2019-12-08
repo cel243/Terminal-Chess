@@ -28,6 +28,7 @@ type t = {
                    ((piece * char * int) option)) list 
 }
 
+(** [get_piece_value piece] is how many points the [piece] is worth *)
 let get_piece_value = function
   | Pawn -> 1
   | Rook -> 5
