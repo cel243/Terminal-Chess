@@ -121,7 +121,7 @@ and legal_for_pawn piece char_m c1 i1 c2 i2 brd =
   (((pawn_w||pawn_b) && char_m=1) && 
    (is_capturing || en_passant i1 c2 brd))
 
-(** [legal_for_pawn c1 i1 c2 i2 brd] is [true] if this King, 
+(** [legal_castle c1 i1 c2 i2 brd] is [true] if this King, 
     [piece], can legally castle from [c1,i1] to [c2,i2] given the rules of 
     castling. *)
 and legal_castle c1 i1 c2 i2 brd =
@@ -136,6 +136,23 @@ and legal_castle c1 i1 c2 i2 brd =
   Board.move_piece temp3 c1 i1 check3 i2;
   (not((king_in_check temp1)||(king_in_check temp2)||(king_in_check temp3)))
 
+(** [legal_for_pawn c1 i1 c2 i2 char_m int_m brd piece] is [true] if this King, 
+    [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
+    kings. *)
+and legal_for_king c1 i1 c2 i2 char_m int_m brd piece =
+  (char_m < 2) && (int_m < 2) || 
+  ((char_m = 2) && 
+   (int_m = 0) && 
+   (piece.Board.has_moved = false) &&
+   (legal_castle c1 i1 c2 i2 brd) &&
+   let c3 = (
+     if (c2 = 'G')
+     then 'H'
+     else 'A') in
+   match Board.get_piece_at brd c3 i1 with
+   | None -> false
+   | Some rook -> ((rook.Board.p_type = Rook) &&
+                   (rook.Board.has_moved = false)))
 
 (** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
@@ -153,20 +170,7 @@ and legal_for_piece c1 i1 c2 i2 brd =
     | Knight -> (char_m + int_m = 3) && (abs(int_m-char_m)=1) 
     | Rook -> ((char_m = 0) && (int_m > 0)) || ((char_m > 0) && (int_m = 0))
     | Bishop -> (char_m = int_m)
-    | King -> (char_m < 2) && (int_m < 2) || 
-              ((char_m = 2) && 
-               (int_m = 0) && 
-               (piece.Board.has_moved = false) &&
-               (legal_castle c1 i1 c2 i2 brd) &&
-               let c3 = (
-                 if (c2 = 'G')
-                 then 'H'
-                 else 'A') in
-               match Board.get_piece_at brd c3 i1 with
-               | None -> false
-               | Some rook -> ((rook.Board.p_type = Rook) &&
-                               (rook.Board.has_moved = false)))
-
+    | King -> legal_for_king c1 i1 c2 i2 char_m int_m brd piece
     | Queen -> 
       ((char_m = 0) && (int_m > 0)) || 
       ((char_m > 0) && (int_m = 0)) ||
@@ -275,15 +279,13 @@ let check_for_castle brd c1 i1 c2 i2 =
                    else if (c2 = 'C')
                    then 'A','D'
                    else 'B', 'B') in
-  if (cr1 = cr2)
-  then ()
-  else
-    let king = (match Board.get_piece_at brd c1 i1 with
-        | None -> false
-        | Some {p_type = p; col = c; has_moved = h} -> 
-          ((p = King) && (h = false) && 
-           (((c = White) && (i1 = 1)) || 
-            ((c = Black) && (i1 = 8)) ))) in
+  if (cr1 = cr2) then ()
+  else let king = (match Board.get_piece_at brd c1 i1 with
+      | None -> false
+      | Some {p_type = p; col = c; has_moved = h} -> 
+        ((p = King) && (h = false) && 
+         (((c = White) && (i1 = 1)) || 
+          ((c = Black) && (i1 = 8)) ))) in
     let rook = (match Board.get_piece_at brd cr1 i1 with
         | None -> false
         | Some {p_type = p; col = c; has_moved = h} -> 
@@ -330,11 +332,9 @@ let process brd cmmd =
           capture brd (Board.get_current_player brd) i1 c2 i2;
           (if (check_for_en_passant brd c1 i1 c2 i2)
            then begin (Board.move_piece_en_passant brd c1 i1 c2 i2 c2 i1); end
-           else
-             begin
-               (check_for_castle brd c1 i1 c2 i2); 
-               (Board.move_piece brd c1 i1 c2 i2);
-             end);
+           else begin
+             (check_for_castle brd c1 i1 c2 i2); 
+             (Board.move_piece brd c1 i1 c2 i2); end);
           if checkmate brd then Checkmate 
           else if stalemate brd then Stalemate  
           else Legal 
