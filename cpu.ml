@@ -1,4 +1,5 @@
-
+(** Cpu hosts all necessary functions for the computer to play intelligent 
+    chess moves and theorize about possible chess moves. *)
 
 (** [depth_cpu] is how many moves ahead the cpu looks *)
 let depth_cpu = 3
@@ -42,6 +43,7 @@ let rec largest_score score move = function
       largest_score sc mv t
     else 
       largest_score score move t
+
 
 let rec highest_piece brd ls score loc p_type =
   match ls with 

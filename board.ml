@@ -3,6 +3,8 @@ type color = Black | White
 type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
 
 (**
+ * Board hosts all necessary functions for manipulating and storing the game 
+ * board
  * AF: t represents a game with t.p_turn as the turn of the current player, 
  * t.board is the game board, where t.board.(0) is the 1st array corresponding 
  * the A file on a chess board (i.e. t.board.(7) is the H file)

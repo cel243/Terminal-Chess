@@ -1,3 +1,5 @@
+(** Machine hosts all the necessary functions for a computer to calculate all 
+    its pieces and make a list of possible moves. *)
 
 let rec get_pieces brd counter = 
   if 
