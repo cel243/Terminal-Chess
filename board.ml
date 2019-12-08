@@ -49,92 +49,116 @@ let get_opp_color = function
   | Black -> White
   | White -> Black
 
+(** [rank1] is the 1st rank of the initial board state. *)
+let rank1 = [|
+  Some {p_type = Rook; col = White; has_moved = false; points=5};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Rook; col = Black; has_moved = false; points=5}
+|]
+
+(** [rank2] is the 2nd rank of the initial board state. *)
+let rank2 = [|
+  Some {p_type = Knight; col = White; has_moved = false; points=3};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Knight; col = Black; has_moved = false; points=3}
+|]
+
+(** [rank3] is the 3rd rank of the initial board state. *)
+let rank3 = [|
+  Some {p_type = Bishop; col = White; has_moved = false; points=3};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Bishop; col = Black; has_moved = false; points=3}
+|]
+
+(** [rank4] is the 4th rank of the initial board state. *)
+let rank4 = [|
+  Some {p_type = Queen; col = White; has_moved = false; points=9};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Queen; col = Black; has_moved = false; points=9}
+|]
+
+(** [rank5] is the 5th rank of the initial board state. *)
+let rank5 = [|
+  Some {p_type = King; col = White; has_moved = false; points=100};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = King; col = Black; has_moved = false; points=100}
+|]
+
+(** [rank6] is the 6th rank of the initial board state. *)
+let rank6 = [|
+  Some {p_type = Bishop; col = White; has_moved = false; points=3};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Bishop; col = Black; has_moved = false; points=3}
+|]
+
+(** [rank7] is the 7th rank of the initial board state. *)
+let rank7 = [|
+  Some {p_type = Knight; col = White; has_moved = false; points=3};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Knight; col = Black; has_moved = false; points=3}
+|]
+
+(** [rank8] is the 8th rank of the initial board state. *)
+let rank8 = [|
+  Some {p_type = Rook; col = White; has_moved = false; points=5};
+  Some {p_type = Pawn; col = White; has_moved = false; points=1};
+  None;
+  None;
+  None;
+  None;
+  Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+  Some {p_type = Rook; col = Black; has_moved = false; points=5}
+|]
+
 let init_state () = 
   { p_turn = White;
     white_captured = [];
     black_captured = [];
     moves = [];
     board = [|
-      [|
-        Some {p_type = Rook; col = White; has_moved = false; points=5};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Rook; col = Black; has_moved = false; points=5}
-      |];
-      [|
-        Some {p_type = Knight; col = White; has_moved = false; points=3};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Knight; col = Black; has_moved = false; points=3}
-      |];
-      [|
-        Some {p_type = Bishop; col = White; has_moved = false; points=3};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Bishop; col = Black; has_moved = false; points=3}
-      |];
-      [|
-        Some {p_type = Queen; col = White; has_moved = false; points=9};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Queen; col = Black; has_moved = false; points=9}
-      |];
-      [|
-        Some {p_type = King; col = White; has_moved = false; points=100};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = King; col = Black; has_moved = false; points=100}
-      |];
-      [|
-        Some {p_type = Bishop; col = White; has_moved = false; points=3};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Bishop; col = Black; has_moved = false; points=3}
-      |];
-      [|
-        Some {p_type = Knight; col = White; has_moved = false; points=3};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Knight; col = Black; has_moved = false; points=3}
-      |];
-      [|
-        Some {p_type = Rook; col = White; has_moved = false; points=5};
-        Some {p_type = Pawn; col = White; has_moved = false; points=1};
-        None;
-        None;
-        None;
-        None;
-        Some {p_type = Pawn; col = Black; has_moved = false; points=1};
-        Some {p_type = Rook; col = Black; has_moved = false; points=5}
-      |];
+      rank1;
+      rank2;
+      rank3;
+      rank4;
+      rank5;
+      rank6;
+      rank7;
+      rank8;
     |];
   }
 

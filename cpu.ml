@@ -3,11 +3,6 @@
 (** [depth_cpu] is how many moves ahead the cpu looks *)
 let depth_cpu = 3
 
-(** [get_index_at int lst] is the element [e] at index [int] of [lst] *)
-let rec get_index_at int = function
-  | [] -> failwith "index error"
-  | h :: t -> if int = 0 then h else get_index_at (int-1) t
-
 (** [create_board brd c1 i1 c2 i2] is the fake board where the hypothetical 
     move [c1,i1] to [c2,i2] was made *)
 let create_board brd c1 i1 c2 i2 =
@@ -113,7 +108,6 @@ and for_next_move dpth move1 = function
       (next_move_helper (get_opp_move brd c2 i2) (dpth-1) move1)
       @(for_next_move dpth move1  t)
 
-(** [next_move brd] is the next move (c1,i1,c2,i2) the cpu recommends *)
 let next_move brd =
   let pieces = Machine.get_pieces brd 63 in
   let moves = Machine.get_moves brd pieces in

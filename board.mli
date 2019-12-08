@@ -88,7 +88,8 @@ val get_black_pieces : t -> (game_piece * char * int) list
     if [c1, i1] is a pawn then it is promoted to a Queen *)
 val move_piece : t -> char -> int -> char -> int -> unit 
 
-val move_piece_en_passant : t -> char -> int -> char -> int -> char -> int -> unit 
+val move_piece_en_passant : 
+  t -> char -> int -> char -> int -> char -> int -> unit 
 
 (** [copy_board b] is a copy of [b] *)
 val copy_board : t -> t 
@@ -115,11 +116,21 @@ val get_moves : t ->
   ((piece * color * char * int) * (char * int) * ((piece * char * int) option))
     list
 
+(** [get_score state color] is the score of player [color]. Score is calculated
+    based on the types of pieces said player has captured *)
 val get_score : t -> color -> int
+
+(** [get_score_cpu state color] is the score of cpu. Score is calculated
+    based on the types of pieces said cpu has captured *)
 val get_score_cpu : t -> color -> int
 
+(** [get_last_move state] is the last move played presented as an optional
+    ((piece1,color,char1,int1),(char2,int2),((piece2,char3,int3)option)
+    where piece1 moves from char1,int1 to char2,int2 and 
+    takes piece2 at char3,int3 if the option is not None. *)
 val get_last_move : t ->
   ((piece * color * char * int) * (char * int) * ((piece * char * int) option))
     option
 
+(** [get_move_cnt state] is the move count of the game *)
 val get_move_cnt : t -> int

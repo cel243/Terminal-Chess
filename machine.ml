@@ -1,6 +1,3 @@
-let rec get_index_at int = function
-  | [] -> failwith "index error"
-  | h :: t -> if int = 0 then h else get_index_at (int-1) t
 
 let rec get_pieces brd int = 
   if 
@@ -43,4 +40,4 @@ let get_rand_move brd =
   let moves = get_moves brd pieces in
   let rand1 = (int_of_float (Unix.time())) mod 1000000000 in
   let rand = ((Random.int rand1) mod (List.length moves)) in
-  get_index_at rand moves
+  List.nth moves rand
