@@ -1,32 +1,32 @@
 
-let rec get_pieces brd int = 
+let rec get_pieces brd counter = 
   if 
-    int > -1 
+    counter > -1 
   then
-    let c = char_of_int((int/8)+65) in
-    let i = (int mod 8)+1 in
+    let c = char_of_int((counter/8)+65) in
+    let i = (counter mod 8)+1 in
     match Board.get_piece_at brd c i with
-    | None -> get_pieces brd (int-1)
+    | None -> get_pieces brd (counter-1)
     | Some {p_type = p; col = col; has_moved; points = pnt} -> 
       if 
         col = Board.get_current_player brd
       then
-        (p, c, i, pnt) :: get_pieces brd (int-1)
+        (p, c, i, pnt) :: get_pieces brd (counter-1)
       else 
-        get_pieces brd (int-1)
+        get_pieces brd (counter-1)
   else
     []
 
-let rec get_moves_piece brd int c i =
+let rec get_moves_piece brd counter c i =
   if 
-    int > -1 
+    counter > -1 
   then
-    let c1 = char_of_int((int/8)+65) in
-    let i1 = (int mod 8)+1 in
+    let c1 = char_of_int((counter/8)+65) in
+    let i1 = (counter mod 8)+1 in
     let legal, _ = Logic.is_legal brd c i c1 i1 in
     if legal 
-    then (c, i, c1, i1) :: get_moves_piece brd (int-1) c i
-    else get_moves_piece brd (int-1) c i
+    then (c, i, c1, i1) :: get_moves_piece brd (counter-1) c i
+    else get_moves_piece brd (counter-1) c i
   else
     [] 
 

@@ -118,7 +118,8 @@ let copy_piece state c1 i1 c2 i2 =
         Some {p_type=s; col=c; has_moved=true; points=p}
 
 (** [log_move state c1 i1 c2 i2 c3 i3] prepends a move of either form:
-    1) ((p1,c1,i1), (c2, i2), Some (p3, c3, i3)) if there was a piece at the destination
+    1) ((p1,c1,i1), (c2, i2), Some (p3, c3, i3)) if there was 
+    a piece at the destination
     2) ((p1,c1,i1), (c2, i2), None)) if there was no piece at the destination,
     or raises a Failure if the starting space is empty. *)
 let log_move state c1 i1 c2 i2 c3 i3 = 

@@ -56,6 +56,8 @@ let rec highest_piece brd ls score loc p_type =
           highest_piece brd t score loc p_type
     end 
 
+(** [get_opp_move brd c2 i2] is the next predicted move the cpu 
+    thinks the player will make. *)
 let get_opp_move brd c2 i2 = 
   Board.next_player brd; 
   let locs,_,_,_ = Support.handle_player_support brd (Command.CanAttack) in 
