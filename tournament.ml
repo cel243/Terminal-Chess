@@ -1,4 +1,22 @@
 
+(**
+ * Tournament hosts all necessary functions for manipulating and 
+ * storing a series of consecutive chess games.
+ * AF: t represents a tournament with:
+ *   The first element being the number of games to be played.
+ *   The second element being the number of completed games up until this point.
+ *   The third element being the color that Player 1 played as previously. 
+ *   The fourth element being Player 1's score.
+ *   The fifth element being Player 2's score.
+ *   The sixth element indicating the type of Player 2 (Human or CPU)
+ * RI: 
+ *    The first element is a positive, non-zero integer.
+ *    The second element is a non-negative integer.
+ *    The third element is a type of Board.color and is [Black] when initialized
+ *    The fourth element is a non-negative float.
+ *    The fifth element is a non-negative float.
+ *    The sixth element is a type of Game.opponent.
+*)
 type t = 
   (
     int   *       (* Best of ___ *)
@@ -42,12 +60,15 @@ let get_winner = function
       else Some PlayerOne
     end
 
+(** [get_opp_type t] returns [Human] if Player 2 is controlled by a real person,
+    and is [CPU] if Player 2 is controlled by the computer. *)
 let get_opp_type (_, _, _, _, _, opp) = opp
 
 let to_score = function
   | Game.Win _ -> 1.0
   | Game.Draw -> 0.5
 
+(** [opp_col c] is [Black] if [c] is [White]; is [White] if [c] is [Black] *)
 let opp_col = function
   | Board.White -> Board.Black
   | Board.Black -> Board.White
@@ -69,6 +90,8 @@ let update ((p, n, c, one, two, opp) as t) outcome =
         | PlayerTwo -> (p, n+1, opp_col c, one, two +. addition, opp)
       end
 
+(** [col_to_string c] is "White" is [c] is [White] and is "Black" if [c] is 
+    [Black]. *)
 let col_to_string = function
   | Board.White -> "White"
   | Board.Black -> "Black"
