@@ -6,6 +6,86 @@ open Support
 open Machine
 open Cpu 
 
+(**
+   The modules that are tested the most within the test suite are Command and
+   Logic. Their nature is very much black-or-white, and therefore allows for
+   the validiation of their correctness to be easily vetted through OUnit. 
+
+   Tests for Command fall largely under the umbrella of glass-box testing, 
+   since the sole purpose of Command is converting user input strings into
+   usable OCaml constructs that can be sent to and later intepreted by Logic. 
+   Therefore, the tests concern themselves with inputs varying by case,
+   formatting, and keywords. Each different type of Command is tested, so
+   the correctness of the entire module is validated via the test suite.
+
+   Logic tests are the most involved and most prevelant tests seen in the
+   suite, dealing largely with validity of piece movement, leaving the King
+   in check, castling, en passant, and attempting to access invalid locations. 
+   The tests are strictly black-box, since the rules of chess are the standard
+   which the module is held to and moves can easily be determined as Legal or
+   Illegal beforehand. Both board-independent and board-dependent move proposals
+   were tested. All aspects of a chess game make an appearance, so the suite
+   adequately ensures the correctness of Logic.
+
+   There were a number of modules that, due to their nature, were unable to 
+   be included or *fully* checked in this test suite and instead needed to have 
+   their correctness validated by hand: Cpu, Machine, Display, Support, 
+   FileHandler, Game, Tournament. NOTE: The inclusion of a module in this
+   list or in subsequent paragraphs does not always reflect its total exclusion
+   from the test suite: some modules contain certain aspects more conducive to
+   testing than others, but some––like Display for example––are simply unable 
+   to be validated at all using OUnit.
+
+   One could consider the effectivness of Cpu's proposals as a possible testing 
+   point, yet that is entirely a judgement call––although the AI tries to make 
+   moves that are not dumb, the underlying logic is nowhere near the level of a 
+   commercial chess engine like Stockfish; therefore, there is no standard with 
+   which Cpu's moves can be reasonably be compared to, and by extension is
+   unable to be tested here. This is not to suggest the Cpu's moves have gone 
+   unchecked: many games have been played to ensure that the Cpu is a reasonable,
+   semi-formidable opponent. Furthermore, the more objective aspects of these
+   modules, such as computing the largest possible score increase given a board,
+   are included and tested in the suite and done via black-box testing.
+
+   Display and much of Support fail to make an appearance in the test suite for
+   the same general reason: they are too graphics-centered. The only way to 
+   ensure that Display––whose main purpose is to present the board to the user––
+   is functioning properly is to play a game. Furthermore, the Support module
+   deals largely with presenting suggestions and supplemental information via
+   the terminal and so simarly cannot be adequately tested. Many functions
+   within Support are routed through Display (as to be able to highlight squares
+   on the board); therefore, these functions fall under the same rationale used
+   to justify the lack of Display's tests, and likewise are not included here.
+   There are, however, a few exceptions within Support that are seen in the
+   test suite constructed by black-box testing, but they do not represent 
+   coverage of the entire module's capabilities.
+
+   FileHandler is unable to be extensively tested here due to the fact that much
+   of its responsibilities deal more so with file I/O than chess. It is 
+   impossible to test that a complicated savefile is valid without 
+   hard-coding the predicted result; this is tedious and, at a certain point, is
+   counter-productive. Furthermore, a loaded game's viability is already 
+   implicitly tested here: none of the tests using loaded games from savefiles
+   would pass if the FileHandler was  reading the saves improperly. Trivial
+   example are present, however, and are tested via black-box testing.
+
+   Finally, Game and Tournament are unable to be included within the test suite 
+   for a couple of reasons. First, it is extremely difficult to simulate an 
+   entire chess game within a single test since at least one human player is 
+   required. Second, there is not information that the tournament manages that 
+   is not already visable to the user while playing the game: at the beginning 
+   of  the tournament, after each game, and at the very end all of the 
+   statistics are displayed. This fact allows one to verify the correctness 
+   of the tournament by play-testing rather than coding tests here with OUnit.
+   The same logic applies to a Game instance: the winner can be validated by
+   the winning string presented at the end, and draws are manually initiated.
+
+   In summary, what could objectively be tested using OUnit makes an 
+   appearance in this test suite. Anything that either was too subjective or
+   simply unable to be encoded in OUnit tests were omitted; however, these
+   features were validated by hand via play-testing. Therefore, all elements
+   of the application have been reviewed and are up to our standards.
+*)
 
 (* BOARDS USED FOR TESTING *)
 
