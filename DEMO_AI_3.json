@@ -1,0 +1,270 @@
+{
+  "current player": "white",
+  "board": [
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "king",
+      "col": "white",
+      "has_moved": true,
+      "points": 100
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "rook",
+      "col": "black",
+      "has_moved": true,
+      "points": 5
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "pawn",
+      "col": "white",
+      "has_moved": false,
+      "points": 1
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "has_moved": true,
+      "points": 9
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "king",
+      "col": "black",
+      "has_moved": false,
+      "points": 100
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    },
+    {
+      "p_type": "none"
+    }
+  ],
+  "log": [
+    {
+      "p_type": "rook",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 8,
+      "ending char": "A",
+      "ending int": 6,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "D",
+      "starting int": 1,
+      "ending char": "A",
+      "ending int": 3,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 3,
+      "ending char": "A",
+      "ending int": 4,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "queen",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 4,
+      "ending char": "B",
+      "ending int": 3,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "king",
+      "col": "white",
+      "starting char": "E",
+      "starting int": 1,
+      "ending char": "A",
+      "ending int": 1,
+      "captured piece": "none"
+    },
+    {
+      "p_type": "king",
+      "col": "white",
+      "starting char": "A",
+      "starting int": 1,
+      "ending char": "A",
+      "ending int": 2,
+      "captured piece": "none"
+    }
+  ],
+  "white captured": [],
+  "black captured": []
+}

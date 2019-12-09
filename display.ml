@@ -70,7 +70,8 @@ let print_rank r b =
     | None -> ANSITerminal.print_string [bg] "   "
     | Some p -> begin
         let s = get_rep p.col p.p_type in
-        let chck_cnd = (Logic.king_in_check b) in
+        let chck_cnd = 
+          (Logic.king_in_check b) && (p.col = Board.get_current_player b) in
         let s' = (" "^s^" ") in
         match p.p_type with 
         | Board.King when chck_cnd -> begin
@@ -177,7 +178,8 @@ let print_rank_highlighted r b locs =
               else get_background r f ) in
     match (Board.get_piece_at b (char_of_int (64 + f)) r) with
     | None -> ANSITerminal.print_string [bg] "   "
-    | Some {p_type=Board.King;col=c} when (Logic.king_in_check b) -> 
+    | Some {p_type=Board.King;col=c} when 
+        (Logic.king_in_check b) && (c = Board.get_current_player b) -> 
       let s = get_rep c Board.King in
       ANSITerminal.print_string [(get_foreground c); on_red] (" "^s^" ") 
     | Some p -> begin

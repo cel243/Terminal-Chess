@@ -203,7 +203,8 @@ let capture_piece state col piece =
 let get_captured_pieces state = function 
   | White -> state.white_captured
   | Black -> state.black_captured
-
+(** [get_score_tr sum pieces] is the sum of all the values of the pieces
+    in [pieces] multiplied by the number each is mapped to.  *)
 let rec get_score_tr sum = function
   | [] -> sum
   | (p, q) :: a -> begin
