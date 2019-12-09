@@ -77,18 +77,23 @@ let get_player_with_color (_, _, c, _, _, _) col =
   if c = col then PlayerTwo
   else PlayerOne
 
+(** [update_result t res] adjusts the players' score(s) according to the
+    result [res] and advances the tournamnet forward one game by
+    switching player colors and incrementing the completed game count. *)
+let update_result ((p, n, c, one, two, opp) as t) res =
+  let addition = to_score res in 
+  match res with
+  | Game.Draw -> (p, n+1, opp_col c, one +. addition, two +. addition, opp)
+  | Game.Win v -> begin
+      match (get_player_with_color t v) with
+      | PlayerOne ->  (p, n+1, opp_col c, one +. addition, two, opp)
+      | PlayerTwo -> (p, n+1, opp_col c, one, two +. addition, opp)
+    end
+
 let update ((p, n, c, one, two, opp) as t) outcome = 
   match outcome with
   | None -> t
-  | Some res ->
-    let addition = to_score res in 
-    match res with
-    | Game.Draw -> (p, n+1, opp_col c, one +. addition, two +. addition, opp)
-    | Game.Win v -> begin
-        match (get_player_with_color t v) with
-        | PlayerOne ->  (p, n+1, opp_col c, one +. addition, two, opp)
-        | PlayerTwo -> (p, n+1, opp_col c, one, two +. addition, opp)
-      end
+  | Some res -> update_result t res
 
 (** [col_to_string c] is "White" is [c] is [White] and is "Black" if [c] is 
     [Black]. *)
@@ -102,33 +107,36 @@ let get_new_player_color (_, _, c, _, _, _)  = function
 
 let display_tourny (p, n, c, one, two, opp) = 
   print_string "\n---TOURNAMENT RESULTS THUS FAR---";
-  print_string ("\nGames played: " ^ (string_of_int n) ^ " of " ^ (string_of_int p));
+  print_string ("\nGames played: " ^ (string_of_int n) 
+                ^ " of " ^ (string_of_int p));
   print_string ("\nPlayer One's Score: " ^ (string_of_float one));
-  (
-    match opp with
-    | Game.Human -> 
-      print_string ("\nPlayer Two's Score: " ^ (string_of_float two))
-    | Game.CPU -> print_string ("\nCPU's Score: " ^ (string_of_float two))
-  );
-  print_string "\n---------------------------------";
+  (match opp with
+   | Game.Human -> begin
+       print_string ("\nPlayer Two's Score: " ^ (string_of_float two));
+     end
+   | Game.CPU -> begin
+       print_string ("\nCPU's Score: " ^ (string_of_float two));
+       print_string ("\n---------------------------------");
+     end);
   ()
 
 let display_game ((_, n, _, _, _, opp) as t) = 
   print_string ("\nNow starting: Game " ^ (string_of_int (n + 1)));
-  print_string ("\nPlayer One's Color: " ^ (col_to_string (get_new_player_color t PlayerOne)));
-  (
-    match opp with
-    | Game.Human -> 
+  print_string ("\nPlayer One's Color: " ^ 
+                (col_to_string (get_new_player_color t PlayerOne)));
+  match opp with
+  | Game.Human -> begin
       print_string 
         ("\nPlayer Two's Color: " ^ 
          (col_to_string (get_new_player_color t PlayerTwo)));
-    | Game.CPU -> 
+    end
+  | Game.CPU -> begin 
       print_string 
         ("\nCPU's Color: " ^ 
          (col_to_string (get_new_player_color t PlayerTwo)));
-  );
-  print_string "\n---------------------------------\n";
-  ()
+      print_string "\n---------------------------------\n";
+      ()
+    end
 
 let display_final t = 
   display_tourny t;
