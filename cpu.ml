@@ -1,6 +1,3 @@
-(** Cpu hosts all necessary functions for the computer to play intelligent 
-    chess moves and theorize about possible chess moves. *)
-
 (** [depth_cpu] is how many moves ahead the cpu looks *)
 let depth_cpu = 3
 

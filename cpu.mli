@@ -1,3 +1,6 @@
+(** Cpu hosts all necessary functions for the computer to play intelligent 
+    chess moves and theorize about possible chess moves. *)
+
 (** [create_board brd c1 i1 c2 i2] is the fake board where the hypothetical 
     move [c1,i1] to [c2,i2] was made *)
 val create_board : Board.t -> char -> int -> char -> int -> Board.t
