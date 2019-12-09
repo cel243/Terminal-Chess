@@ -131,6 +131,9 @@
       "p_type": "none"
     },
     {
+      "p_type": "none"
+    },
+    {
       "p_type": "king",
       "col": "black",
       "has_moved": false,
