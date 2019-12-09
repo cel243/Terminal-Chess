@@ -15,7 +15,6 @@ let get_rep col p = match col, p with
   | Board.Black, Board.Queen -> "\u{265B}"
   | Board.Black, Board.King -> "\u{265A}"
 
-(** [get_rep_long p] is the full string representation of the piece type [p]. *)
 let get_rep_long = function
   | Board.Pawn -> "Pawn"
   | Board.Rook -> "Rook"
@@ -24,8 +23,6 @@ let get_rep_long = function
   | Board.Queen -> "Queen"
   | Board.King -> "King"
 
-(** [get_input ()] is the next line inputted by the user to stdin, or 
-    exits the application if it encounters an EOF (i.e., CTRL-D). *)
 let get_input () = 
   match (read_line ()) with
   | exception End_of_file -> begin
@@ -36,15 +33,18 @@ let get_input () =
 (** [get_background r f] is [ASNITerminal.on_blue] if either the file [f]
     or rank [r] is even, but not both; otherwise, is [ANSITerminal.on_cyan]. *)
 let get_background r f = 
-  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) then
+  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) 
+  then
     ANSITerminal.on_blue
   else
     ANSITerminal.on_cyan
 
-(** [get_highlighted_background r f] is [ASNITerminal.on_yellow] if either the file [f]
-    or rank [r] is even, but not both; otherwise, is [ANSITerminal.on_red]. *)
+(** [get_highlighted_background r f] is [ASNITerminal.on_yellow] if either the
+    file [f] or rank [r] is even, but not both; otherwise, is 
+    [ANSITerminal.on_red]. *)
 let get_highlighted_background r f = 
-  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) then
+  if (f mod 2 = 0 && not (r mod 2 = 0)) || (not (f mod 2 = 0) && (r mod 2 = 0)) 
+  then
     ANSITerminal.on_red
   else
     ANSITerminal.on_yellow
@@ -81,13 +81,8 @@ let print_rank r b =
           end
       end
   done;
-  ANSITerminal.print_string [default] "\n";
-  ()
+  ANSITerminal.print_string [default] "\n"; ()
 
-(** [print_board b] displays to the console all of the pieces on board [b]
-    with a checkered background. Rows are preceded by corresponding numbers
-    and columns have the representative letter (one of A though H) displayed
-    beneath them. *)
 let print_board b =
   ANSITerminal.print_string [default] "\n";
   for r = 8 downto 1 do
@@ -96,17 +91,31 @@ let print_board b =
   ANSITerminal.print_string [white; on_black] "    A  B  C  D  E  F  G  H ";
   ANSITerminal.print_string [default] "\n"
 
-(** [get_color_str c] is "Black" if [c] is [Board.Black], and is "White"
-    if [c] is [Board.White] *)
 let get_color_str = function
   | Board.Black -> "Black"
   | Board.White -> "White"
 
-(** [get_opp_color_str c] is "Black" if [c] is [Board.White], and is "White"
-    if [c] is [Board.Black] *)
 let get_opp_color_str = function
   | Board.White -> "Black"
   | Board.Black -> "White"
+
+(** [construct_start_str (p,col,c,i) k] is "(k) [col'] p' at (c,i)", where
+    col' is the string representation of the color [col] and p' is the long
+    string representation of the piece type [p]. 
+
+    Requires:
+    [p] is a value of Board.piece
+    [col] is a value of Board.color 
+    [c] is a character
+    [i] and [k] are integers 
+*)
+let construct_start_str (p,col,c,i) k = 
+  let cstr = get_color_str col in
+  let rep = get_rep_long p in
+  let is = string_of_int i in
+  let cs = Char.escaped c in
+  let ks = string_of_int k in 
+  "("^ks^") ["^cstr^"] "^rep^" at ("^cs^","^is^")"
 
 (** [construct_move_str i m] creates a string representative of the move [m].
     The move's string always starts with: (i) [<player color>] at (<origin>)
@@ -123,47 +132,36 @@ let get_opp_color_str = function
     =======================|====================================================
 *)
 let construct_move_str i = function
-  | ((p1,col,c1,i1), (c2, i2), None) -> begin
-      let cstr = get_color_str col in
-      let rep = get_rep_long p1 in
-      let i1s = string_of_int i1 in
-      let i2s = string_of_int i2 in
-      let c1s = Char.escaped c1 in
-      let c2s = Char.escaped c2 in
-      let is = string_of_int i in 
-      "("^is^") ["^cstr^"] "^rep^" at ("^c1s^","^i1s
-      ^") TO ("^c2s^","^i2s^")"
-    end
-  | ((p1,col,c1,i1), (c2, i2), Some (p2, c3, i3)) -> begin
-      let cstr = get_color_str col in
-      let cstr2 = get_opp_color_str col in
-      let rep1 = get_rep_long p1 in
-      let rep2 = get_rep_long p2 in
-      let i1s = string_of_int i1 in
-      let i2s = string_of_int i2 in
-      let i3s = string_of_int i3 in
-      let c1s = Char.escaped c1 in
-      let c2s = Char.escaped c2 in
-      let c3s = Char.escaped c3 in
-      let is = string_of_int i in
-      if i2 = i3
-      then ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") CAPTURES "^
-            "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")")
-      else ("("^is^") ["^cstr^"] "^rep1^" at ("^c1s^","^i1s^") TO ("
-            ^c2s^","^i2s^")"^" AND CAPTURES "^
-            "["^cstr2^"] "^rep2^" at ("^c3s^","^i3s^") BY EN PASSANT")
-    end
+  | (s, (c2, i2), None) ->
+    let start = construct_start_str s i in
+    let i2s = string_of_int i2 in
+    let c2s = Char.escaped c2 in 
+    start^" TO ("^c2s^","^i2s^")"
+  | (((_,col,_,_) as s, (c2, i2), Some (p2, c3, i3))) ->
+    let start = construct_start_str s i in
+    let cstr2 = get_opp_color_str col in
+    let rep2 = get_rep_long p2 in
+    let i2s = string_of_int i2 in
+    let i3s = string_of_int i3 in
+    let c2s = Char.escaped c2 in
+    let c3s = Char.escaped c3 in
+    if i2 = i3 then (start^" CAPTURES "^
+                     "["^cstr2^"] "^rep2^" at ("^c2s^","^i2s^")")
+    else (start^" TO ("
+          ^c2s^","^i2s^")"^" AND CAPTURES "^
+          "["^cstr2^"] "^rep2^" at ("^c3s^","^i3s^") BY EN PASSANT")
 
-let print_move i m = 
+let print_move i m b = 
   let s = construct_move_str i m in
-  ANSITerminal.print_string [default] ("Last Move: "^s^"\n")
+  let s' = if b then "Last Move: "^s else s in
+  ANSITerminal.print_string [default] (s'^"\n")
 
 let print_log b = 
   ANSITerminal.print_string [default] "Move Log:\n";
   let rec print_all_moves i = function
     | [] -> ANSITerminal.print_string [default] "\n"
     | h :: t -> 
-      print_move i h;
+      print_move i h false;
       print_all_moves (i+1) t
   in 
   print_all_moves 0 (List.rev (Board.get_moves b));
@@ -213,9 +211,6 @@ let p_support_display (locs, b, hyp, b') =
     print_highlighted_brd b locs 
   )
 
-
-
-
 let help_menu () = 
   ANSITerminal.print_string [green] (
     "\n-----------HELP MENU----------\n"
@@ -236,6 +231,16 @@ let help_menu () =
     ^"_____ IF CN to C'N' --> the same command, but executed in "
     ^"a world where the move CN to C'N' has occured.\n")
 
+(** [print_piece_list lst] prints each piece's long representation string
+    separated by a colon and followed by the quantity (integer) associated with 
+    that entry.
+
+    For example, the list [(Pawn, 2); (Bishop, 1)] is printed as:
+    Pawn: 2
+    Bishop: 1
+
+    Requires: [lst] is a list of pairs of Board.piece and int. 
+*)
 let rec print_piece_list = function 
   | [] -> () 
   | (p, n)::t -> 
@@ -243,6 +248,12 @@ let rec print_piece_list = function
       ((get_rep_long p)^": "^(string_of_int n)^"\n"); 
     print_piece_list t
 
+(** [print_captured_piece brd col] prints all the types and quantity of each
+    of pieces taken by the player with color [col] given the game represented
+    by [brd]. 
+    Requires: [brd] is a list of Board.piece * int entries
+              [col] is a value of Board.color
+*)
 let print_captured_pieces brd = function 
   | Board.White -> 
     ANSITerminal.print_string 
@@ -253,6 +264,12 @@ let print_captured_pieces brd = function
       [red] "\nBLACK'S CAPTURED PIECES: \n"; 
     print_piece_list (Board.get_captured_pieces brd Black) 
 
+(** [capture_message brd c1 i1 c2 i2] prints either:
+    "Pawn takes Pawn by En Passant!" if the piece at [c1, i1] on [brd] is
+    capable of taking a Pawn at [c2, i2] on the same [brd]; or,
+    "<attacker piece type> takes <victim piece type>!" if there are pieces
+    at [c1, i1] and [c2, i2] on the [brd].
+*)
 let capture_message brd c1 i1 c2 i2 = 
   match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
   | _, None -> 

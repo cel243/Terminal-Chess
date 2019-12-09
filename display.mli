@@ -2,9 +2,10 @@
     so that players can easily understand what the current state of the game 
     looks like. *)
 
-(** [print_board b] prints all of the pieces in board [b] on a checkered
-    background and with pieces color-coded by player. Files are indicated by
-    lettering along the bottom; ranks by numbers along the side. *)
+(** [print_board b] displays to the console all of the pieces on board [b]
+    with a checkered background. Rows are preceded by corresponding numbers
+    and columns have the representative letter (one of A through H) displayed
+    beneath them. *)
 val print_board : Board.t -> unit 
 
 (** [p_support_display (locs, b, hyp, b')] does one of two things. 
@@ -22,17 +23,19 @@ val help_menu : unit -> unit
     has captured.  *)
 val print_captured_pieces : Board.t -> Board.color -> unit 
 
-(** [get_rep_long ptype] is the string representation of [ptype] *)
+(** [get_rep_long p] is the full string representation of the piece type [p]. *)
 val get_rep_long : Board.piece -> string 
 
-(** [get_color_str col] is the string representation of [col] *)
+(** [get_color_str c] is "Black" if [c] is [Board.Black], and is "White"
+    if [c] is [Board.White] *)
 val get_color_str : Board.color -> string 
 
-(** [get_opp_color_str col] is the string representation of opposite [col] *)
+(** [get_opp_color_str c] is "Black" if [c] is [Board.White], and is "White"
+    if [c] is [Board.Black] *)
 val get_opp_color_str : Board.color -> string 
 
 (** [capture_message brd c1 i1 c2 i2] prints a message detailing which
-    piece has been captured by the prvious move, if any.  
+    piece has been captured by the previous move, if any.  
     Requires: [c1,i1] to [c2,i2] is a legal move *)
 val capture_message : Board.t -> char -> int -> char -> int -> unit
 
@@ -45,11 +48,28 @@ val capture_message : Board.t -> char -> int -> char -> int -> unit
     Moves that saw a piece (c,i) move to an empty square (c',i') are shown as:
     "(k) [col] p at (c,i) TO (c',i')"
     Moves that saw a piece (c,i) take a piece (c',i') are shown as: 
-    "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" *)
+    "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" 
+    Moves that saw a piece (c,i) take a piece (c',i') by en passant are shown:
+    "(k) [col] p at (c,i) CAPTURES [col'] p' at (c',i') BY EN PASSANT" 
+*)
 val print_log : Board.t -> unit
 
+(** [get_input ()] is the next line inputted by the user to stdin, or 
+    exits the application if it encounters an EOF (i.e., CTRL-D). *)
 val get_input : unit -> string
 
+(** [print_move i ((p,col,c,i), (c',i'), (p',c'',i'') option) b] prints the 
+    given move for turn [i]. If [b] is [true], then "Last Move: " is prepended
+    to whatever output is determined. The format of the displayed string is 
+    the exact same for moves printed via [print_log], and are as follows:
+    Let col' be the string representation of the enemy's piece.
+    Moves that saw a piece (c,i) move to an empty square (c',i') are shown as:
+    "(i) [col] p at (c,i) TO (c',i')"
+    Moves that saw a piece (c,i) take a piece (c',i') are shown as: 
+    "(i) [col] p at (c,i) CAPTURES [col'] p' at (c',i')" 
+    Moves that saw a piece (c,i) take a piece (c',i') by en passant are shown:
+    "(i) [col] p at (c,i) CAPTURES [col'] p' at (c'',i'') BY EN PASSANT" 
+*)
 val print_move : int -> 
   ((Board.piece * Board.color * char * int) * (char * int) 
-   * ((Board.piece * char * int) option)) -> unit
+   * ((Board.piece * char * int) option)) -> bool -> unit

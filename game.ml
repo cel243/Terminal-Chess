@@ -142,7 +142,7 @@ let print_move = function
 let rec play_board b oppt person = 
   (match (Board.get_last_move b) with
    | None -> ()
-   | Some m -> Display.print_move (Board.get_move_cnt b) m);
+   | Some m -> Display.print_move ((Board.get_move_cnt b) - 1) m true);
   let curr = (Board.get_current_player b) in
   curr |> print_move;
   let move =
