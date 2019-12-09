@@ -60,7 +60,8 @@ let get_foreground (c : Board.color) =
 (** [print_rank r b] prints the rank (row) [r] given the pieces in board [b].
     The printed row is preceded by its number on a black background and is
     fololowed by a new line. Pieces are displayed via [get_rep] and empty
-    squares are shown as spaces. *)
+    squares are shown as spaces. The King square is highlighted
+    in red if the king is in check. *)
 let print_rank r b =
   ANSITerminal.print_string [white; on_black] (" "^(string_of_int r)^" ");
   for f = 1 to 8 do
@@ -69,8 +70,7 @@ let print_rank r b =
     | None -> ANSITerminal.print_string [bg] "   "
     | Some p -> begin
         let s = get_rep p.col p.p_type in
-        let chck_cnd = (Logic.king_in_check b) && 
-                       (p.col = Board.get_current_player b) in
+        let chck_cnd = (Logic.king_in_check b) in
         let s' = (" "^s^" ") in
         match p.p_type with 
         | Board.King when chck_cnd -> begin
@@ -99,15 +99,9 @@ let get_opp_color_str = function
   | Board.White -> "Black"
   | Board.Black -> "White"
 
-(** [construct_start_str (p,col,c,i) k] is "(k) [col'] p' at (c,i)", where
+(** [construct_start_str (p,col,c,i) k] is ["(k) [col'] p' at (c,i)"], where
     col' is the string representation of the color [col] and p' is the long
     string representation of the piece type [p]. 
-
-    Requires:
-    [p] is a value of Board.piece
-    [col] is a value of Board.color 
-    [c] is a character
-    [i] and [k] are integers 
 *)
 let construct_start_str (p,col,c,i) k = 
   let cstr = get_color_str col in
@@ -167,12 +161,13 @@ let print_log b =
   print_all_moves 0 (List.rev (Board.get_moves b));
   print_board b
 
-(** [print_rank_highlighted r b locs col] 
+(** [print_rank_highlighted r b locs] 
     prints the rank (row) [r] given the pieces in board [b].
     The printed row is preceded by its number on a black background and is
     fololowed by a new line. Pieces are displayed via [get_rep] and empty
     squares are shown as spaces. The backgrounds of locations in 
-    [locs] are highlighted with [col]. *)
+    [locs] are highlighted in either yellow or red. The King square
+    is highlighted if the king is in check. *)
 let print_rank_highlighted r b locs =
   ANSITerminal.print_string [white; on_black] (" "^(string_of_int r)^" ");
   for f = 1 to 8 do
@@ -182,6 +177,9 @@ let print_rank_highlighted r b locs =
               else get_background r f ) in
     match (Board.get_piece_at b (char_of_int (64 + f)) r) with
     | None -> ANSITerminal.print_string [bg] "   "
+    | Some {p_type=Board.King;col=c} when (Logic.king_in_check b) -> 
+      let s = get_rep c Board.King in
+      ANSITerminal.print_string [(get_foreground c); on_red] (" "^s^" ") 
     | Some p -> begin
         let s = get_rep p.col p.p_type in
         ANSITerminal.print_string [(get_foreground p.col); bg] (" "^s^" ")
@@ -234,12 +232,9 @@ let help_menu () =
 (** [print_piece_list lst] prints each piece's long representation string
     separated by a colon and followed by the quantity (integer) associated with 
     that entry.
-
     For example, the list [(Pawn, 2); (Bishop, 1)] is printed as:
     Pawn: 2
     Bishop: 1
-
-    Requires: [lst] is a list of pairs of Board.piece and int. 
 *)
 let rec print_piece_list = function 
   | [] -> () 
@@ -251,8 +246,6 @@ let rec print_piece_list = function
 (** [print_captured_piece brd col] prints all the types and quantity of each
     of pieces taken by the player with color [col] given the game represented
     by [brd]. 
-    Requires: [brd] is a list of Board.piece * int entries
-              [col] is a value of Board.color
 *)
 let print_captured_pieces brd = function 
   | Board.White -> 

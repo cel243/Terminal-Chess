@@ -5,7 +5,7 @@ let is_valid_location c i =
   (let n = int_of_char c in (n >= 65 && n <= 72)) && (i >= 1 && i <= 8) 
 
 (** [is_curr_players b c i] is true if there is a piece at the location (c,i) 
-    and if that piece's color is equal to the color of the current player. If
+    and that piece's color is equal to the color of the current player. If
     there is no piece at that location, it is false. 
     Requires: (c,i) is a valid location. *)
 let is_curr_players brd c i = 
@@ -13,15 +13,17 @@ let is_curr_players brd c i =
   | None -> false
   | Some {col} -> col = (Board.get_current_player brd)
 
+(** [step curr dest] is the next value of [curr] in a stepwise
+    sweep towards [dest]. *)
 let step curr dest = 
   if curr < dest then curr + 1
   else if curr > dest then curr - 1
   else curr 
 
 (** [stepwise brd curr_c curr_i dest_c dest_i] is [true] if 
-    there is a chess piece in the chess piece's path from its current
-    location to its target destination, not including the target 
-    destination. *)
+    there is a chess piece in the path from [curr_c, curr_i]
+    to [dest_c, dest_i], not including the target destination but 
+    including the current destination. *)
 let rec stepwise brd curr_c curr_i dest_c dest_i = 
   if curr_c = dest_c && curr_i = dest_i then false 
   else 
@@ -31,12 +33,12 @@ let rec stepwise brd curr_c curr_i dest_c dest_i =
     | _ -> true 
 
 (** [is_blocked brd c1 i1 c2 i2] is [true] if there is a chess piece in
-    between where this piece currently is (c1, i1) and where it is
-    trying to move (c2, i2), not including the start and end locations. 
-    Otherwise it is [false]. If the piece at (c1, i1) is a knight, then 
+    between where this piece currently is [(c1, i1)] and where it is
+    trying to move [(c2, i2)], not including the start and end locations. 
+    Otherwise it is [false]. If the piece at [(c1, i1)] is a knight, then 
     [is_blocked] is always [false]. 
-    Requires: there is a piece of the appropriate color at (c1, i1), and 
-    neither (c1, i1) nor (c2, i2) is out of bounds.  *)
+    Requires: there is a piece of the appropriate color at [(c1, i1)], and 
+    neither [(c1, i1)] nor [(c2, i2)] is out of bounds.  *)
 let is_blocked brd st_c st_i dest_c dest_i = 
   match Board.get_piece_at brd st_c st_i with 
   | None -> failwith "precondition violated in is_blocked" 
@@ -48,7 +50,7 @@ let is_blocked brd st_c st_i dest_c dest_i =
 (** [check_opp_attacks brd op_ls king_c king_i] is [true] if any of 
     the opposing player's pieces have the ability to take the current
     player's king in this current board state, and [false] 
-    otherwise  *)
+    otherwise, where the king is located at [king_c, king_i] on [brd].  *)
 let rec check_opp_attacks brd op_ls king_c king_i = 
   match op_ls with 
   | [] -> false 
@@ -91,7 +93,7 @@ and king_loc brd =
   ) in 
   match k_ls with 
   | [(k, c, i)] -> (c,i) 
-  | _ -> failwith "there is always a king on the board : logic" 
+  | _ -> failwith "this is not a valid board b/c there is no king : logic" 
 
 (** [king_in_check brd c1 i1 c2 i2] is [true] if the current 
     player's king is in check, and [false] otherwise.  *)
@@ -123,38 +125,42 @@ and legal_for_pawn piece char_m c1 i1 c2 i2 brd =
 
 (** [legal_castle c1 i1 c2 i2 brd] is [true] if this King, 
     [piece], can legally castle from [c1,i1] to [c2,i2] given the rules of 
-    castling. *)
+    castling. 
+    Requires: the piece at [c1,i1] is a king. *)
 and legal_castle c1 i1 c2 i2 brd =
-  let check1, check2, check3 = (
+  let check2, check3 = (
     if (c2 = 'G')
-    then 'E', 'F', 'G'
-    else 'E', 'D', 'C') in
+    then  'F', 'G'
+    else  'D', 'C') in
   let temp1 = Board.copy_board brd in 
   let temp2 = Board.copy_board brd in 
   let temp3 = Board.copy_board brd in 
   Board.move_piece temp2 c1 i1 check2 i2;
   Board.move_piece temp3 c1 i1 check3 i2;
-  (not((king_in_check temp1)||(king_in_check temp2)||(king_in_check temp3)))
+  ( not((king_in_check temp1)||(king_in_check temp2)||(king_in_check temp3)) )
+  && (Board.get_piece_at brd check2 i1) = None 
+  && (Board.get_piece_at brd check3 i1) = None
+  && (
+    let c3 = ( if (c2 = 'G') then 'H' else 'A') in
+    match Board.get_piece_at brd c3 i1 with
+    | Some {p_type=Board.Rook; has_moved=false} -> true
+    | _ -> false 
+  )
 
-(** [legal_for_pawn c1 i1 c2 i2 char_m int_m brd piece] is [true] if this King, 
-    [piece], can legally move from [c1,i1] to [c2,i2] given the rules of 
-    kings. *)
-and legal_for_king c1 i1 c2 i2 char_m int_m brd piece =
+(** [legal_for_king c1 i1 c2 i2 char_m int_m brd king] is [true] if [king] 
+    can legally move from [c1,i1] to [c2,i2] given the rules of 
+    kings. 
+    Requires: [king] is a king. *)
+and legal_for_king c1 i1 c2 i2 char_m int_m brd king =
   (char_m < 2) && (int_m < 2) || 
-  ((char_m = 2) && 
-   (int_m = 0) && 
-   (piece.Board.has_moved = false) &&
-   (legal_castle c1 i1 c2 i2 brd) &&
-   let c3 = (
-     if (c2 = 'G')
-     then 'H'
-     else 'A') in
-   match Board.get_piece_at brd c3 i1 with
-   | None -> false
-   | Some rook -> ((rook.Board.p_type = Rook) &&
-                   (rook.Board.has_moved = false)))
+  (
+    (char_m = 2) && 
+    (int_m = 0) && 
+    (king.Board.has_moved = false) &&
+    (legal_castle c1 i1 c2 i2 brd)
+  )
 
-(** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1] [i1] can
+(** [legal_for_piece c1 i1 c2 i2 brd] is [true] if game_piece at [c1,i1] can
     legally move from [c1,i1] to [c2,i2] given the rules of the type 
     of said piece 
     Requires: there is a piece at [c1,i1] *)
@@ -187,7 +193,6 @@ let leaves_king_in_check brd c1 i1 c2 i2 =
   king_in_check temp 
 
 let is_legal brd c1 i1 c2 i2 =  
-  (* all legality tests go here! *)
   if (not (is_valid_location c1 i1)) || (not (is_valid_location c2 i2)) then 
     (false, "You're attempting to access an out of bounds location!")
   else if not (is_curr_players brd c1 i1) then 
@@ -197,8 +202,7 @@ let is_legal brd c1 i1 c2 i2 =
   else if (is_blocked brd c1 i1 c2 i2) then (false, "This piece is blocked!")
   else if not (legal_for_piece c1 i1 c2 i2 brd) 
   then (false, "This piece can't move like that!") 
-  else if 
-    leaves_king_in_check brd c1 i1 c2 i2 
+  else if leaves_king_in_check brd c1 i1 c2 i2 
   then (false, "You can't leave your king in check!")
   else (true, "") 
 
@@ -211,9 +215,6 @@ let rec check_rows c ints piece brd =
   | i::t ->  
     let (p,cp,ip) = piece in 
     let (b, _) = is_legal brd cp ip c i in
-    (* if legal_for_piece cp ip c i brd 
-       && not (is_blocked brd cp ip c i)
-       && not (leaves_king_in_check brd cp ip c i) *)
     if b
     then false  
     else check_rows c t piece brd 
@@ -234,8 +235,8 @@ let this_piece_cant_move piece brd =
   let ints =  [1;2;3;4;5;6;7;8] in 
   check_cols chars ints piece brd
 
-(** [pieces_cant_move pieces brd] is true if the current
-    player's pieces cannot move in any legal way. False otherwise.  *)
+(** [pieces_cant_move pieces brd] is true if the pieces listed in 
+    [pieces] cannot move in any legal way. False otherwise.  *)
 let rec pieces_cant_move pieces brd = 
   match pieces with 
   | [] -> true 
@@ -254,14 +255,14 @@ let cant_move brd =
 (** [stalemate brd] is true if the current state of the board
     leaves the non-current player unable to move any pieces, but this 
     is not a checkmate. 
-    Requires: the non-current player's king is not in check *)
+    Requires: the opposite player's king is not in check *)
 let stalemate brd = 
   let temp = Board.copy_board brd in 
   let () = Board.next_player temp in 
   cant_move temp 
 
 (** [checkmate brd] is true if the current state of the board leaves
-    the non-current player's king in check. *)
+    the opposite player's king in checkmate. *)
 let checkmate brd = 
   let temp = Board.copy_board brd in 
   let () = Board.next_player temp in 
@@ -280,16 +281,16 @@ let check_for_castle brd c1 i1 c2 i2 =
                    then 'A','D'
                    else 'B', 'B') in
   if (cr1 = cr2) then ()
-  else let king = (match Board.get_piece_at brd c1 i1 with
-      | None -> false
-      | Some {p_type = p; col = c; has_moved = h} -> 
-        ((p = King) && (h = false) && 
-         (((c = White) && (i1 = 1)) || 
-          ((c = Black) && (i1 = 8)) ))) in
+  else 
+    let king = (
+      match Board.get_piece_at brd c1 i1 with
+      | Some {p_type = Board.King; col = c; has_moved = false} -> 
+        ((c = White) && (i1 = 1)) || 
+        ((c = Black) && (i1 = 8)) 
+      | _ -> false ) in 
     let rook = (match Board.get_piece_at brd cr1 i1 with
-        | None -> false
-        | Some {p_type = p; col = c; has_moved = h} -> 
-          ((p = Rook) && (h = false))) in
+        | Some {p_type = Board.Rook; has_moved = false} -> true
+        | _ -> false ) in
     if (king && rook)
     then (Board.move_piece brd cr1 i1 cr2 i2)
     else ()
@@ -315,29 +316,37 @@ let check_for_en_passant brd c1 i1 c2 i2 =
     target destination of this move, if such a piece exists *)
 let capture brd col i1 c2 i2 = 
   match Board.get_piece_at brd c2 i2 with 
-  | None -> if en_passant i1 c2 brd then  
-      Board.capture_piece brd col Pawn
+  | None -> 
+    if en_passant i1 c2 brd then Board.capture_piece brd col Pawn
     else ()
   | Some {p_type=p2} -> 
     Board.capture_piece brd col p2
+
+(** [handle_move brd (c1,i1,c2,i2)] is [Checkmate] if the move results in
+    a checkmate, [Stalemate] if the move results in a stalemate, otherwise
+    [Legal] is the move from [c1,i1] to [c2,i2] is legal, and [Illegal str] 
+    if it is not legal, where [str] is a description of 
+    why the move is illegal. [handle_move] also carries out actually
+    moving the pieces where they need to go given the move command.   *)
+let handle_move brd (c1,i1,c2,i2) = 
+  match is_legal brd c1 i1 c2 i2 with 
+  | true, _ -> 
+    capture brd (Board.get_current_player brd) i1 c2 i2;
+    (if (check_for_en_passant brd c1 i1 c2 i2)
+     then (Board.move_piece_en_passant brd c1 i1 c2 i2 c2 i1)
+     else begin
+       (check_for_castle brd c1 i1 c2 i2); 
+       (Board.move_piece brd c1 i1 c2 i2); end);
+    if checkmate brd then Checkmate 
+    else if stalemate brd then Stalemate  
+    else Legal 
+  | false, str -> 
+    Illegal str
 
 let process brd cmmd = 
   if (List.length (Board.get_moves brd)) > 159
   then Draw
   else
     match cmmd with 
-    | Command.Move (c1,i1,c2,i2) -> begin 
-        match is_legal brd c1 i1 c2 i2 with 
-        | true, _ -> 
-          capture brd (Board.get_current_player brd) i1 c2 i2;
-          (if (check_for_en_passant brd c1 i1 c2 i2)
-           then begin (Board.move_piece_en_passant brd c1 i1 c2 i2 c2 i1); end
-           else begin
-             (check_for_castle brd c1 i1 c2 i2); 
-             (Board.move_piece brd c1 i1 c2 i2); end);
-          if checkmate brd then Checkmate 
-          else if stalemate brd then Stalemate  
-          else Legal 
-        | false, str -> 
-          Illegal str end
+    | Command.Move (c1,i1,c2,i2) -> handle_move brd (c1,i1,c2,i2)
     | _ -> failwith "process is always called with a move command : logic"

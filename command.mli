@@ -1,4 +1,4 @@
-(** This module parses player commands in the chess game *)
+(** Command parses player commands in the chess game *)
 
 (** the type of two locations on the chess board, where the columns
     are labeled A..H from left to right, and the rows are labelled 
@@ -11,16 +11,16 @@ type locations = char * int * char * int
 (** the type of player commands asking for specific support 
     operations.  *)
 type request = 
-  | LegalMoves of char * int 
-  | LegalMovesIF of char * int * char * int * char * int 
+  | LegalMoves of (char * int) 
+  | LegalMovesIF of (char * int * char * int * char * int ) 
   | UnderAttack 
   | UnderAttackIF of locations
-  | CanAttack 
+  | CanAttack
   | CanAttackIF of locations
-  | Attackers of char * int 
-  | AttackersIF of char * int * char * int * char * int 
-  | Suggest of (Board.t -> char * int * char * int)
-  | SuggestIF of (Board.t -> char * int * char * int)*locations
+  | Attackers of (char * int) 
+  | AttackersIF of (char * int * char * int * char * int ) 
+  | Suggest of (Board.t -> locations)
+  | SuggestIF of (Board.t -> locations)*locations
 
 (** the type of a player command *)
 type t = 

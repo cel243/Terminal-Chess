@@ -15,7 +15,6 @@
  *    The third element is a type of Board.color and is [Black] when initialized
  *    The fourth element is a non-negative float.
  *    The fifth element is a non-negative float.
- *    The sixth element is a type of Game.opponent.
 *)
 type t = 
   (

@@ -1,8 +1,52 @@
 (** [depth_cpu] is how many moves ahead the cpu looks *)
 let depth_cpu = 3
 
+(** [get_pieces brd counter] makes a list of all the pieces on the board 
+    belonging to the current player of the form (Piece,rank,file,score). *)
+let rec get_pieces brd counter = 
+  if 
+    counter > -1 
+  then
+    let c = char_of_int((counter/8)+65) in
+    let i = (counter mod 8)+1 in
+    match Board.get_piece_at brd c i with
+    | None -> get_pieces brd (counter-1)
+    | Some {p_type = p; col = col; has_moved; points = pnt} -> 
+      if 
+        col = Board.get_current_player brd
+      then
+        (p, c, i, pnt) :: get_pieces brd (counter-1)
+      else 
+        get_pieces brd (counter-1)
+  else
+    []
+
+(** [get_moves_piece brd counter c1 i1] is the list of all possible moves 
+    of the piece at [c1, i1]. *)
+let rec get_moves_piece brd counter c i =
+  if 
+    counter > -1 
+  then
+    let c1 = char_of_int((counter/8)+65) in
+    let i1 = (counter mod 8)+1 in
+    let legal, _ = Logic.is_legal brd c i c1 i1 in
+    if legal 
+    then (c, i, c1, i1) :: get_moves_piece brd (counter-1) c i
+    else get_moves_piece brd (counter-1) c i
+  else
+    [] 
+
+(** [get_moves brd lst] is the list of all possible moves for every piece in 
+    [lst]. *)
+let rec get_moves brd = function
+  | [] -> []
+  | (p, c, i, pnt) :: t -> 
+    (get_moves_piece brd (63) c i) @ (get_moves brd t)
+
 (** [create_board brd c1 i1 c2 i2] is the fake board where the hypothetical 
-    move [c1,i1] to [c2,i2] was made *)
+    move [c1,i1] to [c2,i2] was made, unless the move results
+    in the capture of the king, in which case the king is 
+    "captured" but is not removed from the board.  *)
 let create_board brd c1 i1 c2 i2 =
   let fake_board = Board.copy_board brd in
   let captured_p = (Board.get_piece_at fake_board c2 i2) in
@@ -31,7 +75,7 @@ let rec get_boards brd = function
     ((c1,i1,c2,i2),create_board brd c1 i1 c2 i2)::(get_boards brd t)
 
 (** [largest_score score move lst] 
-    is the [move] with the largest [score] from [lst] *)
+    is the move in [lst] with the largest score *)
 let rec largest_score score move = function
   | [] -> move
   | (sc,mv)::t ->
@@ -41,7 +85,10 @@ let rec largest_score score move = function
     else 
       largest_score score move t
 
-
+(** [highest_piece brd ls score loc p_type] is the piece  
+    at a location in [ls] with the highest point value.
+    Requires: every location in [ls] corresponds to 
+    a square on the board with a piece.  *)
 let rec highest_piece brd ls score loc p_type =
   match ls with 
   | [] -> loc, p_type 
@@ -56,7 +103,12 @@ let rec highest_piece brd ls score loc p_type =
     end 
 
 (** [get_opp_move brd c2 i2] is the next predicted move the cpu 
-    thinks the player will make. *)
+    thinks the opposing player will make, assuming that if the 
+    opposing player can take a piece, it will, and if the 
+    opposing player can take multiple pieces, it will 
+    take the piece of the highest value. If the piece
+    the opponent takes is the king, then the king will
+    not be removed from the board. *)
 let get_opp_move brd c2 i2 = 
   Board.next_player brd; 
   let locs,_,_,_ = Support.handle_player_support brd (Command.CanAttack) in 
@@ -76,7 +128,6 @@ let get_opp_move brd c2 i2 =
       Board.next_player brd;
       brd )
 
-
 (** [next_move_helper brd dpth move1 tsc csc] 
     is a list of [(score, (c1,i1,c2,i2))] for each leaf
     of the move tree of depth [dpth], 
@@ -86,8 +137,8 @@ let get_opp_move brd c2 i2 =
 let rec next_move_helper brd dpth move1 =
   if dpth > 0
   then
-    let pieces = Machine.get_pieces brd 63 in
-    let moves = Machine.get_moves brd pieces in
+    let pieces = get_pieces brd 63 in
+    let moves = get_moves brd pieces in
     let boards = get_boards brd moves in
     for_next_move dpth move1 boards
   else
@@ -110,8 +161,8 @@ and for_next_move dpth move1 = function
       @(for_next_move dpth move1  t)
 
 let next_move brd =
-  let pieces = Machine.get_pieces brd 63 in
-  let moves = Machine.get_moves brd pieces in
+  let pieces = get_pieces brd 63 in
+  let moves = get_moves brd pieces in
   let boards = get_boards brd moves in
   let movelist = for_next_move depth_cpu ('A', 1, 'A', 1) boards in
   (largest_score (-1000) ('A',1,'A',1) (movelist))

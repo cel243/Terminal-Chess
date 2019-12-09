@@ -2,9 +2,10 @@
 
     This module represents the state of the board, including
     where all the pieces are located, what the previous legal moves have 
-    been, and which player's turn it is. 
+    been, which pieces have been captured, and which player's turn it is. 
 
-    It contains functions to mutate the state of the board.  *)
+    It contains functions to mutate the state of the board and
+    retreive information about the state fo the board.  *)
 
 (** The abstract type of the value representing the chess game,
     which contains information about where each piece is located. *)
@@ -19,7 +20,8 @@ type color = Black | White
 
 (** the type of a piece in the chess game, containing a type, 
     a color denoting which player the piece belongs to, 
-    and whether the piece has been moved previously.  *)
+    whether the piece has been moved previously, and
+    the point value of that piece.   *)
 type game_piece = 
   {p_type : piece; col : color; has_moved : bool; points : int }
 
@@ -43,7 +45,9 @@ val set_game : color -> game_piece option array array ->
 val get_current_player : t -> color 
 
 (** [board_to_array g] is the board in game [g] represented as an 
-    array.  *)
+    array, where [brd_arr.(0)] corresponds 
+    to the A column of the chess board, and [brd_arr.(0).(0)] corresponds 
+    to the square at A1  *)
 val board_to_array : t -> game_piece option array array
 
 (** [log_to_list g] is the log of moves represented as a list.  *)
@@ -101,7 +105,7 @@ val move_piece_en_passant :
 (** [copy_board b] is a copy of [b] *)
 val copy_board : t -> t 
 
-(** [get_opp_color col] is [Board.Black] is [col] is [Board.White], and is
+(** [get_opp_color col] is [Board.Black] if [col] is [Board.White], and is
     [Board.White] is [col] is [Board.White] *)
 val get_opp_color : color -> color
 

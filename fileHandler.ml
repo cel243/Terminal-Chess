@@ -180,7 +180,6 @@ let get_cap col json =
     (fun c -> cap := (get_cap_entry c)::(!cap)) cap_ls; 
   !cap 
 
-
 (** [get_turn json] is the current player's turn in the game
     stored in [json].  *)
 let get_turn json = 

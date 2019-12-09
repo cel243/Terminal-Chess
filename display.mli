@@ -1,6 +1,6 @@
-(** A printer that takes in a game and displays the current board visually
-    so that players can easily understand what the current state of the game 
-    looks like. *)
+(** Display is a printer that handles all view features of the chess game. 
+    For example, Display handles all printing of the chess board, printing
+    of statements relevant to the players, etc. *)
 
 (** [print_board b] displays to the console all of the pieces on board [b]
     with a checkered background. Rows are preceded by corresponding numbers

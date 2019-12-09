@@ -1,5 +1,5 @@
 (** 
-   Representation of a series of chess games that track player scores,
+   Tournament represents a series of chess games that track player scores,
    player colors, and the resulting outcome.
 
    This module provides a type that maintains all of the above information,

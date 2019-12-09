@@ -3,34 +3,36 @@ type color = Black | White
 type game_piece = {p_type : piece; col : color; has_moved : bool; points : int }
 
 (**
- * Board hosts all necessary functions for manipulating and storing the game 
- * board
- * AF: t represents a game with t.p_turn as the turn of the current player, 
- * t.board is the game board, where t.board.(0) is the 1st array corresponding 
- * the A file on a chess board (i.e. t.board.(7) is the H file)
- * t.board.(0).(0) represents the position A1 on the board (i.e. t.board.(5).(2) 
- * represents F3).
- * t.white_captured is the pieces the White player has captured mapped to the 
- * number of that particular piece white has captured 
- * t.black_captured is the pieces the Black player has captured mapped to the 
- * number of that particular piece white has captured
- * t.moves is the list of moves performed during the game
- * RI: t.board is a 8*8 array. 
- * t.white_captured, t.black_captured, and t.moves contain nonzero, positive 
- * integers only.
- * t.moves contains only chars A..H
+   AF: [{p_turn=color; white_captured=w_ls; black_captured=b_ls; 
+   board=brd_arr; moves=move_ls}] is a game where [color] is the current
+   player, [w_ls] is the pieces that the White player has captured mapped
+   to the number of that type of piece it has captured, [b_ls] is the pieces 
+   that the Black player has captured mapped to the number of that piece it 
+   has captured, [brd_arr] is the game board, where [brd_arr.(0)] corresponds 
+   to the A column of the chess board, and [brd_arr.(0).(0)] corresponds 
+   to the square at A1 (EX: [brd_arr.(5).(2)] represents F3), and 
+   [move_ls] is the list of moves performed during the game. 
+
+   RI: [brd_arr] is an 8*8 arr, where the pieces are arranged in 
+   such a way that they could have been moved there during a legitimate
+   game of chess from the standard starting position. For example, 
+   there will always be two kings on the board. 
+   [w_ls], [b_ls], and [move_ls] contain only positive integers,
+   and [move_ls] further contains only characters in A...H. 
 *)
 type t = { 
   mutable p_turn : color;
   mutable white_captured : (piece*int) list; 
   mutable black_captured : (piece*int) list; 
   board : ((game_piece option) array) array;
-  mutable moves : ((piece * color * char * int) * 
-                   (char * int) *
-                   ((piece * char * int) option)) list 
+  mutable moves : (
+    (piece * color * char * int) * 
+    (char * int) *
+    ((piece * char * int) option)
+  ) list 
 }
 
-(** [get_piece_value piece] is how many points the [piece] is worth *)
+(** [get_piece_value piece] is how many points [piece] is worth *)
 let get_piece_value = function
   | Pawn -> 1
   | Rook -> 5
@@ -38,6 +40,12 @@ let get_piece_value = function
   | Knight -> 3
   | Queen -> 9
   | King -> 100
+
+let get_opp_color = function
+  | Black -> White
+  | White -> Black
+
+let init_state init_state_loader = init_state_loader "INIT_STATE.json" 
 
 let set_game p_turn board log w_cap b_cap= 
   {
@@ -48,15 +56,7 @@ let set_game p_turn board log w_cap b_cap=
     moves = log
   }
 
-let get_opp_color = function
-  | Black -> White
-  | White -> Black
-
-let init_state init_state_loader = init_state_loader "INIT_STATE.json" 
-
-
-let get_current_player state =
-  state.p_turn
+let get_current_player state = state.p_turn
 
 let board_to_array state = state.board
 
@@ -77,8 +77,7 @@ let next_player state =
 let get_piece_at state c i =
   state.board.((int_of_char c)-65).(i-1)
 
-let get_moves state = 
-  state.moves
+let get_moves state = state.moves
 
 let get_last_move t = match (get_moves t) with 
   | [] -> None
@@ -112,8 +111,8 @@ let copy_piece state c1 i1 c2 i2 =
   match state.board.((int_of_char c1)-65).(i1-1) with
   | None -> raise (Failure "piece not there")
   | Some {p_type=s; col=c; has_moved=h; points=p} -> 
-    if (((i2 = 8) && (c = White) && (s = Pawn)) ||
-        ((i2 = 1) && (c = Black) && (s = Pawn)))
+    if ((i2 = 8 && c = White && s = Pawn) ||
+        (i2 = 1 && c = Black && s = Pawn))
     then state.board.((int_of_char c2)-65).(i2-1) <- 
         Some {p_type=Queen; col=c; has_moved=true; points=p}
     else
@@ -144,11 +143,6 @@ let log_move state c1 i1 c2 i2 c3 i3 =
         move::state.moves
       end in
   state.moves <- moves'
-
-(*
-p3 --> c3 i3
-(log_move state c1 i1 c2 i2 c3 i3)
-*)
 
 let move_piece_en_passant state c1 i1 c2 i2 c3 i3 =
   (log_move state c1 i1 c2 i2 c3 i3);

@@ -27,7 +27,7 @@ let check_valid brd c i =
     Requires: [f] is a function that suggest the next move. *)
 let suggest f brd = 
   let (c1, i1, c2, i2) = f brd in 
-  ([(c1,i1);c2,i2], brd, false, brd)
+  ([(c1,i1);(c2,i2)], brd, false, brd)
 
 (** [all_opp_attacks brd op_ls c i sofar] is a list of opponent
     pieces that are capable of capturing the piece at [c,i].  *)
@@ -45,8 +45,7 @@ let rec all_opp_attacks brd op_ls c i sofar =
     that are capable of capturing the piece at [c,i]. 
     If [c,i] does not represent a valid location or is not the location 
     of one of the current player's pieces, an appropriate error message 
-    will print and [locs] is [[]]. If there are no attackers of
-    the piece at [c,i], [attackers] will print ["No attackers!"] *)
+    will print and [locs] is [[]]. *)
 let attackers brd c i = 
   match check_valid brd c i with 
   | (false, _) -> ([], brd, false, brd)
@@ -101,10 +100,10 @@ let can_attack brd =
   Board.next_player temp; 
   under_attack temp
 
-
 (** [check_rows c' ints brd c i] is a list of locations in column [c']
     that the piece at [c,i] can legally move to.
-    Requires: there is a piece at [c,i] and it belongs to the current player.  *)
+    Requires: there is a piece at [c,i] and it belongs to the current player.  
+*)
 let rec check_rows c' ints brd c i = 
   match ints with 
   | [] -> [] 
@@ -114,9 +113,10 @@ let rec check_rows c' ints brd c i =
     then (c',i')::(check_rows c' t brd c i)  
     else check_rows c' t brd c i
 
-(** [chars ints brd c i sofar] is a list of locations on the 
+(** [check_cols chars ints brd c i sofar] is a list of locations on the 
     board to which it is legal for the piece at [c,i] to move. 
-    Requires: there is a piece at [c,i] and it belongs to the current player. *)
+    Requires: there is a piece at [c,i] and it belongs to the current player. 
+*)
 let rec check_cols chars ints brd c i sofar = 
   match chars with 
   | [] -> sofar 
@@ -166,7 +166,7 @@ let hypothetical cmmd brd c1 i1 c2 i2 =
          | Command.AttackersIF (c,i,_,_,_,_) -> attackers temp c i  
          | Command.LegalMovesIF (c,i,_,_,_,_) -> legal_moves temp c i 
          | Command.SuggestIF (f, _) -> suggest f temp
-         | _ -> failwith "precondition violated" ) in 
+         | _ -> failwith "precondition violated : support hypothetical" ) in 
       (locs, temp, true, brd)
     )
 
