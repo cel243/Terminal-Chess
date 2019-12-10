@@ -109,6 +109,7 @@ let castle_invalid_brd2 = FileHandler.load_game "CASTLE_INVALID_TEST2.json"
 let castle_invalid_brd3 = FileHandler.load_game "CASTLE_INVALID_TEST3.json"
 let en_passant_valid_brd = FileHandler.load_game "EN_PASSANT_VALID.json"
 let en_passant_invalid_brd = FileHandler.load_game "EN_PASSANT_INVALID.json"
+let prom_brd = FileHandler.load_game "PROMOTION_TEST.json"
 
 let file_brd_manual = Board.init_state FileHandler.load_game  
 let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
@@ -336,6 +337,15 @@ let logic_tests_clean_WITH_effects = [
 
   (* EN PASSANT allowed under right conditions *)
   "valid en passant allowed", en_passant_valid_brd, 'C',5,'D',6, Legal;
+
+  (* Promotion of pawn to queen occurs
+      Step 1: Move pawn to end of file
+      Step 2: Attempt to move the now-queen backwards 
+      Step 3: Attempt to move the now-queen diagonally
+  *)
+  "promotion occurs (step 1)", prom_brd, 'A',7,'A',8, Legal;
+  "promotion occurs (step 2)", prom_brd, 'A',8,'A',2, Legal;
+  "promotion occurs (step 3)", prom_brd, 'A',2,'D',5, Legal;
 ]
 
 let logic_tests_clean_NO_effects = [
@@ -414,6 +424,7 @@ let logic_tests_clean_NO_effects = [
   (* EN PASSANT restricted if move occurred after pawn moved forward 2 *)
   "en passant no longer allowed", en_passant_valid_brd, 'C',5,'D',6, 
   (Illegal "You don't have a piece in this square!");
+
 ]
 
 let logic_tests_unclean = [
