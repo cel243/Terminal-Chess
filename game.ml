@@ -184,8 +184,9 @@ let display_last_move b =
 let get_next_move b oppt person =
   if person || oppt <> CPU then (print_string "> "; Display.get_input ())
   else begin
+    print_string "Press ENTER to continue:\n"; 
+    ignore (Display.get_input ());
     let cpu_move =
-      ignore (Display.get_input ());
       let (c1, i1, c2, i2) = Cpu.next_move b in
       (Char.escaped c1)^(string_of_int i1)^" to "^
       (Char.escaped c2)^(string_of_int i2) in
