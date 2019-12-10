@@ -6,9 +6,10 @@ open Support
 open Cpu 
 
 (**
-   The modules that are tested the most within the test suite are Command and
-   Logic. Their nature is very much black-or-white, and therefore allows for
-   the validiation of their correctness to be easily vetted through OUnit. 
+   The modules that are tested the most within the test suite are Command, 
+   Board, and Logic. Their nature is very much black-or-white, and therefore 
+   allows for the validiation of their correctness to be easily vetted through
+   OUnit. 
 
    Tests for Command fall largely under the umbrella of glass-box testing, 
    since the sole purpose of Command is converting user input strings into
@@ -16,6 +17,14 @@ open Cpu
    Therefore, the tests concern themselves with inputs varying by case,
    formatting, and keywords. Each different type of Command is tested, so
    the correctness of the entire module is validated via the test suite.
+
+   Much of the Board tests deal are black-box in nature, ensuring the initial
+   state is in agreement with a standard chess board. Other tests make sure
+   that the list of captured pieces for a certain player are valid as well (both
+   initially and after taking a few). There are a number of methods within Board
+   that are indirectly tested, such as [next_player] for FileHandler and 
+   [copy_board] for Logic. Combining these two facts ensures correctness of
+   the Board module via this test suite.
 
    Logic tests are the most involved and most prevelant tests seen in the
    suite, dealing largely with validity of piece movement, leaving the King
