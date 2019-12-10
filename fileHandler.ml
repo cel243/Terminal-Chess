@@ -61,9 +61,9 @@ let form_log_entry ((p1, c, c1, i1), (c2, i2), p_op) : Yojson.Basic.t =
     | None -> [("captured piece", `String "none")]
     | Some (p2, c3, i3) -> 
       [("captured piece", 
-        `String (Display.get_rep_long p1 |> String.lowercase_ascii));
+        `String (Display.get_rep_long p2 |> String.lowercase_ascii));
        ("captured char", `String (Char.escaped c3));
-       ("captured int", `Int i2)] ) in 
+       ("captured int", `Int i3)] ) in 
   `Assoc (base_list@cap_piece)
 
 (**  [form_log log_ls] is a JSON representation of the log of moves

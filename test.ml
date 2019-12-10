@@ -7,9 +7,9 @@ open Cpu
 
 (**
    The modules that are tested the most within the test suite are Command, 
-   Board, and Logic. Their nature is very much black-or-white, and therefore 
-   allows for the validiation of their correctness to be easily vetted through
-   OUnit. 
+   Board, Support, FileHandler, and Logic. Their nature is very much 
+   black-or-white, and therefore allows for the validiation of their 
+   correctness to be easily vetted through OUnit. 
 
    Tests for Command fall largely under the umbrella of glass-box testing, 
    since the sole purpose of Command is converting user input strings into
@@ -35,10 +35,34 @@ open Cpu
    were tested. All aspects of a chess game make an appearance, so the suite
    adequately ensures the correctness of Logic.
 
+   Support tests are black-box in nature, ensuring that the outputted 
+   list of board locations given a support request and a board state 
+   are what would be expected by a human surveying the board. Each type 
+   of Support request is tested to ensure that it is outputing what
+   is expected, with the exception of the "suggest" command, since it
+   relies on the AI, the testing of which will be discussed shortly. 
+   Thus the correctness of Support is ensured. 
+
+   Filehandler tests are strictly black box, and check to ensure that 
+   when a game is saved and loaded, the loaded game has all of the expected
+   properties. Most importantly, the tests for FileHandler ensure that
+   the initial state of the game, which is now loaded from a file, is
+   as we would expect. However, FileHandler is unable to be extensively tested
+   due to the fact that much of its responsibilities deal more so with file 
+   I/O than chess. It is impossible to test that a complicated savefile is 
+   valid without hard-coding the predicted result; this is tedious and, at a 
+   certain point, iscounter-productive. Furthermore, a loaded game's viability 
+   is already implicitly tested here: none of the tests using loaded games 
+   from savefiles would pass if the FileHandler was reading the saves 
+   improperly. Trivial example are present, however, and are tested via 
+   black-box testing. Because we test to ensure that the loaded file 
+   matches what we would expect, this tests the saving functionality as well
+   as the loading functionality and thus proves the correctness of the module. 
+
    There were a number of modules that, due to their nature, were unable to 
    be included or *fully* checked in this test suite and instead needed to have 
-   their correctness validated by hand: Cpu, Machine, Display, Support, 
-   FileHandler, Game, Tournament. NOTE: The inclusion of a module in this
+   their correctness validated by hand: Cpu, Display, Game, Tournament. 
+   NOTE: The inclusion of a module in this
    list or in subsequent paragraphs does not always reflect its total exclusion
    from the test suite: some modules contain certain aspects more conducive to
    testing than others, but some––like Display for example––are simply unable 
@@ -50,32 +74,14 @@ open Cpu
    commercial chess engine like Stockfish; therefore, there is no standard with 
    which Cpu's moves can be reasonably be compared to, and by extension is
    unable to be tested here. This is not to suggest the Cpu's moves have gone 
-   unchecked: many games have been played to ensure that the Cpu is a reasonable,
-   semi-formidable opponent. Furthermore, the more objective aspects of these
-   modules, such as computing the largest possible score increase given a board,
-   are included and tested in the suite and done via black-box testing.
+   unchecked: many games have been played to ensure that the Cpu is a 
+   reasonable, formidable opponent. Furthermore, tests ensure that the Cpu
+   is at least outputting legal moves.
 
-   Display and much of Support fail to make an appearance in the test suite for
-   the same general reason: they are too graphics-centered. The only way to 
-   ensure that Display––whose main purpose is to present the board to the user––
-   is functioning properly is to play a game. Furthermore, the Support module
-   deals largely with presenting suggestions and supplemental information via
-   the terminal and so simarly cannot be adequately tested. Many functions
-   within Support are routed through Display (as to be able to highlight squares
-   on the board); therefore, these functions fall under the same rationale used
-   to justify the lack of Display's tests, and likewise are not included here.
-   There are, however, a few exceptions within Support that are seen in the
-   test suite constructed by black-box testing, but they do not represent 
-   coverage of the entire module's capabilities.
-
-   FileHandler is unable to be extensively tested here due to the fact that much
-   of its responsibilities deal more so with file I/O than chess. It is 
-   impossible to test that a complicated savefile is valid without 
-   hard-coding the predicted result; this is tedious and, at a certain point, is
-   counter-productive. Furthermore, a loaded game's viability is already 
-   implicitly tested here: none of the tests using loaded games from savefiles
-   would pass if the FileHandler was  reading the saves improperly. Trivial
-   example are present, however, and are tested via black-box testing.
+   Display fails to make an appearance in the test suite since it is 
+   too graphics-centered. The only way to ensure that Display––whose main 
+   purpose is to present the board to the user––is functioning properly is to 
+   play a game.
 
    Finally, Game and Tournament are unable to be included within the test suite 
    for a couple of reasons. First, it is extremely difficult to simulate an 
@@ -92,10 +98,95 @@ open Cpu
    appearance in this test suite. Anything that either was too subjective or
    simply unable to be encoded in OUnit tests were omitted; however, these
    features were validated by hand via play-testing. Therefore, all elements
-   of the application have been reviewed and are up to our standards.
+   of the application have been reviewed and are up to our standards, 
+   and our testing has proven that our project functions as expected. 
 *)
 
 (* BOARDS USED FOR TESTING *)
+
+let init_board_arr = 
+  [|
+    [|
+      Some {p_type = Rook; col = White; has_moved = false; points=5};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Rook; col = Black; has_moved = false; points=5}
+    |];
+    [|
+      Some {p_type = Knight; col = White; has_moved = false; points=3};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Knight; col = Black; has_moved = false; points=3}
+    |];
+    [|
+      Some {p_type = Bishop; col = White; has_moved = false; points=3};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Bishop; col = Black; has_moved = false; points=3}
+    |];
+    [|
+      Some {p_type = Queen; col = White; has_moved = false; points=9};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Queen; col = Black; has_moved = false; points=9}
+    |];
+    [|
+      Some {p_type = King; col = White; has_moved = false; points=100};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = King; col = Black; has_moved = false; points=100}
+    |];
+    [|
+      Some {p_type = Bishop; col = White; has_moved = false; points=3};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Bishop; col = Black; has_moved = false; points=3}
+    |];
+    [|
+      Some {p_type = Knight; col = White; has_moved = false; points=3};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Knight; col = Black; has_moved = false; points=3}
+    |];
+    [|
+      Some {p_type = Rook; col = White; has_moved = false; points=5};
+      Some {p_type = Pawn; col = White; has_moved = false; points=1};
+      None;
+      None;
+      None;
+      None;
+      Some {p_type = Pawn; col = Black; has_moved = false; points=1};
+      Some {p_type = Rook; col = Black; has_moved = false; points=5}
+    |];
+  |]
 
 let capture_board = FileHandler.load_game "CAPTURE_TEST.json"
 let checkmate_brd = FileHandler.load_game "CHECKMATE_TEST.json"
@@ -111,12 +202,17 @@ let en_passant_valid_brd = FileHandler.load_game "EN_PASSANT_VALID.json"
 let en_passant_invalid_brd = FileHandler.load_game "EN_PASSANT_INVALID.json"
 let prom_brd = FileHandler.load_game "PROMOTION_TEST.json"
 
+(* board where pieces have been captured, starting player is black, ...  *)
 let file_brd_manual = Board.init_state FileHandler.load_game  
-let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
+let  _ = ignore (Logic.process file_brd_manual (Move ('C' ,2 ,'C', 4)));
   Board.next_player file_brd_manual;
-  ignore (Logic.process file_brd_manual (Move ('A' ,7 ,'A', 6)));
+  ignore (Logic.process file_brd_manual (Move ('D' ,7 ,'D', 5)));
   Board.next_player file_brd_manual;
-  ignore (Logic.process file_brd_manual (Move ('F' ,1 ,'C', 4)));
+  ignore (Logic.process file_brd_manual (Move ('B' ,1 ,'A', 3)));
+  Board.next_player file_brd_manual;
+  ignore (Logic.process file_brd_manual (Move ('D' ,5 ,'C', 4)));
+  Board.next_player file_brd_manual;
+  ignore (Logic.process file_brd_manual (Move ('A' ,3 ,'C', 4)));
   Board.next_player file_brd_manual
 
 let game_state = Board.init_state FileHandler.load_game  
@@ -209,6 +305,20 @@ let logic_move_test_copybrd name board c1 i1 c2 i2 outcome =
 let file_tests = [
   "Teh board loaded from the file is equal to the one you get manually" >:: 
   (fun _ -> assert_equal file_brd file_brd_manual) ;
+  "The init state board has the desired board array" >::
+  (fun _ -> assert_equal 
+      (Board.init_state FileHandler.load_game |> Board.board_to_array)
+      init_board_arr);
+  "The init state board has starting player white" >::
+  (fun _ -> assert_equal White 
+      (Board.init_state FileHandler.load_game |> Board.get_current_player));
+  "The init state board has empty move list" >::
+  (fun _ -> assert_equal [] 
+      (Board.init_state FileHandler.load_game |> Board.log_to_list));
+  "The init state board has empty captured pieces lists" >::
+  (fun _ -> assert_equal ([],[]) 
+      (let b = Board.init_state FileHandler.load_game in 
+       (Board.get_captured_pieces b White, Board.get_captured_pieces b Black)))
 ]
 
 let support_tests_clean = [
@@ -430,9 +540,6 @@ let logic_tests_clean_NO_effects = [
 
 ]
 
-let logic_tests_unclean = [
-
-]
 
 let logic_tests = 
   ( List.map 
@@ -492,28 +599,6 @@ let board_tests = [
   (fun _ -> assert_equal 15 (List.length (get_black_pieces game_state)));  
 ] 
 
-(* let machine_helper = 
-   let c1,i1,c2,i2 = (get_rand_move capture_board)in
-   let test,_ = is_legal capture_board c1 i1 c2 i2 in
-   test *)
-
-(* let machine_tests = [
-   "Lists White pieces" >:: 
-   (fun _ -> assert_equal (List.length (get_white_pieces capture_board))
-      (List.length (get_pieces capture_board 63)));
-   "Lists Black pieces" >:: 
-   (fun _ -> assert_equal (List.length (get_black_pieces checkmate_brd))
-      (List.length (get_pieces checkmate_brd 63)));
-   "Lists Knight moves" >:: 
-   (fun _ -> assert_equal 3
-      (List.length (get_moves_piece capture_board 63 'G' 1)));
-   "Lists both Knights moves" >:: 
-   (fun _ -> assert_equal 5
-      (List.length (get_moves capture_board ((1,'G',1,1)::(1,'B',1,1)::[]))));
-   "Random move is legal" >:: 
-   (fun _ -> assert_equal true
-      machine_helper);
-   ] *)
 
 let cpu_helper = 
   let c1,i1,c2,i2 = (next_move capture_board)in
@@ -521,16 +606,6 @@ let cpu_helper =
   test
 
 let cpu_tests = [
-  (* "Creates fake board properly" >:: 
-     (fun _ -> assert_equal (get_piece_at capture_board 'B' 7)
-      (get_piece_at (create_board capture_board 'B' 7 'H' 3) 'H' 3));
-     "Lists moves properly" >:: 
-     (fun _ -> assert_equal 
-      (List.length (get_boards capture_board [('B',7,'H',3);('D',5,'H',3)]))
-      2 );
-     "Finds the largest score" >:: 
-     (fun _ -> assert_equal (largest_score 0 0 [(1,1);(2,2);(3,3);(5,4)])
-      4 ); *)
   "Next move is legal" >:: 
   (fun _ -> assert_equal true
       cpu_helper);
@@ -543,7 +618,6 @@ let suite =
     logic_tests;
     support_tests; 
     file_tests;
-    (* machine_tests; *)
     cpu_tests;
   ]
 
