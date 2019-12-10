@@ -22,7 +22,7 @@ let rec handle_load () =
 
 (** [prompt_gametype ()] is prompts the user for the desired game mode to play
     and returns one of: [Exhibition b] where [b] is either a new Board and 
-    a loaded one from a saved file; [Series] for a new tournament; or exits
+    a loaded one from a savefile; [Series] for a new tournament; or exits
     if the user types "exit". *)
 let rec prompt_gametype () = 
   print_string "Which mode would you like to play?\n";
@@ -37,7 +37,7 @@ let rec prompt_gametype () =
   | "exit" -> print_string "Goodbye!"; exit 0
   | _ -> print_string "Invalid mode. Please retry.\n"; prompt_gametype ()
 
-(** [prompt_opponent_type ()] prompts the user for the desired opponent
+(** [prompt_opponent_type ()] is prompts the user for the desired opponent
     to face, and is either [Human] or [CPU]. *)
 let rec prompt_opponent_type () = 
   print_string "Who would you like to play against?\n";
@@ -52,7 +52,7 @@ let rec prompt_opponent_type () =
       prompt_opponent_type ()
     end
 
-(** [main ()] prompts for the game to play, then starts the game. *)
+(** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   ANSITerminal.erase ANSITerminal.Screen;
   print_string "Welcome to chess.\n";

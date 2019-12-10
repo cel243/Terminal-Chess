@@ -148,9 +148,9 @@ let handle_move (c1,i1,c2,i2) c b =
     Requires: 
     [b] is the current Board
     [str] is the input of the current player *)
-let parse_input b str opp = 
-  ANSITerminal.erase ANSITerminal.Screen;
-  match (Command.parse Cpu.next_move str) with
+let parse_input b str opp =
+  let c = (Command.parse Cpu.next_move str) in
+  match c with
   | Resign -> handle_resign (Board.get_current_player b) b
   | Draw -> handle_draw b opp
   | Save s -> handle_save s b
@@ -178,32 +178,44 @@ let display_last_move b =
   | None -> ()
   | Some m -> Display.print_move ((Board.get_move_cnt b) - 1) m true
 
+let is_not_cpu = function
+  | Human -> true
+  | CPU -> false
+
+let get_human_move () = 
+  print_string "> ";
+  (Display.get_input ())
+
+let get_cpu_move b =
+  let (c1, i1, c2, i2) = (Cpu.next_move b) in
+  (Char.escaped c1)^(string_of_int i1)^" to "^
+  (Char.escaped c2)^(string_of_int i2)
+
 (** [get_next_move b] is the next move to perform for the game on Board [b].
     If it is the human's turn, the user is prompted via the console to input
     a move; otherwise, the CPU is tasked with determining a move and that is
     returned instead.*)
 let get_next_move b oppt person =
-  if person || oppt <> CPU then (print_string "> "; Display.get_input ())
-  else begin
-    let cpu_move =
-      let (c1, i1, c2, i2) = Cpu.next_move b in
-      (Char.escaped c1)^(string_of_int i1)^" to "^
-      (Char.escaped c2)^(string_of_int i2) in
-    (* "a7 to a6" in *)
-    print_string ("> " ^ cpu_move ^ "\n");
-    cpu_move
-  end
+  if (person || (is_not_cpu oppt)) then get_human_move ()
+  else get_cpu_move b
+
+let is_persons_turn flag oppt = flag || (is_not_cpu oppt)
 
 (** [play_board b oopt person] prints the current board, 
     prompts a player or CPU to  input a command, accepts player input, 
     and delegates the handling of that input appropriately.  *)
-let rec play_board b oppt person = 
+let rec play_board b oppt person =
+  (if not (is_persons_turn person oppt) then
+     (Display.print_board b)
+   else 
+     (ANSITerminal.erase ANSITerminal.Screen; Display.print_board b););
   display_last_move b;
   let curr = (Board.get_current_player b) in curr |> print_move;
-  let move = get_next_move b oppt person in
+  let curr' = (Board.get_current_player b) in
+  let move = (get_next_move b oppt person) in
   match (parse_input b move oppt) with
   | None -> begin
-      if (Board.get_current_player b) = curr then (* Illegal Move *)
+      if (Board.get_current_player b) = curr' then (* Illegal Move *)
         play_board b oppt person
       else
         play_board b oppt (not person)

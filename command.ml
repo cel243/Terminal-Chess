@@ -96,10 +96,9 @@ let get_command f wrd_ls =
   | ["CAPTURED"] -> Captured
   | ["SAVE";"AS";s] -> Save s 
   | ["LOG"] -> Log
-  | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 -> 
+  | [l1; "TO"; l2] when String.length l1 = 2 && String.length l2 = 2 ->
     Move (get_locations_2 l1 l2)
   | _ -> get_psupport_cmmd f wrd_ls 
-
 
 let parse f p_in = 
   String.split_on_char ' ' p_in 

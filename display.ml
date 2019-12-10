@@ -23,13 +23,6 @@ let get_rep_long = function
   | Board.Queen -> "Queen"
   | Board.King -> "King"
 
-let get_input () = 
-  match (read_line ()) with
-  | exception End_of_file -> begin
-      ANSITerminal.print_string [ANSITerminal.green] "Goodbye.\n"; exit 0
-    end
-  | str -> str
-
 (** [get_background r f] is [ASNITerminal.on_blue] if either the file [f]
     or rank [r] is even, but not both; otherwise, is [ANSITerminal.on_cyan]. *)
 let get_background r f = 
@@ -38,6 +31,13 @@ let get_background r f =
     ANSITerminal.on_blue
   else
     ANSITerminal.on_cyan
+
+let get_input () =
+  match (read_line ()) with
+  | exception End_of_file -> begin
+      ANSITerminal.print_string [ANSITerminal.green] "Goodbye.\n"; exit 0
+    end
+  | str -> str
 
 (** [get_highlighted_background r f] is [ASNITerminal.on_yellow] if either the
     file [f] or rank [r] is even, but not both; otherwise, is 

@@ -54,7 +54,7 @@ val capture_message : Board.t -> char -> int -> char -> int -> unit
 *)
 val print_log : Board.t -> unit
 
-(** [get_input ()] is the next line inputted by the user to stdin, or 
+(** [get_input] is the next line inputted by the user to stdin, or 
     exits the application if it encounters an EOF (i.e., CTRL-D). *)
 val get_input : unit -> string
 
