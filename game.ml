@@ -1,3 +1,4 @@
+open Lwt
 
 type outcome = 
   | Win of Board.color
@@ -206,17 +207,18 @@ let is_persons_turn flag oppt = flag || (is_not_cpu oppt)
     and delegates the handling of that input appropriately.  *)
 let rec play_board b oppt person =
   display_last_move b;
-  let curr = (Board.get_current_player b) in curr |> print_move;
-  let curr' = (Board.get_current_player b) in
-  let move = (get_next_move b oppt person) in
-  match (parse_input b move oppt) with
-  | None -> begin
-      if (Board.get_current_player b) = curr' then (* Illegal Move *)
-        play_board b oppt person
-      else
-        play_board b oppt (not person)
-    end
-  | outcome -> outcome
+  let move_pro, move_res - Lwt.wait  
+let curr = (Board.get_current_player b) in curr |> print_move;
+let curr' = (Board.get_current_player b) in
+let move = (get_next_move b oppt person) in
+match (parse_input b move oppt) with
+| None -> begin
+    if (Board.get_current_player b) = curr' then (* Illegal Move *)
+      play_board b oppt person
+    else
+      play_board b oppt (not person)
+  end
+| outcome -> outcome
 
 let play b oppt human_start = 
   Display.print_board b; 

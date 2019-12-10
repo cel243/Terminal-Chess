@@ -5,7 +5,7 @@ MLIS=$(MODULES:=.mli)
 MAIN=main.byte
 TEST=test.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind 
-PKGS=oUnit,qcheck,ANSITerminal,yojson
+PKGS=oUnit,qcheck,ANSITerminal,yojson,lwt
 
 default: build
 	utop
