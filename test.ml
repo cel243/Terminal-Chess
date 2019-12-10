@@ -102,6 +102,11 @@ let checkmate_brd = FileHandler.load_game "CHECKMATE_TEST.json"
 let stalemate_brd = FileHandler.load_game "STALEMATE_TEST.json"
 let support_brd = FileHandler.load_game "SUPPORT_TEST.json"
 let file_brd = FileHandler.load_game "FILE_TEST.json"
+let draw_brd = FileHandler.load_game "DRAW_159.json"
+let castle_valid_brd = FileHandler.load_game "CASTLE_VALID_TEST.json"
+let castle_invalid_brd1 = FileHandler.load_game "CASTLE_INVALID_TEST1.json"
+let castle_invalid_brd2 = FileHandler.load_game "CASTLE_INVALID_TEST2.json"
+let castle_invalid_brd3 = FileHandler.load_game "CASTLE_INVALID_TEST3.json"
 
 let file_brd_manual = Board.init_state FileHandler.load_game  
 let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
@@ -386,6 +391,22 @@ let logic_tests_clean_NO_effects = [
   (Illegal  "This piece can't move like that!");
   "cannot move king left 4", piece_move_king,'E',4,'A',4,
   (Illegal  "This piece can't move like that!");
+
+  (* 80 move draw test *)
+  "game ends in draw at 160 moves", draw_brd, 'C',3,'B',1, Draw;
+
+  (* Valid castle allowed *)
+  "can castle when clear & pieces unmoved", castle_valid_brd, 'E',1,'G',1, Legal;
+
+  (* Castle not allowed (x3) *)
+  "can't castle: King already moved", castle_invalid_brd1, 'E',1,'G',1, 
+  (Illegal "You don't have a piece in this square!");
+
+  "can't castle: Rook already moved", castle_invalid_brd2, 'E',1,'G',1, 
+  (Illegal "You don't have a piece in this square!");
+
+  "can't castle: King in check", castle_invalid_brd3, 'E',1,'G',1, 
+  (Illegal "This piece can't move like that!");
 ]
 
 let logic_tests_unclean = [
