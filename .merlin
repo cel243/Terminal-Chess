@@ -4,4 +4,3 @@ PKG qcheck
 PKG ANSITerminal 
 PKG yojson
 PKG ocamlbuild
-PKG Lwt 

@@ -11,3 +11,4 @@
 #load_rec "game.cmo";;
 #load_rec "tournament.cmo";;
 #load_rec "cpu.cmo";;
+#load_rec "main.cmo";;
