@@ -107,6 +107,8 @@ let castle_valid_brd = FileHandler.load_game "CASTLE_VALID_TEST.json"
 let castle_invalid_brd1 = FileHandler.load_game "CASTLE_INVALID_TEST1.json"
 let castle_invalid_brd2 = FileHandler.load_game "CASTLE_INVALID_TEST2.json"
 let castle_invalid_brd3 = FileHandler.load_game "CASTLE_INVALID_TEST3.json"
+let en_passant_valid_brd = FileHandler.load_game "EN_PASSANT_VALID.json"
+let en_passant_invalid_brd = FileHandler.load_game "EN_PASSANT_INVALID.json"
 
 let file_brd_manual = Board.init_state FileHandler.load_game  
 let  _ = ignore (Logic.process file_brd_manual (Move ('E' ,2 ,'E', 4)));
@@ -331,6 +333,9 @@ let logic_tests_clean_WITH_effects = [
   (Illegal  "This piece can't move like that!");
   "pawn can move diagonally when taking other piece", piece_move_pawn, 
   'D',4,'C',5, Legal; 
+
+  (* EN PASSANT allowed under right conditions *)
+  "valid en passant allowed", en_passant_valid_brd, 'C',5,'D',6, Legal;
 ]
 
 let logic_tests_clean_NO_effects = [
@@ -401,12 +406,14 @@ let logic_tests_clean_NO_effects = [
   (* Castle not allowed (x3) *)
   "can't castle: King already moved", castle_invalid_brd1, 'E',1,'G',1, 
   (Illegal "You don't have a piece in this square!");
-
   "can't castle: Rook already moved", castle_invalid_brd2, 'E',1,'G',1, 
   (Illegal "You don't have a piece in this square!");
-
   "can't castle: King in check", castle_invalid_brd3, 'E',1,'G',1, 
   (Illegal "This piece can't move like that!");
+
+  (* EN PASSANT restricted if move occurred after pawn moved forward 2 *)
+  "en passant no longer allowed", en_passant_valid_brd, 'C',5,'D',6, 
+  (Illegal "You don't have a piece in this square!");
 ]
 
 let logic_tests_unclean = [
