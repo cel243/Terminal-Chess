@@ -346,6 +346,9 @@ let logic_tests_clean_WITH_effects = [
   "promotion occurs (step 1)", prom_brd, 'A',7,'A',8, Legal;
   "promotion occurs (step 2)", prom_brd, 'A',8,'A',2, Legal;
   "promotion occurs (step 3)", prom_brd, 'A',2,'D',5, Legal;
+
+  (* Pawn move forward 2 allowed *)
+  "can move pawn forward 2", prom_brd, 'F',2,'F',4, Legal;
 ]
 
 let logic_tests_clean_NO_effects = [
