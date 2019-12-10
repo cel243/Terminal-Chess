@@ -60,7 +60,6 @@ let rec check_opp_attacks brd op_ls king_c king_i =
     then true 
     else check_opp_attacks brd t king_c king_i
 
-(**  [en_passant i1 c2 brd] is [true] if a pawn can be taken by en passant *)
 and en_passant i1 c2 brd =
   match Board.get_current_player brd with
   | White -> 
@@ -95,8 +94,6 @@ and king_loc brd =
   | [(k, c, i)] -> (c,i) 
   | _ -> failwith "this is not a valid board b/c there is no king : logic" 
 
-(** [king_in_check brd c1 i1 c2 i2] is [true] if the current 
-    player's king is in check, and [false] otherwise.  *)
 and king_in_check brd = 
   let op_piece_ls = (
     match Board.get_current_player brd with 

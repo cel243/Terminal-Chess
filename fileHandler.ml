@@ -1,4 +1,3 @@
-(** Yojson.Basic.from_file f *)
 open Yojson.Basic.Util
 
 (** [ptype_from_string s] is the chess piece type that [s] represents. 

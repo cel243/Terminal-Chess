@@ -21,7 +21,7 @@ let check_valid brd c i =
       (true, temp)
     | Some {col} -> (true, temp) )
 
-(** [suggest f brd] is ([strt ; fnsh], brd, false, brd), where [strt] is 
+(** [suggest f brd] is [([strt ; fnsh], brd, false, brd)], where [strt] is 
     the beginning square of the CPU's cuggested move, and [fnsh] is the
     ending square. 
     Requires: [f] is a function that suggest the next move. *)

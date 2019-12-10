@@ -1,4 +1,4 @@
-(** SUpport offers functions that help the player as they play the game, like 
+(** Support offers functions that help the player as they play the game, like 
     showing legal moves, which pieces are in danger, suggesting moves,
     etc. *)
 

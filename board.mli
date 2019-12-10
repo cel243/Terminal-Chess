@@ -1,4 +1,4 @@
-(** Representation of the dynamic state of the chess game.
+(** Board represents the dynamic state of the chess game.
 
     This module represents the state of the board, including
     where all the pieces are located, what the previous legal moves have 

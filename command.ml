@@ -25,7 +25,9 @@ exception Invalid
 (** [get_locations_3 loc l1 l2] is [(c,i,c1,i1,c2,i2)], where [c,i]
     is the character and integer in [loc], [c1,i1] is the character and 
     integer in [l1], and [c2,i2] is the character and integer in [l2]. 
+
     Example: get_locations_3 "C3" "A2" "B6" = ('C',3,'A',2,'B',6)
+
     Requires: [loc, l1, l2] all have length [2] and consist 
     of an uppercase character in A...H followed by an integer
     in 1...8.  *)
@@ -34,9 +36,11 @@ let get_locations_3 loc l1 l2 =
    String.get l1 0, int_of_char (String.get l1 1) - 48,
    String.get l2 0, int_of_char (String.get l2 1) - 48 )
 
-(** [get_locations_2 l1 l2] is [(i1,c2,i2)], where [c1,i1] is the character 
+(** [get_locations_2 l1 l2] is [(c1,i1,c2,i2)], where [c1,i1] is the character 
     and integer in [l1] and [c2,i2] is the character and integer in [l2]. 
+
     Example: get_locations_2 "A2" "B6" = ('A',2,'B',6)
+
     Requires: [loc, l1, l2] all have length [2] and consist 
     of an uppercase character in A...H followed by an integer
     in 1...8.  *)

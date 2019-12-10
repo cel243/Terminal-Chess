@@ -1,20 +1,21 @@
 
+(** *)
+
 (**
- * Tournament hosts all necessary functions for manipulating and 
- * storing a series of consecutive chess games.
  * AF: t represents a tournament with:
- *   The first element being the number of games to be played.
- *   The second element being the number of completed games up until this point.
- *   The third element being the color that Player 1 played as previously. 
- *   The fourth element being Player 1's score.
- *   The fifth element being Player 2's score.
- *   The sixth element indicating the type of Player 2 (Human or CPU)
+ *   - The first element being the number of games to be played.
+ *   - The second element being the number of completed games up until this point.
+ *   - The third element being the color that Player 1 played as previously. 
+ *   - The fourth element being Player 1's score.
+ *   - The fifth element being Player 2's score.
+ *   -  The sixth element indicating the type of Player 2 (Human or CPU)
+ * 
  * RI: 
- *    The first element is a positive, non-zero integer.
- *    The second element is a non-negative integer.
- *    The third element is a type of Board.color and is [Black] when initialized
- *    The fourth element is a non-negative float.
- *    The fifth element is a non-negative float.
+ *    -  The first element is a positive, non-zero integer.
+ *    -  The second element is a non-negative integer.
+ *    - The third element is a type of Board.color and is [Black] when initialized
+ *    - The fourth element is a non-negative float.
+ *    - The fifth element is a non-negative float.
 *)
 type t = 
   (

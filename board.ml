@@ -83,8 +83,8 @@ let get_last_move t = match (get_moves t) with
   | [] -> None
   | h :: _ -> Some h
 
-(* [loop_array c f i r] i the (game_piece * char * int) list representation of 
-   board pieces of color c in a given rank r from array f. *)
+(** [loop_array c f i r] i the [(game_piece * char * int)] list representation of 
+    board pieces of color c in a given rank r from array f. *)
 let rec loop_array color file i r =
   if i = 8 then []
   else 
@@ -95,8 +95,8 @@ let rec loop_array color file i r =
       then (g_piece, char_of_int(r+65), i+1)::(loop_array color file (i+1) r)
       else (loop_array color file (i+1) r)
 
-(* [loop_board c t i] is the (game_piece * char * int) list representation of 
-   board pieces of color c, passes each file array to [loop_array c f i r] *)
+(** [loop_board c t i] is the [(game_piece * char * int)] list representation of 
+    board pieces of color c, passes each file array to [loop_array c f i r] *)
 let rec loop_board color state i =
   if i = 8 then []
   else (loop_array color state.board.(i) 0 i)@(loop_board color state (i+1))

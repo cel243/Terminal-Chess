@@ -1,3 +1,5 @@
+(**  *)
+
 (** [depth_cpu] is how many moves ahead the cpu looks *)
 let depth_cpu = 3
 
@@ -128,7 +130,7 @@ let get_opp_move brd c2 i2 =
       Board.next_player brd;
       brd )
 
-(** [next_move_helper brd dpth move1 tsc csc] 
+(** [next_move_helper brd dpth move1] 
     is a list of [(score, (c1,i1,c2,i2))] for each leaf
     of the move tree of depth [dpth], 
     where [score] is the score of the current 
@@ -144,7 +146,7 @@ let rec next_move_helper brd dpth move1 =
   else
     ((Board.get_score_cpu brd (Board.get_current_player brd)), move1)::[]
 
-(** [for_next_move dpth move1 tsc csc] 
+(** [for_next_move dpth move1] 
     is a list of [(score, (c1,i1,c2,i2))] for each leaf
     of the move tree, where [score] is the score of the current 
     state of that board's leaf. 

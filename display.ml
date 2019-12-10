@@ -245,10 +245,6 @@ let rec print_piece_list = function
       ((get_rep_long p)^": "^(string_of_int n)^"\n"); 
     print_piece_list t
 
-(** [print_captured_piece brd col] prints all the types and quantity of each
-    of pieces taken by the player with color [col] given the game represented
-    by [brd]. 
-*)
 let print_captured_pieces brd = function 
   | Board.White -> 
     ANSITerminal.print_string 
@@ -259,12 +255,6 @@ let print_captured_pieces brd = function
       [red] "\nBLACK'S CAPTURED PIECES: \n"; 
     print_piece_list (Board.get_captured_pieces brd Black) 
 
-(** [capture_message brd c1 i1 c2 i2] prints either:
-    "Pawn takes Pawn by En Passant!" if the piece at [c1, i1] on [brd] is
-    capable of taking a Pawn at [c2, i2] on the same [brd]; or,
-    "<attacker piece type> takes <victim piece type>!" if there are pieces
-    at [c1, i1] and [c2, i2] on the [brd].
-*)
 let capture_message brd c1 i1 c2 i2 = 
   match Board.get_piece_at brd c1 i1, Board.get_piece_at brd c2 i2 with 
   | _, None -> 
