@@ -157,7 +157,10 @@ let parse_input b str opp =
   | Help -> handle_help b
   | Captured -> handle_captured b
   | PSupport req -> handle_support b req
-  | Move (c1,i1,c2,i2) as c -> handle_move (c1,i1,c2,i2) c b
+  | Move (c1,i1,c2,i2) as c -> begin
+      ANSITerminal.erase ANSITerminal.Screen;
+      handle_move (c1,i1,c2,i2) c b
+    end
   | Log -> Display.print_log b; None
   | exception Command.Invalid ->
     print_string "Invalid command.\n";
