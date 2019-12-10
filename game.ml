@@ -205,10 +205,6 @@ let is_persons_turn flag oppt = flag || (is_not_cpu oppt)
     prompts a player or CPU to  input a command, accepts player input, 
     and delegates the handling of that input appropriately.  *)
 let rec play_board b oppt person =
-  (if not (is_persons_turn person oppt) then
-     (Display.print_board b)
-   else 
-     (ANSITerminal.erase ANSITerminal.Screen; Display.print_board b););
   display_last_move b;
   let curr = (Board.get_current_player b) in curr |> print_move;
   let curr' = (Board.get_current_player b) in
