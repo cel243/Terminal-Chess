@@ -105,7 +105,7 @@ let save_game f_name brd =
       ("log", form_log log_ls);
       ("white captured", form_captured w_cap);
       ("black captured", form_captured b_cap)] in 
-  Yojson.Basic.to_file (f_name^".json") json 
+  Yojson.Basic.to_file ("game_jsons/"^f_name^".json") json 
 
 (** [get_piece p] is the optional game piece that is represented 
     by JSON object [p].  *)
@@ -185,7 +185,7 @@ let get_turn json =
   col_from_string (json |> member "current player" |> to_string)
 
 let load_game f = 
-  let json = Yojson.Basic.from_file f in 
+  let json = Yojson.Basic.from_file ("game_jsons/"^f) in 
   Board.set_game (get_turn json) (get_board json) (get_log json)
     (get_cap "W" json) (get_cap "B" json)
 
